@@ -27,7 +27,7 @@ public class ProximityIntentReceiver extends BroadcastReceiver {
 		Boolean entering = intent.getBooleanExtra(key, false);
 		if (entering) {
 			Log.d(LOG_TAG, "ENTER");
-			Toast.makeText(context, "Entering the region", Toast.LENGTH_LONG)
+			Toast.makeText(context, R.string.car_found, Toast.LENGTH_LONG)
 					.show();
 
 			SimpleDateFormat format_time = new SimpleDateFormat("dd HH:mm");

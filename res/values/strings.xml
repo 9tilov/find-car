@@ -4,5 +4,11 @@
     <string name="app_name">findMyCar</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+    <string name="save_car_loc">Car location has been saved</string>
+    <string name="no_location">Location can\'t be retrieved</string>
+    <string name="no_provider">No Provider Found</string>
+    <string name="no_internet">No Internet connection</string>
+    <string name="no_points">No points</string>
+    <string name="car_found">Car is here!</string>
 
 </resources>

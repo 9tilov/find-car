@@ -99,7 +99,6 @@ public class ScreenMap extends FragmentActivity {
 						.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
 
 				drawMarker(departurePoint, locationType.USER_LOCATION);
-				// drawCircle(departurePoint);
 				markerPoints.add(arrivalPoint);
 				MarkerOptions arrivalOptions = new MarkerOptions();
 				arrivalOptions.position(arrivalPoint);
@@ -150,16 +149,13 @@ public class ScreenMap extends FragmentActivity {
 
 					IntentFilter filter = new IntentFilter(PROX_ALERT_INTENT);
 					registerReceiver(new ProximityIntentReceiver(), filter);
-					Toast.makeText(getApplicationContext(), "Alert Added",
-							Toast.LENGTH_SHORT).show();
-
 				}
 			} else
-				Toast.makeText(getBaseContext(), "Location can't be retrieved",
+				Toast.makeText(getBaseContext(), R.string.no_location,
 						Toast.LENGTH_SHORT).show();
 
 		} else
-			Toast.makeText(getBaseContext(), "No Provider Found",
+			Toast.makeText(getBaseContext(), R.string.no_provider,
 					Toast.LENGTH_SHORT).show();
 
 		Log.d(LOG_TAG, "location_lng1 = " + arrivalLngFromAddress);
@@ -302,7 +298,7 @@ public class ScreenMap extends FragmentActivity {
 			String duration = "";
 			// Traversing through all the routes
 			if (!isNetworkAvailable()) {
-				Toast.makeText(getBaseContext(), "No Internet connection",
+				Toast.makeText(getBaseContext(), R.string.no_internet,
 						Toast.LENGTH_SHORT).show();
 				return;
 			}
@@ -342,7 +338,7 @@ public class ScreenMap extends FragmentActivity {
 			}
 
 			if (result.size() < 1) {
-				Toast.makeText(getBaseContext(), "No Points",
+				Toast.makeText(getBaseContext(), R.string.no_points,
 						Toast.LENGTH_SHORT).show();
 				return;
 			}

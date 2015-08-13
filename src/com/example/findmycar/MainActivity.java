@@ -49,14 +49,18 @@ public class MainActivity extends Activity {
 					Log.d(LOG_TAG, "location_lng = " + location.getLongitude());
 					Log.d(LOG_TAG, "location_lat = " + location.getLatitude());
 					SharedPreference.SaveLocation(this, 55.93115, 37.522269);
+					
+					Toast.makeText(getBaseContext(),
+							R.string.save_car_loc, Toast.LENGTH_SHORT)
+							.show();
 					// SharedPreference.SaveLocation(this,
 					// location.getLatitude(), location.getLongitude());
 				} else
 					Toast.makeText(getBaseContext(),
-							"Location can't be retrieved", Toast.LENGTH_SHORT)
+							R.string.no_location, Toast.LENGTH_SHORT)
 							.show();
 			} else {
-				Toast.makeText(getBaseContext(), "No Provider Found",
+				Toast.makeText(getBaseContext(), R.string.no_provider,
 						Toast.LENGTH_SHORT).show();
 			}
 			break;
