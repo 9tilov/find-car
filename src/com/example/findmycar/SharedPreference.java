@@ -13,6 +13,7 @@ public class SharedPreference {
 	public static final String s_hour = "hour";
 	public static final String s_minute = "minute";
 	public static final String s_day = "day";
+	public static final String s_state = "state";
 
 	public final static String EXTRA_ARRIVAL_LATITUDE = "arrival_lat";
 	public final static String EXTRA_ARRIVAL_LONGITUDE = "arrival_lng";
@@ -28,7 +29,7 @@ public class SharedPreference {
 		editor.commit();
 	}
 
-	static public LatLng LoadState(Context ctx) {
+	static public LatLng LoadLocation(Context ctx) {
 		SharedPreferences sharedPreferences = PreferenceManager
 				.getDefaultSharedPreferences(ctx);
 		double lat = Double.longBitsToDouble(sharedPreferences
@@ -60,6 +61,33 @@ public class SharedPreference {
 		int minute = sharedPreferences.getInt(s_minute, 0);
 		String time = String.valueOf(day + " " + hour + ":" + minute);
 		return time;
+	}
+
+	static public void SaveState(Context ctx, boolean state) {
+		SharedPreferences sharedPreferences = PreferenceManager
+				.getDefaultSharedPreferences(ctx);
+		SharedPreferences.Editor editor = sharedPreferences.edit();
+		editor.remove(s_state);
+		editor.putBoolean(s_state, state);
+		editor.commit();
+	}
+
+	static public boolean LoadState(Context ctx) {
+		SharedPreferences sharedPreferences = PreferenceManager
+				.getDefaultSharedPreferences(ctx);
+		boolean state = sharedPreferences.getBoolean(s_state, false);
+		return state;
+	}
+
+	static public void clearPref(Context ctx) {
+		SharedPreferences sharedPreferences = PreferenceManager
+				.getDefaultSharedPreferences(ctx);
+		SharedPreferences.Editor editor = sharedPreferences.edit();
+		editor.remove(s_day);
+		editor.remove(s_hour);
+		editor.remove(s_minute);
+		editor.remove(s_lat);
+		editor.remove(s_lng);
 	}
 
 }

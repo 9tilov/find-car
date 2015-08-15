@@ -36,6 +36,8 @@ public class ProximityIntentReceiver extends BroadcastReceiver {
 			Log.d(LOG_TAG, "real_time = " + real_time);
 			Log.d(LOG_TAG, "park_time = " + park_time);
 			String difference = timeDifference(context, park_time, real_time);
+			SharedPreference.clearPref(context);
+			SharedPreference.SaveState(context, false);
 			Log.d(LOG_TAG, "difference = " + difference);
 		} else {
 			Log.d(LOG_TAG, "EXIT");
@@ -43,7 +45,7 @@ public class ProximityIntentReceiver extends BroadcastReceiver {
 		NotificationManager notificationManager = (NotificationManager) context
 				.getSystemService(Context.NOTIFICATION_SERVICE);
 
-		Intent notificationIntent = new Intent(context, ScreenMap.class);
+		Intent notificationIntent = new Intent(context, MainActivity.class);
 		PendingIntent pendingIntent = PendingIntent.getActivity(context, 0,
 				notificationIntent, 0);
 		Notification notification = createNotification();
