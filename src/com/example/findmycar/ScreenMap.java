@@ -14,6 +14,7 @@ import java.util.List;
 import org.json.JSONObject;
 
 import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -55,6 +56,7 @@ public class ScreenMap extends FragmentActivity {
 	}
 
 	public LocationManager locationManager;
+	BroadcastReceiver reciever;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -148,7 +150,8 @@ public class ScreenMap extends FragmentActivity {
 							arrivalPoint.longitude, 20, -1, proximityIntent);
 
 					IntentFilter filter = new IntentFilter(PROX_ALERT_INTENT);
-					registerReceiver(new ProximityIntentReceiver(), filter);
+					reciever = new ProximityIntentReceiver();
+					registerReceiver(reciever, filter);
 				}
 			} else
 				Toast.makeText(getBaseContext(), R.string.no_location,
@@ -463,6 +466,12 @@ public class ScreenMap extends FragmentActivity {
 		NetworkInfo activeNetworkInfo = connectivityManager
 				.getActiveNetworkInfo();
 		return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+	}
+
+	@Override
+	protected void onStop() {
+		unregisterReceiver(reciever);
+		super.onStop();
 	}
 
 }
