@@ -13,7 +13,7 @@ public class SharedPreference {
 	public static final String s_hour = "hour";
 	public static final String s_minute = "minute";
 	public static final String s_day = "day";
-	public static final String s_state = "state";
+	public static final String s_state_location_save = "state_location";
 
 	public final static String EXTRA_ARRIVAL_LATITUDE = "arrival_lat";
 	public final static String EXTRA_ARRIVAL_LONGITUDE = "arrival_lng";
@@ -63,19 +63,20 @@ public class SharedPreference {
 		return time;
 	}
 
-	static public void SaveState(Context ctx, boolean state) {
+	static public void SaveIsLocationSavedState(Context ctx, boolean state) {
 		SharedPreferences sharedPreferences = PreferenceManager
 				.getDefaultSharedPreferences(ctx);
 		SharedPreferences.Editor editor = sharedPreferences.edit();
-		editor.remove(s_state);
-		editor.putBoolean(s_state, state);
+		editor.remove(s_state_location_save);
+		editor.putBoolean(s_state_location_save, state);
 		editor.commit();
 	}
 
-	static public boolean LoadState(Context ctx) {
+	static public boolean LoadIsLocationSavedState(Context ctx) {
 		SharedPreferences sharedPreferences = PreferenceManager
 				.getDefaultSharedPreferences(ctx);
-		boolean state = sharedPreferences.getBoolean(s_state, false);
+		boolean state = sharedPreferences.getBoolean(s_state_location_save,
+				false);
 		return state;
 	}
 
