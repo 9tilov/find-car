@@ -19,6 +19,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
@@ -49,7 +50,7 @@ public class ScreenMap extends FragmentActivity {
 	GoogleMap map;
 	final static String LOG_TAG = "myLogs";
 	final static String LOG_TAG1 = "inet";
-	TextView tvDistanceDuration;
+	TextView tvDistance, tvDuration;
 
 	public enum locationType {
 		USER_LOCATION, CAR_LOCATION
@@ -64,8 +65,24 @@ public class ScreenMap extends FragmentActivity {
 		setContentView(R.layout.screen_map);
 
 		final String PROX_ALERT_INTENT = "com.example.findmycar";
-		tvDistanceDuration = (TextView) findViewById(R.id.tv_distance_time);
+		tvDistance = (TextView) findViewById(R.id.tv_distance_time);
+		tvDuration = (TextView) findViewById(R.id.tv_duration_time);
 		final ArrayList<LatLng> markerPoints;
+		Typeface font = Typeface.createFromAsset(getAssets(), "Dashley.ttf");
+
+		Button btnFindCar = (Button) findViewById(R.id.buttonFindCar);
+		SemiCircleDrawable dr_stop = new SemiCircleDrawable(Color.RED);
+		btnFindCar.setBackgroundDrawable(dr_stop);
+		btnFindCar.setTypeface(font);
+
+		btnFindCar.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				SharedPreference.SaveIsLocationSavedState(
+						getApplicationContext(), false);
+				finish();
+			}
+		});
 		markerPoints = new ArrayList<LatLng>();
 		SupportMapFragment fm = (SupportMapFragment) getSupportFragmentManager()
 				.findFragmentById(R.id.map);
