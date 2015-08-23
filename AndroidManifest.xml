@@ -48,6 +48,13 @@
             android:name="ScreenMap"
             android:label="Map" >
         </activity>
+
+        <receiver android:name="com.example.findmycar.ProximityIntentReceiver" >
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" >
+                </action>
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>
