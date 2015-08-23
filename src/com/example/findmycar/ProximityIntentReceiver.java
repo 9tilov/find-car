@@ -27,8 +27,7 @@ public class ProximityIntentReceiver extends BroadcastReceiver {
 		Boolean entering = intent.getBooleanExtra(key, false);
 		if (entering) {
 			Log.d(LOG_TAG, "ENTER");
-			Toast.makeText(context, R.string.car_found, Toast.LENGTH_LONG)
-					.show();
+			car_found(context);
 
 			SimpleDateFormat format_time = new SimpleDateFormat("dd HH:mm");
 			String real_time = format_time.format(new Date());
@@ -37,7 +36,7 @@ public class ProximityIntentReceiver extends BroadcastReceiver {
 			Log.d(LOG_TAG, "park_time = " + park_time);
 			String difference = timeDifference(context, park_time, real_time);
 			SharedPreference.clearPref(context);
-			SharedPreference.SaveState(context, false);
+			SharedPreference.SaveIsLocationSavedState(context, false);
 			Log.d(LOG_TAG, "difference = " + difference);
 		} else {
 			Log.d(LOG_TAG, "EXIT");
@@ -62,7 +61,6 @@ public class ProximityIntentReceiver extends BroadcastReceiver {
 		notification.when = System.currentTimeMillis();
 		notification.flags |= Notification.FLAG_AUTO_CANCEL;
 		notification.flags |= Notification.FLAG_SHOW_LIGHTS;
-		notification.defaults |= Notification.DEFAULT_VIBRATE;
 		notification.defaults |= Notification.DEFAULT_LIGHTS;
 		notification.ledARGB = Color.WHITE;
 		notification.ledOnMS = 1500;
@@ -134,5 +132,9 @@ public class ProximityIntentReceiver extends BroadcastReceiver {
 			e.printStackTrace();
 		}
 		return difference;
+	}
+
+	private void car_found(Context ctx) {
+		Toast.makeText(ctx, R.string.car_found, Toast.LENGTH_LONG).show();
 	}
 }
