@@ -32,6 +32,9 @@ import android.support.v4.app.FragmentActivity;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -94,12 +97,8 @@ public class ScreenMap extends FragmentActivity {
 
 		map = fm.getMap();
 
-		map.setMyLocationEnabled(true);
 		map.setTrafficEnabled(true);
-		double arrivalLatFromAddress = getIntent().getDoubleExtra(
-				SharedPreference.EXTRA_ARRIVAL_LATITUDE, 90.0);
-		double arrivalLngFromAddress = getIntent().getDoubleExtra(
-				SharedPreference.EXTRA_ARRIVAL_LONGITUDE, -160.);
+		map.setMyLocationEnabled(true);
 		if (provider != null && !provider.equals("")) {
 
 			Location location = locationManager.getLastKnownLocation(provider);
@@ -107,10 +106,7 @@ public class ScreenMap extends FragmentActivity {
 
 				LatLng departurePoint = new LatLng(location.getLatitude(),
 						location.getLongitude());
-				LatLng arrivalPoint = new LatLng(arrivalLatFromAddress,
-						arrivalLngFromAddress);
-				// LatLng arrivalPoint = new LatLng(location.getLatitude(),
-				// location.getLongitude());
+				LatLng arrivalPoint = SharedPreference.LoadLocation(this);
 				markerPoints.add(departurePoint);
 				MarkerOptions departureOptions = new MarkerOptions();
 				departureOptions.position(departurePoint);
@@ -128,11 +124,12 @@ public class ScreenMap extends FragmentActivity {
 
 				if (markerPoints.size() == 1) {
 					CameraUpdate update = CameraUpdateFactory.newLatLngZoom(
-							departurePoint, 14);
+							departurePoint, 12);
 					map.moveCamera(update);
 				}
 
-				else if (markerPoints.size() >= 2) {
+				else if (markerPoints.size() == 2) {
+					Log.d(LOG_TAG, "markerPoints");
 					LatLngBounds.Builder builder = new LatLngBounds.Builder();
 					builder.include(departurePoint);
 					builder.include(arrivalPoint);
@@ -164,22 +161,24 @@ public class ScreenMap extends FragmentActivity {
 					PendingIntent proximityIntent = PendingIntent.getBroadcast(
 							this, 0, intent, 0);
 					locationManager.addProximityAlert(arrivalPoint.latitude,
-							arrivalPoint.longitude, 20, -1, proximityIntent);
+							arrivalPoint.longitude, 2, -1, proximityIntent);
 
 					IntentFilter filter = new IntentFilter(PROX_ALERT_INTENT);
 					reciever = new ProximityIntentReceiver();
 					registerReceiver(reciever, filter);
+					Log.d(LOG_TAG, "markerPoints_end");
 				}
-			} else
-				Toast.makeText(getBaseContext(), R.string.no_location,
-						Toast.LENGTH_SHORT).show();
+			} else {
+				no_location();
+				startActivity(new Intent(
+						android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+			}
 
-		} else
-			Toast.makeText(getBaseContext(), R.string.no_provider,
-					Toast.LENGTH_SHORT).show();
-
-		Log.d(LOG_TAG, "location_lng1 = " + arrivalLngFromAddress);
-		Log.d(LOG_TAG, "location_lat1 = " + arrivalLatFromAddress);
+		} else {
+			no_provider();
+			startActivity(new Intent(
+					android.provider.Settings.ACTION_WIFI_SETTINGS));
+		}
 
 	}
 
@@ -318,8 +317,9 @@ public class ScreenMap extends FragmentActivity {
 			String duration = "";
 			// Traversing through all the routes
 			if (!isNetworkAvailable()) {
-				Toast.makeText(getBaseContext(), R.string.no_internet,
-						Toast.LENGTH_SHORT).show();
+				no_internet();
+				startActivity(new Intent(
+						android.provider.Settings.ACTION_WIFI_SETTINGS));
 				return;
 			}
 			for (int i = 0; i < result.size(); i++) {
@@ -350,7 +350,7 @@ public class ScreenMap extends FragmentActivity {
 
 				// Adding all the points in the route to LineOptions
 				lineOptions.addAll(points);
-				lineOptions.width(2);
+				lineOptions.width(4);
 
 				// Changing the color polyline according to the mode
 				lineOptions.color(Color.BLUE);
@@ -358,15 +358,16 @@ public class ScreenMap extends FragmentActivity {
 			}
 
 			if (result.size() < 1) {
-				Toast.makeText(getBaseContext(), R.string.no_points,
-						Toast.LENGTH_SHORT).show();
+				no_points();
 				return;
 			}
 			Log.d(LOG_TAG, "distance = " + distance);
 			Log.d(LOG_TAG, "duration = " + duration);
 
-			tvDistanceDuration.setText("distance = " + distance + "\n"
-					+ "duration = " + duration);
+			tvDistance.setText(getResources().getString(R.string.distance)
+					+ distance);
+			tvDuration.setText(getResources().getString(R.string.duration)
+					+ duration);
 			// Drawing polyline in the Google Map for the i-th route
 			map.addPolyline(lineOptions);
 
@@ -398,7 +399,7 @@ public class ScreenMap extends FragmentActivity {
 		circleOptions.center(point);
 
 		// Radius of the circle
-		circleOptions.radius(20);
+		circleOptions.radius(2);
 
 		// Border color of the circle
 		circleOptions.strokeColor(Color.BLACK);
@@ -489,6 +490,26 @@ public class ScreenMap extends FragmentActivity {
 	protected void onStop() {
 		unregisterReceiver(reciever);
 		super.onStop();
+	}
+
+	private void no_location() {
+		Toast.makeText(getBaseContext(), R.string.no_location,
+				Toast.LENGTH_SHORT).show();
+	}
+
+	private void no_provider() {
+		Toast.makeText(getBaseContext(), R.string.no_provider,
+				Toast.LENGTH_SHORT).show();
+	}
+
+	private void no_internet() {
+		Toast.makeText(getBaseContext(), R.string.no_internet,
+				Toast.LENGTH_SHORT).show();
+	}
+
+	private void no_points() {
+		Toast.makeText(getBaseContext(), R.string.no_points, Toast.LENGTH_SHORT)
+				.show();
 	}
 
 }
