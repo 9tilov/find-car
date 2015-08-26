@@ -6,7 +6,7 @@
     <dimen name="twodp">2dp</dimen>
     <dimen name="text_size_title">25sp</dimen>
     <dimen name="text_size_title_time">42sp</dimen>
-    <dimen name="text_size_checkbox">20sp</dimen>
+    <dimen name="text_size_checkbox">15sp</dimen>
     <dimen name="text_size_toggle">10sp</dimen>
     <dimen name="text_size">15sp</dimen>
     <dimen name="text_info">25sp</dimen>
