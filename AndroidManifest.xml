@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.moggot.findmycar"
-    android:versionCode="1"
-    android:versionName="1.0" >
+    android:versionCode="2"
+    android:versionName="1.1" >
 
     <uses-sdk
         android:minSdkVersion="9"
-        android:targetSdkVersion="22" />
+        android:targetSdkVersion="23" />
 
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -23,12 +22,13 @@
         android:required="true" />
 
     <application
+        android:name="com.moggot.findmycar.AnalyticsApplication"
         android:allowBackup="true"
         android:icon="@drawable/logo"
         android:label="@string/app_name" >
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
-            android:value="AIzaSyDuwgxcthlDeZSqj_Te8Ec7RON_AsWUM10" >
+            android:value="AIzaSyC7_Ld561l28C2OtgBdpfEkhFEAs98Bzlc" >
         </meta-data>
         <meta-data
             android:name="com.google.android.gms.version"
@@ -62,6 +62,14 @@
                 </action>
             </intent-filter>
         </receiver>
+
+        <!-- Google Analytics Version v4 needs this value for easy tracking -->
+        <meta-data
+            android:name="com.google.android.gms.analytics.globalConfigResource"
+            android:resource="@xml/global_tracker" />
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
     </application>
 
 </manifest>

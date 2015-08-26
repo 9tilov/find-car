@@ -50,7 +50,7 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
-public class ScreenMap extends FragmentActivity {
+public class ScreenMap extends TrackedActivity {
 	GoogleMap map;
 	final static String LOG_TAG = "myLogs";
 	final static String LOG_TAG1 = "inet";

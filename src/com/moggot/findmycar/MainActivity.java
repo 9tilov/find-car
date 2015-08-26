@@ -11,7 +11,6 @@ import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
@@ -23,6 +22,8 @@ import android.view.animation.Animation.AnimationListener;
 import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 import android.widget.Toast;
+
+import com.google.android.gms.analytics.GoogleAnalytics;
 
 public class MainActivity extends Activity {
 
@@ -44,14 +45,15 @@ public class MainActivity extends Activity {
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
 				WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		setContentView(R.layout.activity_main);
+
+		((AnalyticsApplication) getApplication())
+				.getTracker(AnalyticsApplication.TrackerName.APP_TRACKER);
+
 		isLocationSaved = SharedPreference.LoadIsLocationSavedState(this);
 		img_animation = (ImageView) findViewById(R.id.ivTrigger);
 		DisplayMetrics displaymetrics = new DisplayMetrics();
 		getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
 		height = displaymetrics.heightPixels;
-		// Intent intent = new Intent(MainActivity.this,
-		// ScreenMap.class);
-		// startActivityForResult(intent, 1);
 
 	}
 
@@ -124,8 +126,8 @@ public class MainActivity extends Activity {
 							Log.d(LOG_TAG,
 									"location_lat = " + location.getLatitude());
 
-							// SharedPreference.SaveLocation(this, 55.932,
-							// 37.522269);
+							// SharedPreference.SaveLocation(this, 55.928,
+							// 37.520);
 							SharedPreference.SaveLocation(this,
 									location.getLatitude(),
 									location.getLongitude());
@@ -251,6 +253,23 @@ public class MainActivity extends Activity {
 	private void car_loc_save_success() {
 		Toast.makeText(getBaseContext(), R.string.save_car_loc,
 				Toast.LENGTH_SHORT).show();
+	}
+
+	@Override
+	protected void onStart() {
+		super.onStart();
+		// Get an Analytics tracker to report app starts & uncaught exceptions
+		// etc.
+		GoogleAnalytics.getInstance(this).reportActivityStart(this);
+
+	}
+
+	@Override
+	protected void onStop() {
+
+		// Stop the analytics tracking
+		GoogleAnalytics.getInstance(this).reportActivityStop(this);
+		super.onStop();
 	}
 
 }
