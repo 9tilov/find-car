@@ -48,14 +48,19 @@ public class ProximityIntentReceiver extends BroadcastReceiver {
 		Intent notificationIntent = new Intent(context, MainActivity.class);
 		PendingIntent pendingIntent = PendingIntent.getActivity(context, 0,
 				notificationIntent, 0);
-		Notification notification = createNotification();
-		notification.setLatestEventInfo(context, context.getResources()
-				.getString(R.string.app_name), context.getResources()
-				.getString(R.string.you_are_near_your_car)
-				+ "\n"
-				+ context.getResources().getString(R.string.parking_time)
-				+ " "
-				+ difference, pendingIntent);
+		// Notification notification = createNotification();
+
+		Notification notification = new Notification.Builder(context)
+				.setContentTitle(
+						context.getResources().getString(R.string.car_found))
+				.setContentText(
+						context.getResources().getString(R.string.parking_time)
+								+ " " + difference)
+				.setSmallIcon(R.drawable.ic_logo).setAutoCancel(true).build();
+		// notification.setLatestEventInfo(context, context.getResources()
+		// .getString(R.string.car_found), context.getResources()
+		// .getString(R.string.parking_time) + " " + difference,
+		// pendingIntent);
 
 		notificationManager.notify(1000, notification);
 	}
@@ -63,7 +68,6 @@ public class ProximityIntentReceiver extends BroadcastReceiver {
 	@SuppressLint("SimpleDateFormat")
 	private Notification createNotification() {
 		Notification notification = new Notification();
-		notification.icon = R.drawable.ic_logo;
 		notification.when = System.currentTimeMillis();
 		notification.flags |= Notification.FLAG_AUTO_CANCEL;
 		notification.flags |= Notification.FLAG_SHOW_LIGHTS;
