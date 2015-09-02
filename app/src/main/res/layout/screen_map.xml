@@ -3,15 +3,14 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical"
-    android:weightSum="100" >
+    android:weightSum="100">
 
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="0dip"
         android:layout_weight="10"
         android:baselineAligned="false"
-        android:orientation="horizontal" >
-    </LinearLayout>
+        android:orientation="horizontal"></LinearLayout>
 
     <LinearLayout
         android:layout_width="fill_parent"
@@ -19,7 +18,7 @@
         android:layout_weight="10"
         android:baselineAligned="false"
         android:orientation="horizontal"
-        android:weightSum="2" >
+        android:weightSum="2">
 
         <LinearLayout
             android:layout_width="0dp"
@@ -27,12 +26,12 @@
             android:layout_weight="1"
             android:gravity="center"
             android:orientation="vertical"
-            android:weightSum="2" >
+            android:weightSum="2">
 
             <RelativeLayout
                 android:layout_width="fill_parent"
                 android:layout_height="0dp"
-                android:layout_weight="1" >
+                android:layout_weight="1">
 
                 <TextView
                     android:id="@+id/tv_distance_time"
@@ -47,7 +46,7 @@
             <RelativeLayout
                 android:layout_width="fill_parent"
                 android:layout_height="0dp"
-                android:layout_weight="1" >
+                android:layout_weight="1">
 
                 <TextView
                     android:id="@+id/tv_duration_time"
@@ -65,7 +64,7 @@
             android:layout_height="fill_parent"
             android:layout_weight="1"
             android:gravity="center"
-            android:orientation="vertical" >
+            android:orientation="vertical">
 
             <Button
                 android:id="@+id/buttonFindCar"
@@ -82,22 +81,23 @@
         android:layout_height="0dip"
         android:layout_weight="1"
         android:baselineAligned="false"
-        android:orientation="horizontal" >
-    </LinearLayout>
+        android:orientation="horizontal"></LinearLayout>
 
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="0dip"
         android:layout_weight="79"
         android:baselineAligned="false"
-        android:orientation="horizontal" >
+        android:orientation="horizontal">
 
-        <fragment
+
+        <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:tools="http://schemas.android.com/tools"
             android:id="@+id/map"
             android:name="com.google.android.gms.maps.SupportMapFragment"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" >
-        </fragment>
+            android:layout_height="match_parent"
+            tools:context=".ScreenMap" />
     </LinearLayout>
 
 </LinearLayout>

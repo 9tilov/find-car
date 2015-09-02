@@ -34,7 +34,7 @@
             android:id="@+id/ivIcon"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:src="@drawable/logo" />
+            android:src="@mipmap/logo4" />
     </RelativeLayout>
 
     <RelativeLayout
@@ -71,7 +71,7 @@
             android:id="@+id/ivReview"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:src="@drawable/like" />
+            android:src="@mipmap/like" />
     </RelativeLayout>
 
     <RelativeLayout
@@ -79,7 +79,7 @@
         android:layout_height="0dip"
         android:layout_weight="1"
         android:gravity="bottom"
-        android:orientation="horizontal" >
+        android:orientation="horizontal">
     </RelativeLayout>
 
 </LinearLayout>
