@@ -1,11 +1,14 @@
 package com.moggot.findmycarlocation;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -19,18 +22,13 @@ import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
-import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.analytics.GoogleAnalytics;
 
 import java.util.Calendar;
 
 public class MainActivity extends AppCompatActivity {
-
-    InterstitialAd mInterstitialAd;
-
 
     float y1, y2;
     ImageView img_animation;
@@ -65,39 +63,6 @@ public class MainActivity extends AppCompatActivity {
         DisplayMetrics displaymetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
         height = displaymetrics.heightPixels;
-
-//        mNewGameButton = (Button) findViewById(R.id.newgame_button);
-        mInterstitialAd = new InterstitialAd(this);
-        mInterstitialAd.setAdUnitId("ca-app-pub-1475613019168586/3427314950");
-
-        mInterstitialAd.setAdListener(new AdListener() {
-            @Override
-            public void onAdClosed() {
-                requestNewInterstitial();
-            }
-        });
-
-        requestNewInterstitial();
-
-//        mNewGameButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                if (mInterstitialAd.isLoaded()) {
-//                    mInterstitialAd.show();
-//                } else {
-//                }
-//            }
-//        });
-
-    }
-
-
-    private void requestNewInterstitial() {
-        AdRequest adRequest = new AdRequest.Builder()
-                .addTestDevice("SEE_YOUR_LOGCAT_TO_GET_YOUR_DEVICE_ID")
-                .build();
-
-        mInterstitialAd.loadAd(adRequest);
     }
 
     public boolean onTouchEvent(MotionEvent touchevent) {
@@ -157,8 +122,12 @@ public class MainActivity extends AppCompatActivity {
                         String provider = locationManager.getBestProvider(criteria,
                                 false);
                         if (provider != null && !provider.equals("")) {
-                            Location location = locationManager
-                                    .getLastKnownLocation(provider);
+                            Location location = null;
+                            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                                location = locationManager
+                                        .getLastKnownLocation(provider);
+                            }
+
                             if (location != null) {
 
                                 Log.d(LOG_TAG,
@@ -202,7 +171,6 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onAnimationStart(Animation animation) {
-                // TODO Auto-generated method stub
                 isAnimation = true;
             }
 
@@ -223,8 +191,6 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onAnimationRepeat(Animation animation) {
-                // TODO Auto-generated method stub
-
             }
         });
         animation.setDuration(1000);
@@ -240,7 +206,6 @@ public class MainActivity extends AppCompatActivity {
         animation.setAnimationListener(new AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {
-                // TODO Auto-generated method stub
                 isAnimation = true;
             }
 
@@ -251,15 +216,12 @@ public class MainActivity extends AppCompatActivity {
                             ScreenMap.class);
                     startActivityForResult(intent, 1);
                     isAnimation = false;
-                    Log.d(LOG_TAG, "isAnimation = " + isAnimation);
                 }
                 isAnimation = false;
             }
 
             @Override
             public void onAnimationRepeat(Animation animation) {
-                // TODO Auto-generated method stub
-
             }
         });
         animation.setDuration(1000);
