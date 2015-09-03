@@ -1,18 +1,37 @@
 package com.moggot.findmycarlocation;
 
+import android.Manifest;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.location.Criteria;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -22,6 +41,9 @@ import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolylineOptions;
+
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -34,28 +56,14 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
-import org.json.JSONObject;
-
-import android.content.IntentFilter;
-import android.graphics.Typeface;
-import android.location.LocationListener;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.os.AsyncTask;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.Button;
-import android.widget.TextView;
-import com.google.android.gms.maps.model.PolylineOptions;
-
 public class ScreenMap extends TrackedActivity {
 
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
-    private BroadcastReceiver reciever;
+    private BroadcastReceiver receiver;
     final static String LOG_TAG = "myLogs";
     TextView tvDistance, tvDuration;
+
+    InterstitialAd mInterstitialAd;
 
     public enum locationType {
         USER_LOCATION, CAR_LOCATION
@@ -69,29 +77,56 @@ public class ScreenMap extends TrackedActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.screen_map);
+        AdView mAdView = (AdView) findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
+        mInterstitialAd = new InterstitialAd(this);
 
+        mInterstitialAd.setAdUnitId("ca-app-pub-1475613019168586/3427314950");
 
+        mInterstitialAd.loadAd(adRequest);
+
+        mInterstitialAd.setAdListener(new AdListener() {
+            @Override
+            public void onAdLoaded() {
+
+                if (mInterstitialAd.isLoaded()) {
+                    mInterstitialAd.show();
+                }
+            }
+
+            @Override
+            public void onAdOpened() {
+            }
+
+            @Override
+            public void onAdFailedToLoad(int errorCode) {
+
+            }
+        });
+
+        setUpMapIfNeeded();
         tvDistance = (TextView) findViewById(R.id.tv_distance_time);
         tvDuration = (TextView) findViewById(R.id.tv_duration_time);
-        final ArrayList<LatLng> markerPoints;
         Typeface font = Typeface.createFromAsset(getAssets(), "Dashley.ttf");
         tvDistance.setTypeface(font);
         tvDuration.setTypeface(font);
         Button btnFindCar = (Button) findViewById(R.id.buttonFindCar);
         SemiCircleDrawable dr_stop = new SemiCircleDrawable(
                 Color.parseColor("#CFCFCF"));
-        btnFindCar.setBackgroundDrawable(dr_stop);
+        btnFindCar.setBackground(dr_stop);
         btnFindCar.setTypeface(font);
         btnFindCar.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 SharedPreference.SaveIsLocationSavedState(
                         getApplicationContext(), false);
                 finish();
             }
         });
 
-        setUpMapIfNeeded();
+
     }
 
     @Override
@@ -99,28 +134,16 @@ public class ScreenMap extends TrackedActivity {
         super.onResume();
         setUpMapIfNeeded();
 
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
-                1000 * 10, 10, locationListener);
-        locationManager.requestLocationUpdates(
-                LocationManager.NETWORK_PROVIDER, 1000 * 10, 10,
-                locationListener);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
+                        1000 * 10, 10, locationListener);
+                locationManager.requestLocationUpdates(
+                    LocationManager.NETWORK_PROVIDER, 1000 * 10, 10,
+                    locationListener);
+        }
+
     }
 
-    /**
-     * Sets up the map if it is possible to do so (i.e., the Google Play services APK is correctly
-     * installed) and the map has not already been instantiated.. This will ensure that we only ever
-     * call {@link #setUpMap()} once when {@link #mMap} is not null.
-     * <p/>
-     * If it isn't installed {@link SupportMapFragment} (and
-     * {@link com.google.android.gms.maps.MapView MapView}) will show a prompt for the user to
-     * install/update the Google Play services APK on their device.
-     * <p/>
-     * A user can return to this FragmentActivity after following the prompt and correctly
-     * installing/updating/enabling the Google Play services. Since the FragmentActivity may not
-     * have been completely destroyed during this process (it is likely that it would only be
-     * stopped or paused), {@link #onCreate(Bundle)} may not be called again so we should call this
-     * method in {@link #onResume()} to guarantee that it will be called.
-     */
     private void setUpMapIfNeeded() {
         // Do a null check to confirm that we have not already instantiated the map.
         if (mMap == null) {
@@ -134,14 +157,8 @@ public class ScreenMap extends TrackedActivity {
         }
     }
 
-    /**
-     * This is where we can add markers or lines, add listeners or move the camera. In this case, we
-     * just add a marker near Africa.
-     * <p/>
-     * This should only be called once and when we are sure that {@link #mMap} is not null.
-     */
     private void setUpMap() {
-        final ArrayList<LatLng> markerPoints = new ArrayList<LatLng>();
+        final ArrayList<LatLng> markerPoints = new ArrayList<>();
         SupportMapFragment fm = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
@@ -155,8 +172,10 @@ public class ScreenMap extends TrackedActivity {
         mMap.setTrafficEnabled(true);
         mMap.setMyLocationEnabled(true);
         if (provider != null && !provider.equals("")) {
-
-            Location location = locationManager.getLastKnownLocation(provider);
+            Location location = null;
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                location = locationManager.getLastKnownLocation(provider);
+            }
             if (location != null) {
 
                 LatLng departurePoint = new LatLng(location.getLatitude(),
@@ -217,8 +236,8 @@ public class ScreenMap extends TrackedActivity {
                             arrivalPoint.longitude, 2, -1, proximityIntent);
 
                     IntentFilter filter = new IntentFilter(PROX_ALERT_INTENT);
-                    reciever = new ProximityIntentReceiver();
-                    registerReceiver(reciever, filter);
+                    receiver = new ProximityIntentReceiver();
+                    registerReceiver(receiver, filter);
                     Log.d(LOG_TAG, "markerPoints_end");
                 }
             } else {
@@ -298,7 +317,7 @@ public class ScreenMap extends TrackedActivity {
             br.close();
 
         } catch (Exception e) {
-            Log.d("Exception while downloading url", e.toString());
+            Log.d("Exception", e.toString());
         } finally {
             iStream.close();
             urlConnection.disconnect();
@@ -451,7 +470,11 @@ public class ScreenMap extends TrackedActivity {
 
         @Override
         public void onProviderEnabled(String provider) {
-            showLocation(locationManager.getLastKnownLocation(provider));
+
+            if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                showLocation(locationManager.getLastKnownLocation(provider));
+            }
+
         }
 
         @Override
@@ -495,9 +518,9 @@ public class ScreenMap extends TrackedActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        if (reciever != null) {
-            unregisterReceiver(reciever);
-            reciever = null;
+        if (receiver != null) {
+            unregisterReceiver(receiver);
+            receiver = null;
         }
     }
 
