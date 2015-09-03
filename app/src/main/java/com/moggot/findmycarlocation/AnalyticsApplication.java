@@ -30,8 +30,6 @@ public class AnalyticsApplication extends Application {
     // The following line should be changed to include the correct property id.
     private static final String PROPERTY_ID = "UA-66799500-6";
 
-    public static int GENERAL_TRACKER = 0;
-
     public enum TrackerName {
         APP_TRACKER, // Tracker used only in this app.
         GLOBAL_TRACKER, // Tracker used by all the apps from a company. eg:
@@ -53,7 +51,6 @@ public class AnalyticsApplication extends Application {
             Tracker t = (trackerId == TrackerName.APP_TRACKER) ? analytics
                     .newTracker(R.xml.app_tracker) : analytics
                     .newTracker(PROPERTY_ID);
-            // : analytics.newTracker(R.xml.ecommerce_tracker);
             mTrackers.put(trackerId, t);
 
         }
