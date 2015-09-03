@@ -1,17 +1,35 @@
-
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center"
-    tools:context="com.example.findmycar.MainActivity"
-    android:background="@mipmap/bg_last1">
+    android:orientation="vertical"
+    android:weightSum="10">
 
-    <ImageView
+    <RelativeLayout
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:id="@+id/ivTrigger"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true"
-        android:background="@mipmap/geer6" />
-</RelativeLayout>
+        android:layout_height="0dip"
+        android:layout_weight="9"
+        android:background="@mipmap/bg_last1">
+
+        <ImageView
+            android:id="@+id/ivTrigger"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:background="@mipmap/geer6" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="0dip"
+        android:layout_weight="1">
+
+        <com.google.android.gms.ads.AdView xmlns:ads="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/adView"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            ads:adSize="SMART_BANNER"
+            ads:adUnitId="@string/banner_ad_unit_id"></com.google.android.gms.ads.AdView>
+    </RelativeLayout>
+</LinearLayout>

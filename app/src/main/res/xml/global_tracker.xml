@@ -12,7 +12,8 @@
 
     <!-- The screen names that will appear in reports -->
 
-    <screenName name="com.moggot.findmycar.MainActivity">MainActivity</screenName>
-    <screenName name="com.moggot.findmycar.ScreenMap">ScreenMap</screenName>
+    <screenName name="com.moggot.findmycarlocation.MainActivity">MainActivity</screenName>
+    <screenName name="com.moggot.findmycarlocation.ScreenMap">ScreenMap</screenName>
+    <screenName name="com.moggot.findmycarlocation.ScreenInfo">ScreenInfo</screenName>
 
 </resources>
