@@ -15,9 +15,6 @@ public class SharedPreference {
     public static final String s_day = "day";
     public static final String s_state_location_save = "state_location";
 
-    public final static String EXTRA_ARRIVAL_LATITUDE = "arrival_lat";
-    public final static String EXTRA_ARRIVAL_LONGITUDE = "arrival_lng";
-
     static public void SaveLocation(Context ctx, double lat, double lng) {
         SharedPreferences sharedPreferences = PreferenceManager
                 .getDefaultSharedPreferences(ctx);
