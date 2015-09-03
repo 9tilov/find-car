@@ -3,6 +3,7 @@ package com.moggot.findmycarlocation;
 /**
  * Created by dmitry on 02.09.15.
  */
+
 import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -11,7 +12,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.graphics.Color;
 import android.location.LocationManager;
 import android.util.Log;
 import android.widget.Toast;
@@ -52,34 +52,14 @@ public class ProximityIntentReceiver extends BroadcastReceiver {
         Intent notificationIntent = new Intent(context, MainActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0,
                 notificationIntent, 0);
-        // Notification notification = createNotification();
-
         Notification notification = new Notification.Builder(context)
                 .setContentTitle(
                         context.getResources().getString(R.string.car_found))
                 .setContentText(
                         context.getResources().getString(R.string.parking_time)
                                 + " " + difference)
-                .setSmallIcon(R.mipmap.ic_launcher).setAutoCancel(true).build();
-        // notification.setLatestEventInfo(context, context.getResources()
-        // .getString(R.string.car_found), context.getResources()
-        // .getString(R.string.parking_time) + " " + difference,
-        // pendingIntent);
-
+                .setSmallIcon(R.mipmap.ic_launcher).setAutoCancel(true).setContentIntent(pendingIntent).build();
         notificationManager.notify(1000, notification);
-    }
-
-    @SuppressLint("SimpleDateFormat")
-    private Notification createNotification() {
-        Notification notification = new Notification();
-        notification.when = System.currentTimeMillis();
-        notification.flags |= Notification.FLAG_AUTO_CANCEL;
-        notification.flags |= Notification.FLAG_SHOW_LIGHTS;
-        notification.defaults |= Notification.DEFAULT_LIGHTS;
-        notification.ledARGB = Color.WHITE;
-        notification.ledOnMS = 1500;
-        notification.ledOffMS = 1500;
-        return notification;
     }
 
     @SuppressLint("SimpleDateFormat")
