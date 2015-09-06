@@ -15,6 +15,7 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT" />
+    <uses-permission android:name="com.samsung.android.providers.context.permission.WRITE_USE_APP_FEATURE_SURVEY" />
 
     <application
         android:name="com.moggot.findmycarlocation.AnalyticsApplication"
@@ -35,6 +36,7 @@
             android:screenOrientation="portrait">>
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
@@ -48,6 +50,15 @@
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED"></action>
             </intent-filter>
+        </receiver>
+
+        <receiver android:name="MyWidget">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE"></action>
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_metadata"></meta-data>
         </receiver>
 
         <activity
