@@ -14,6 +14,7 @@ public class SharedPreference {
     public static final String s_minute = "minute";
     public static final String s_day = "day";
     public static final String s_state_location_save = "state_location";
+    public static final String s_widget_id = "widget_id";
 
     static public void SaveLocation(Context ctx, double lat, double lng) {
         SharedPreferences sharedPreferences = PreferenceManager
@@ -88,4 +89,20 @@ public class SharedPreference {
         editor.remove(s_lng);
     }
 
+    static public void SaveWidgetID(Context ctx, int id) {
+        SharedPreferences sharedPreferences = PreferenceManager
+                .getDefaultSharedPreferences(ctx);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.remove(s_widget_id);
+        editor.putInt(s_widget_id, id);
+        editor.commit();
+    }
+
+    static public int LoadWidgetID(Context ctx) {
+        SharedPreferences sharedPreferences = PreferenceManager
+                .getDefaultSharedPreferences(ctx);
+        int id = sharedPreferences.getInt(s_widget_id,
+                -1);
+        return id;
+    }
 }
