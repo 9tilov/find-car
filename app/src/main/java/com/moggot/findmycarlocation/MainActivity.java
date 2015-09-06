@@ -2,8 +2,10 @@ package com.moggot.findmycarlocation;
 
 import android.Manifest;
 import android.app.Activity;
+import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Criteria;
 import android.location.Location;
@@ -38,9 +40,13 @@ public class MainActivity extends Activity {
     final static String LOG_TAG = "myLogs";
     boolean isLocationSaved;
 
-    public boolean isAnimation = false;
-    private boolean repeat = true;
-    private boolean show_map = false;
+    private static boolean isAnimation = false;
+    private static boolean repeat = true;
+    private static boolean show_map = false;
+
+    int widgetID = AppWidgetManager.INVALID_APPWIDGET_ID;
+    Intent resultValue;
+    SharedPreferences sp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,14 +55,15 @@ public class MainActivity extends Activity {
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_main);
 
+        isLocationSaved = SharedPreference.LoadIsLocationSavedState(this);
+        installWidget();
+
         AdView mAdView = (AdView) findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);
-        Log.d(LOG_TAG, "start");
         ((AnalyticsApplication) getApplication())
                 .getTracker(AnalyticsApplication.TrackerName.APP_TRACKER);
 
-        isLocationSaved = SharedPreference.LoadIsLocationSavedState(this);
         img_animation = (ImageView) findViewById(R.id.ivTrigger);
         DisplayMetrics displaymetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
@@ -81,6 +88,7 @@ public class MainActivity extends Activity {
                     Log.d(LOG_TAG, "trigger = " + trigger);
                     isLocationSaved = SharedPreference
                             .LoadIsLocationSavedState(this);
+                    updateWidget(isLocationSaved);
                     // if UP to DOWN sweep event on screen
                     if (trigger == 0) {
                         if (!isLocationSaved) {
@@ -115,6 +123,7 @@ public class MainActivity extends Activity {
                         SharedPreference.SaveTime(this, cur_day, cur_hour,
                                 cur_minute);
                         SharedPreference.SaveIsLocationSavedState(this, true);
+                        updateWidget(true);
                         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
                         Criteria criteria = new Criteria();
                         String provider = locationManager.getBestProvider(criteria,
@@ -127,7 +136,6 @@ public class MainActivity extends Activity {
                             }
 
                             if (location != null) {
-
                                 Log.d(LOG_TAG,
                                         "location_lng = " + location.getLongitude());
                                 Log.d(LOG_TAG,
@@ -201,6 +209,7 @@ public class MainActivity extends Activity {
                 start, end);
 
         isLocationSaved = SharedPreference.LoadIsLocationSavedState(this);
+        updateWidget(isLocationSaved);
         animation.setAnimationListener(new AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {
@@ -257,6 +266,43 @@ public class MainActivity extends Activity {
             trigger = 0;
             repeat = true;
             show_map = false;
+            updateWidget(isLocationSaved);
+        }
+    }
+
+    private void updateWidget(boolean isLocationSavedValue) {
+        if (widgetID == -1)
+            return;
+        sp.edit().putBoolean(SharedPreference.s_state_location_save, isLocationSavedValue).commit();
+        Log.d(LOG_TAG,
+                "isLocationSavedValue = " + isLocationSavedValue);
+        Log.d(LOG_TAG,
+                "widgetIDValue = " + widgetID);
+        MyWidget.updateWidget(this, AppWidgetManager.getInstance(this), widgetID);
+        setResult(RESULT_OK, resultValue);
+    }
+
+    private void installWidget() {
+        Intent intent = getIntent();
+        Bundle extras = intent.getExtras();
+        widgetID = SharedPreference.LoadWidgetID(this);
+        Log.d(LOG_TAG, "widgetID = " + widgetID);
+        if (extras != null) {
+            widgetID = extras.getInt(AppWidgetManager.EXTRA_APPWIDGET_ID,
+                    AppWidgetManager.INVALID_APPWIDGET_ID);
+            Log.d(LOG_TAG, "widgetID_extras = " + widgetID);
+            SharedPreference.SaveWidgetID(this, widgetID);
+        }
+        // и проверяем его корректность
+        if (widgetID != AppWidgetManager.INVALID_APPWIDGET_ID) {
+            // формируем intent ответа
+            resultValue = new Intent();
+            resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetID);
+            // отрицательный ответ
+            setResult(RESULT_CANCELED, resultValue);
+            sp = getSharedPreferences(MyWidget.WIDGET_PREF, MODE_PRIVATE);
+            setResult(RESULT_OK, resultValue);
+            updateWidget(isLocationSaved);
         }
     }
 
@@ -301,4 +347,5 @@ public class MainActivity extends Activity {
         GoogleAnalytics.getInstance(this).reportActivityStop(this);
         super.onStop();
     }
+
 }
