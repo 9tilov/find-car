@@ -82,7 +82,7 @@ public class ScreenMap extends TrackedActivity {
         mAdView.loadAd(adRequest);
         mInterstitialAd = new InterstitialAd(this);
 
-        mInterstitialAd.setAdUnitId("ca-app-pub-1475613019168586/3427314950");
+        mInterstitialAd.setAdUnitId(getResources().getString(R.string.banner_ad_unit_id_map_interstitial));
 
         mInterstitialAd.loadAd(adRequest);
 
