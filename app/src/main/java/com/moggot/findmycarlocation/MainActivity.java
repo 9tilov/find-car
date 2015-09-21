@@ -3,11 +3,9 @@ package com.moggot.findmycarlocation;
 import android.Manifest;
 import android.app.Activity;
 import android.appwidget.AppWidgetManager;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -41,7 +39,6 @@ public class MainActivity extends Activity {
     boolean isLocationSaved;
 
     private static boolean isAnimation = false;
-    private static boolean repeat = true;
     private static boolean show_map = false;
 
     int widgetID = AppWidgetManager.INVALID_APPWIDGET_ID;
@@ -221,6 +218,8 @@ public class MainActivity extends Activity {
         TranslateAnimation animation = new TranslateAnimation(0.0f, 0.0f,
                 0, -height / 9);
 
+        final int[] count_anim = {0};
+
         animation.setAnimationListener(new AnimationListener() {
 
             @Override
@@ -230,17 +229,15 @@ public class MainActivity extends Activity {
 
             @Override
             public void onAnimationEnd(Animation animation) {
-                if (repeat) {
-                    TranslateAnimation animation_repeate = new TranslateAnimation(0.0f, 0.0f,
-                            -height / 9, 0);
-                    animation_repeate.setDuration(1000);
-                    animation_repeate.setFillAfter(true);
-                    img_animation.startAnimation(animation_repeate);
-                    car_loc_save_success();
-                    repeat = false;
-                    isAnimation = false;
-                }
-
+                ++count_anim[0];
+                if (count_anim[0] == 2)
+                    return;
+                TranslateAnimation animation_repeate = new TranslateAnimation(0.0f, 0.0f,
+                        -height / 9, 0);
+                animation_repeate.setDuration(500);
+                animation_repeate.setFillAfter(true);
+                img_animation.startAnimation(animation_repeate);
+                isAnimation = false;
             }
 
             @Override
@@ -269,7 +266,7 @@ public class MainActivity extends Activity {
                 if (isLocationSaved && show_map) {
                     Intent intent = new Intent(MainActivity.this,
                             ScreenMap.class);
-                    startActivityForResult(intent, 1);
+                    startActivityForResult(intent, SharedPreference.ACTIVITY_RESULT_CODE.MAP_SCREEN);
                     isAnimation = false;
                 }
                 isAnimation = false;
@@ -301,43 +298,53 @@ public class MainActivity extends Activity {
         }
         if (id == R.id.info) {
             Intent intent = new Intent(MainActivity.this, ScreenInfo.class);
-            startActivityForResult(intent, 2);
+            startActivityForResult(intent, SharedPreference.ACTIVITY_RESULT_CODE.INFO_SCREEN);
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
-    private void addShortcut() {
-        //Adding shortcut for MainActivity
-        //on Home screen
-        Intent shortcutIntent = new Intent(getApplicationContext(),
-                MainActivity.class);
-
-        shortcutIntent.setAction(Intent.ACTION_MAIN);
-
-        Intent addIntent = new Intent();
-        addIntent
-                .putExtra(Intent.EXTRA_SHORTCUT_INTENT, shortcutIntent);
-        addIntent.putExtra(Intent.EXTRA_SHORTCUT_NAME, "HelloWorldShortcut");
-        addIntent.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE,
-                Intent.ShortcutIconResource.fromContext(getApplicationContext(),
-                        R.mipmap.ic_launcher));
-
-        addIntent
-                .setAction("com.android.launcher.action.INSTALL_SHORTCUT");
-        getApplicationContext().sendBroadcast(addIntent);
-    }
+//    private void addShortcut() {
+//        //Adding shortcut for MainActivity
+//        //on Home screen
+//        Intent shortcutIntent = new Intent(getApplicationContext(),
+//                MainActivity.class);
+//
+//        shortcutIntent.setAction(Intent.ACTION_MAIN);
+//
+//        Intent addIntent = new Intent();
+//        addIntent
+//                .putExtra(Intent.EXTRA_SHORTCUT_INTENT, shortcutIntent);
+//        addIntent.putExtra(Intent.EXTRA_SHORTCUT_NAME, getResources().getString(R.string.app_name));
+//        addIntent.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE,
+//                Intent.ShortcutIconResource.fromContext(getApplicationContext(),
+//                        R.mipmap.logo));
+//
+//        addIntent
+//                .setAction("com.android.launcher.action.INSTALL_SHORTCUT");
+//        getApplicationContext().sendBroadcast(addIntent);
+//    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == 1) {
-            animationDown(height / 9, 0);
-            trigger = 0;
-            repeat = true;
-            show_map = false;
-            updateWidget(isLocationSaved);
+        Log.d(LOG_TAG, "requestCode = " + requestCode);
+        isLocationSaved = SharedPreference.LoadIsLocationSavedState(this);
+        switch (requestCode) {
+            case SharedPreference.ACTIVITY_RESULT_CODE.MAP_SCREEN:
+                animationDown(height / 9, 0);
+                trigger = 0;
+                show_map = false;
+                updateWidget(isLocationSaved);
+                break;
+            case SharedPreference.ACTIVITY_RESULT_CODE.LOCATION_SETTINGS:
+                if (!nwM.isNetworkEnable())
+                    no_internet();
+                break;
+            case SharedPreference.ACTIVITY_RESULT_CODE.WIFI_SETTINGS:
+                if (!nwM.isWifiEnable())
+                    no_internet();
+                break;
         }
-    }
 
     }
 
@@ -346,14 +353,25 @@ public class MainActivity extends Activity {
                 Toast.LENGTH_SHORT).show();
     }
 
-    private void no_location() {
-        Toast.makeText(getBaseContext(), R.string.no_location,
-                Toast.LENGTH_SHORT).show();
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            nwM.locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
+                    1000 * 10, 10, nwM.locationListener);
+            nwM.locationManager.requestLocationUpdates(
+                    LocationManager.NETWORK_PROVIDER, 1000 * 10, 10,
+                    nwM.locationListener);
+        }
     }
 
-    private void no_provider() {
-        Toast.makeText(getBaseContext(), R.string.no_provider,
-                Toast.LENGTH_SHORT).show();
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)
+            nwM.locationManager.removeUpdates(nwM.locationListener);
     }
 
     private void find_your_car() {
@@ -362,12 +380,7 @@ public class MainActivity extends Activity {
     }
 
     private void save_car_location() {
-        Toast.makeText(getBaseContext(), R.string.save_car_location,
-                Toast.LENGTH_SHORT).show();
-    }
-
-    private void car_loc_save_success() {
-        Toast.makeText(getBaseContext(), R.string.save_car_loc,
+        Toast.makeText(getBaseContext(), R.string.you_should_save_car_location,
                 Toast.LENGTH_SHORT).show();
     }
 
@@ -386,6 +399,11 @@ public class MainActivity extends Activity {
         // Stop the analytics tracking
         GoogleAnalytics.getInstance(this).reportActivityStop(this);
         super.onStop();
+    }
+
+    private void car_loc_save_success() {
+        Toast.makeText(this, R.string.save_car_location_success,
+                Toast.LENGTH_SHORT).show();
     }
 
 }
