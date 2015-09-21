@@ -70,6 +70,7 @@ public class MainActivity extends Activity {
         height = displaymetrics.heightPixels;
     }
 
+
     public boolean onTouchEvent(MotionEvent touchevent) {
         isLocationSaved = SharedPreference.LoadIsLocationSavedState(this);
         if (isAnimation)
@@ -86,8 +87,7 @@ public class MainActivity extends Activity {
                 if (y1 < y2) {
                     Log.d(LOG_TAG, "isLocationSaved = " + isLocationSaved);
                     Log.d(LOG_TAG, "trigger = " + trigger);
-                    isLocationSaved = SharedPreference
-                            .LoadIsLocationSavedState(this);
+                    isLocationSaved = SharedPreference.LoadIsLocationSavedState(this);
                     updateWidget(isLocationSaved);
                     // if UP to DOWN sweep event on screen
                     if (trigger == 0) {
@@ -168,6 +168,54 @@ public class MainActivity extends Activity {
         return false;
     }
 
+
+    private void updateWidget(boolean isLocationSavedValue) {
+        if (widgetID == -1)
+            return;
+        sp = getSharedPreferences(MyWidget.WIDGET_PREF, MODE_PRIVATE);
+        sp.edit().putBoolean(SharedPreference.s_state_location_save, isLocationSavedValue).apply();
+        Log.d(LOG_TAG,
+                "isLocationSavedValue = " + isLocationSavedValue);
+        Log.d(LOG_TAG,
+                "widgetIDValue = " + widgetID);
+        MyWidget.updateMyWidget(this, AppWidgetManager.getInstance(this), widgetID);
+        setResult(RESULT_OK, resultValue);
+    }
+
+    private void installWidget() {
+        Intent intent = getIntent();
+        Bundle extras = intent.getExtras();
+        widgetID = SharedPreference.LoadWidgetID(this);
+
+        Log.d(LOG_TAG, "widgetID = " + widgetID);
+        if (extras != null) {
+            widgetID = extras.getInt(AppWidgetManager.EXTRA_APPWIDGET_ID,
+                    AppWidgetManager.INVALID_APPWIDGET_ID);
+            Log.d(LOG_TAG, "widgetID_extras = " + widgetID);
+            SharedPreference.SaveWidgetID(this, widgetID);
+
+            if (isLocationSaved) {
+                Intent intent_screen = new Intent(MainActivity.this,
+                        ScreenMap.class);
+                startActivityForResult(intent_screen, SharedPreference.ACTIVITY_RESULT_CODE.MAP_SCREEN);
+            } else
+                saveLocation();
+
+        }
+        // и проверяем его корректность
+        if (widgetID != AppWidgetManager.INVALID_APPWIDGET_ID) {
+            // формируем intent ответа
+            resultValue = new Intent();
+            resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetID);
+            // отрицательный ответ
+            setResult(RESULT_CANCELED, resultValue);
+            sp = getSharedPreferences(MyWidget.WIDGET_PREF, MODE_PRIVATE);
+            setResult(RESULT_OK, resultValue);
+            isLocationSaved = SharedPreference
+                    .LoadIsLocationSavedState(this);
+            updateWidget(isLocationSaved);
+        }
+    }
 
     void animationUP() {
         TranslateAnimation animation = new TranslateAnimation(0.0f, 0.0f,
@@ -291,40 +339,11 @@ public class MainActivity extends Activity {
         }
     }
 
-    private void updateWidget(boolean isLocationSavedValue) {
-        if (widgetID == -1)
-            return;
-        sp.edit().putBoolean(SharedPreference.s_state_location_save, isLocationSavedValue).commit();
-        Log.d(LOG_TAG,
-                "isLocationSavedValue = " + isLocationSavedValue);
-        Log.d(LOG_TAG,
-                "widgetIDValue = " + widgetID);
-        MyWidget.updateWidget(this, AppWidgetManager.getInstance(this), widgetID);
-        setResult(RESULT_OK, resultValue);
     }
 
-    private void installWidget() {
-        Intent intent = getIntent();
-        Bundle extras = intent.getExtras();
-        widgetID = SharedPreference.LoadWidgetID(this);
-        Log.d(LOG_TAG, "widgetID = " + widgetID);
-        if (extras != null) {
-            widgetID = extras.getInt(AppWidgetManager.EXTRA_APPWIDGET_ID,
-                    AppWidgetManager.INVALID_APPWIDGET_ID);
-            Log.d(LOG_TAG, "widgetID_extras = " + widgetID);
-            SharedPreference.SaveWidgetID(this, widgetID);
-        }
-        // и проверяем его корректность
-        if (widgetID != AppWidgetManager.INVALID_APPWIDGET_ID) {
-            // формируем intent ответа
-            resultValue = new Intent();
-            resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetID);
-            // отрицательный ответ
-            setResult(RESULT_CANCELED, resultValue);
-            sp = getSharedPreferences(MyWidget.WIDGET_PREF, MODE_PRIVATE);
-            setResult(RESULT_OK, resultValue);
-            updateWidget(isLocationSaved);
-        }
+    private void no_internet() {
+        Toast.makeText(this, R.string.no_internet,
+                Toast.LENGTH_SHORT).show();
     }
 
     private void no_location() {

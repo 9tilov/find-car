@@ -4,4 +4,6 @@
     android:configure="com.moggot.findmycarlocation.MainActivity"
     android:minHeight="40dp"
     android:minWidth="40dp"
+    android:previewImage="@mipmap/logo4"
+    android:resizeMode="horizontal|vertical"
     android:updatePeriodMillis="0"></appwidget-provider>

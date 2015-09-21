@@ -23,7 +23,7 @@ public class MyWidget extends AppWidgetProvider {
         super.onUpdate(context, appWidgetManager, appWidgetIds);
         // обновляем все экземпляры
         for (int i : appWidgetIds) {
-            updateWidget(context, appWidgetManager, i);
+            updateMyWidget(context, appWidgetManager, i);
         }
     }
 
@@ -38,7 +38,7 @@ public class MyWidget extends AppWidgetProvider {
         editor.commit();
     }
 
-    static void updateWidget(Context ctx, AppWidgetManager appWidgetManager,
+    static void updateMyWidget(Context ctx, AppWidgetManager appWidgetManager,
                              int widgetID) {
         SharedPreferences sp = ctx.getSharedPreferences(
                 WIDGET_PREF, Context.MODE_PRIVATE);
@@ -50,17 +50,24 @@ public class MyWidget extends AppWidgetProvider {
         // Помещаем данные в текстовые поля
         RemoteViews widgetView = new RemoteViews(ctx.getPackageName(),
                 R.layout.widget);
+
+        Intent configIntent = new Intent(ctx, MainActivity.class);
+        configIntent.setAction(AppWidgetManager.ACTION_APPWIDGET_CONFIGURE);
+        configIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetID);
+        PendingIntent pIntent = PendingIntent.getActivity(ctx, widgetID,
+                configIntent, 0);
+        widgetView.setOnClickPendingIntent(R.id.widget_save_location, pIntent);
+
         Log.d(LOG_TAG, "isCarParked1_MyWidget = " + isCarParked);
-        // Конфигурационный экран (первая зона)
         if (isCarParked)
-            widgetView.setImageViewResource(R.id.widget_save_location, R.mipmap.car);
+            widgetView.setImageViewResource(R.id.widget_save_location, R.mipmap.find_car);
         else
-            widgetView.setImageViewResource(R.id.widget_save_location, R.mipmap.man);
+            widgetView.setImageViewResource(R.id.widget_save_location, R.mipmap.park_car);
         // Счетчик нажатий (третья зона)
         Intent countIntent = new Intent(ctx, MyWidget.class);
         countIntent.setAction(ACTION_CHANGE);
         countIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetID);
-        PendingIntent pIntent = PendingIntent.getBroadcast(ctx, widgetID, countIntent, 0);
+//        PendingIntent pIntent = PendingIntent.getBroadcast(ctx, widgetID, countIntent, 0);
         widgetView.setOnClickPendingIntent(R.id.widget_save_location, pIntent);
 
         // Обновляем виджет
@@ -92,7 +99,7 @@ public class MyWidget extends AppWidgetProvider {
 
                 // Обновляем виджет
                 Log.d(LOG_TAG, "mAppWidgetId_MyWidget = " + mAppWidgetId);
-                updateWidget(context, AppWidgetManager.getInstance(context),
+                updateMyWidget(context, AppWidgetManager.getInstance(context),
                         mAppWidgetId);
             }
         }
