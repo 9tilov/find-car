@@ -13,6 +13,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.location.LocationManager;
+import android.os.Build;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -21,6 +23,8 @@ import java.util.Date;
 
 public class ProximityIntentReceiver extends BroadcastReceiver {
     final static String LOG_TAG = "myLogs";
+
+    NotificationCompat.Builder mBuilder;
 
     @SuppressLint("SimpleDateFormat")
     @SuppressWarnings("deprecation")
@@ -46,20 +50,40 @@ public class ProximityIntentReceiver extends BroadcastReceiver {
         } else {
             Log.d(LOG_TAG, "EXIT");
         }
-        NotificationManager notificationManager = (NotificationManager) context
-                .getSystemService(Context.NOTIFICATION_SERVICE);
+        if (Build.VERSION.SDK_INT < 16) {
+            Intent notificationIntent = new Intent(context, MainActivity.class);
+            PendingIntent pendingIntent = PendingIntent.getActivity(context, 0,
+                    notificationIntent, 0);
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
+            NotificationManager notificationManager = (NotificationManager) context
+                    .getSystemService(Context.NOTIFICATION_SERVICE);
+            Notification notification = builder.setContentIntent(pendingIntent)
+                    .setSmallIcon(R.mipmap.car)
+                    .setAutoCancel(true)
+                    .setDefaults(Notification.DEFAULT_SOUND)
+                    .setContentText(context.getResources().getString(R.string.parking_time) + " " + difference).build();
+            notificationManager.notify(199, notification);
+            Log.d(LOG_TAG, "<16");
 
-        Intent notificationIntent = new Intent(context, MainActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0,
-                notificationIntent, 0);
-        Notification notification = new Notification.Builder(context)
-                .setContentTitle(
-                        context.getResources().getString(R.string.car_found))
-                .setContentText(
-                        context.getResources().getString(R.string.parking_time)
-                                + " " + difference)
-                .setSmallIcon(R.mipmap.ic_launcher).setAutoCancel(true).setContentIntent(pendingIntent).build();
-        notificationManager.notify(1000, notification);
+        } else {
+            NotificationManager notificationManager = (NotificationManager) context
+                    .getSystemService(Context.NOTIFICATION_SERVICE);
+
+            Intent notificationIntent = new Intent(context, MainActivity.class);
+            PendingIntent pendingIntent = PendingIntent.getActivity(context, 0,
+                    notificationIntent, 0);
+
+
+            Notification notification = new Notification.Builder(context)
+                    .setContentTitle(context.getResources().getString(R.string.car_found))
+                    .setContentText(context.getResources().getString(R.string.parking_time) + " " + difference)
+                    .setSmallIcon(R.drawable.notif)
+                    .setDefaults(Notification.DEFAULT_SOUND)
+                    .setAutoCancel(true)
+                    .setContentIntent(pendingIntent).build();
+            notificationManager.notify(1000, notification);
+            Log.d(LOG_TAG, ">=16");
+        }
     }
 
     @SuppressLint("SimpleDateFormat")
