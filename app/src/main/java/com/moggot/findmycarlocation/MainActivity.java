@@ -209,7 +209,7 @@ public class MainActivity extends Activity {
             public void onAnimationRepeat(Animation animation) {
             }
         });
-        animation.setDuration(1000);
+        animation.setDuration(500);
         animation.setFillAfter(true);
         img_animation.startAnimation(animation);
     }
