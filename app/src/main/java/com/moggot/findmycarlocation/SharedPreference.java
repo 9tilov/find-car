@@ -8,6 +8,13 @@ import com.google.android.gms.maps.model.LatLng;
 
 public class SharedPreference {
 
+    public class ACTIVITY_RESULT_CODE {
+        final static int MAP_SCREEN = 0;
+        final static int WIFI_SETTINGS = 1;
+        final static int LOCATION_SETTINGS = 2;
+        final static int INFO_SCREEN = 3;
+    }
+
     public static final String s_lat = "latitude";
     public static final String s_lng = "longitude";
     public static final String s_hour = "hour";
