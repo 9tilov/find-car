@@ -32,8 +32,8 @@
 
         <ImageView
             android:id="@+id/ivIcon"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:src="@mipmap/logo4" />
     </RelativeLayout>
 
