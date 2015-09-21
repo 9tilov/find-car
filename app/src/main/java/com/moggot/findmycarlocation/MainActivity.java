@@ -44,6 +44,7 @@ public class MainActivity extends Activity {
     int widgetID = AppWidgetManager.INVALID_APPWIDGET_ID;
     Intent resultValue;
     SharedPreferences sp;
+    NetworkManager nwM;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,8 +52,10 @@ public class MainActivity extends Activity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_main);
-
+//        addShortcut();
+        nwM = new NetworkManager(this);
         isLocationSaved = SharedPreference.LoadIsLocationSavedState(this);
+        img_animation = (ImageView) findViewById(R.id.ivTrigger);
         installWidget();
 
         AdView mAdView = (AdView) findViewById(R.id.adView);
@@ -61,10 +64,14 @@ public class MainActivity extends Activity {
         ((AnalyticsApplication) getApplication())
                 .getTracker(AnalyticsApplication.TrackerName.APP_TRACKER);
 
-        img_animation = (ImageView) findViewById(R.id.ivTrigger);
+
         DisplayMetrics displaymetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
         height = displaymetrics.heightPixels;
+
+        Log.d(LOG_TAG, "wifi = " + nwM.isWifiEnable());
+        Log.d(LOG_TAG, "sim = " + nwM.isSimSupport());
+
     }
 
 
@@ -112,49 +119,7 @@ public class MainActivity extends Activity {
                             find_your_car();
                             break;
                         }
-                        animationUP();
-                        Calendar time = Calendar.getInstance();
-                        int cur_day = time.get(Calendar.DAY_OF_MONTH);
-                        int cur_hour = time.get(Calendar.HOUR_OF_DAY);
-                        int cur_minute = time.get(Calendar.MINUTE);
-                        SharedPreference.SaveTime(this, cur_day, cur_hour,
-                                cur_minute);
-                        SharedPreference.SaveIsLocationSavedState(this, true);
-                        updateWidget(true);
-                        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-                        Criteria criteria = new Criteria();
-                        String provider = locationManager.getBestProvider(criteria,
-                                false);
-                        if (provider != null && !provider.equals("")) {
-                            Location location = null;
-                            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                                location = locationManager
-                                        .getLastKnownLocation(provider);
-                            }
-
-                            if (location != null) {
-                                Log.d(LOG_TAG,
-                                        "location_lng = " + location.getLongitude());
-                                Log.d(LOG_TAG,
-                                        "location_lat = " + location.getLatitude());
-
-                                // SharedPreference.SaveLocation(this, 55.928,
-                                // 37.520);
-                                SharedPreference.SaveLocation(this,
-                                        location.getLatitude(),
-                                        location.getLongitude());
-                            } else {
-                                no_location();
-                                startActivity(new Intent(
-                                        android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
-                            }
-                        } else {
-                            no_provider();
-                            startActivity(new Intent(
-                                    android.provider.Settings.ACTION_WIFI_SETTINGS));
-                        }
-
-                        trigger = 0;
+                        saveLocation();
                         break;
                     }
                 }
@@ -276,11 +241,40 @@ public class MainActivity extends Activity {
             public void onAnimationRepeat(Animation animation) {
             }
         });
-        animation.setDuration(1000);
+        animation.setDuration(500);
         animation.setFillAfter(true);
         img_animation.startAnimation(animation);
 
     }
+
+    private void saveLocation() {
+        animationUP();
+        Calendar time = Calendar.getInstance();
+        int cur_day = time.get(Calendar.DAY_OF_MONTH);
+        int cur_hour = time.get(Calendar.HOUR_OF_DAY);
+        int cur_minute = time.get(Calendar.MINUTE);
+        SharedPreference.SaveTime(this, cur_day, cur_hour,
+                cur_minute);
+
+        NetworkManager nwM = new NetworkManager(this);
+
+//                                 SharedPreference.SaveLocation(this, 55.928,
+//                                 37.520);
+        Location location = nwM._getLocation();
+        Log.d(LOG_TAG, "location = " + location);
+        if (location != null) {
+            isLocationSaved = true;
+            updateWidget(isLocationSaved);
+            SharedPreference.SaveIsLocationSavedState(this, isLocationSaved);
+            SharedPreference.SaveLocation(this,
+                    location.getLatitude(),
+                    location.getLongitude());
+            car_loc_save_success();
+
+        }
+        trigger = 0;
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
