@@ -3,17 +3,15 @@
 
     <string name="app_name">Где моя машина?!</string>
     <string name="action_settings">Настройки</string>
-    <string name="save_car_loc">Координаты машины сохранены</string>
-    <string name="no_location">Позиция не может быть определена</string>
-    <string name="no_provider">Не найден провайдер</string>
+    <string name="save_car_location_success">Координаты машины сохранены</string>
     <string name="no_internet">Нет интернет соединения</string>
+    <string name="turn_on_wifi">Включите Wi-Fi</string>
     <string name="no_points">Нет пути</string>
     <string name="car_found">Машина здесь!</string>
     <string name="find_your_car">Сначала вы должны найти свою машину</string>
-    <string name="save_car_location">Сначала вы должны сохранить координаты машины</string>
+    <string name="you_should_save_car_location">Сначала вы должны сохранить координаты машины</string>
     <string name="distance">Расстояние: </string>
     <string name="duration">Время в пути: </string>
-    <string name="you_are_near_your_car">Вы рядом с машиной!</string>
     <string name="screen_info">Инфо</string>
     <string name="screen_map">Карта</string>
     <string name="parking_time">Время парковки</string>

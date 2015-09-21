@@ -1,8 +1,4 @@
 <resources>
-    <string name="banner_ad_unit_id_main">ca-app-pub-1475613019168586/6823799751</string>
-    <string name="banner_ad_unit_id_map">ca-app-pub-1475613019168586/5207465754</string>
-    <string name="banner_ad_unit_id_map_interstitial">ca-app-pub-1475613019168586/8300532952</string>
-
     <string name="app_name">Find My Car Location</string>
     <string name="action_settings">Settings</string>
     <string name="save_car_location_success">Car location has been saved</string>
