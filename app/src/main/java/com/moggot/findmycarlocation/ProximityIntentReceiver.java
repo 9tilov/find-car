@@ -108,7 +108,7 @@ public class ProximityIntentReceiver extends BroadcastReceiver {
             String min_str = "";
             if (diffMinutes == 1 || diffMinutes == 21 || diffMinutes == 31
                     || diffMinutes == 41 || diffMinutes == 51)
-                min_str = " минуту ";
+                min_str = " минута ";
             else if (diffMinutes == 2 || diffMinutes == 3 || diffMinutes == 4
                     || diffMinutes == 22 || diffMinutes == 23
                     || diffMinutes == 24 || diffMinutes == 32
@@ -122,7 +122,7 @@ public class ProximityIntentReceiver extends BroadcastReceiver {
             String hour_str = "";
             if (diffHours == 1 || diffHours == 21)
                 hour_str = " час ";
-            else if (diffHours == 1 || diffHours == 2 || diffHours == 3
+            else if (diffHours == 2 || diffHours == 3
                     || diffHours == 4 || diffHours == 22 || diffHours == 23
                     || diffHours == 24)
                 hour_str = " часа ";
@@ -139,11 +139,19 @@ public class ProximityIntentReceiver extends BroadcastReceiver {
                 }
             } else {
 
-                if (diffHours == 0)
-                    difference = diffMinutes + " minutes ";
-                else
-                    difference = diffHours + " hours " + diffMinutes
-                            + " minutes ";
+                if (diffHours == 0) {
+                    difference = diffMinutes + "";
+                    if (diffMinutes == 1)
+                        difference += " minute ";
+                    else
+                        difference += " minutes ";
+                } else {
+                    difference = diffHours + " hours ";
+                    if (diffMinutes == 1)
+                        difference += diffMinutes + " minute ";
+                    else
+                        difference += diffMinutes + " minutes ";
+                }
             }
 
         } catch (Exception e) {
