@@ -52,7 +52,6 @@ public class MainActivity extends Activity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_main);
-//        addShortcut();
         nwM = new NetworkManager(this);
         isLocationSaved = SharedPreference.LoadIsLocationSavedState(this);
         img_animation = (ImageView) findViewById(R.id.ivTrigger);
