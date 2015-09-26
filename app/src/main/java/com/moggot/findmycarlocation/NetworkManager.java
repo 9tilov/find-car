@@ -1,13 +1,17 @@
 package com.moggot.findmycarlocation;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.widget.Toast;
@@ -60,9 +64,19 @@ public class NetworkManager {
 
     public Location _getLocation() {
 
-        Log.d(LOG_TAG, "isSimSupport: " + isSimSupport());
+        Log.d(LOG_TAG, "isSimSupport: " + isSimSupport());if (mLocation == null) {
+            Log.d(LOG_TAG, "mLocation == null: ");
+            Criteria criteria = new Criteria();
+            String provider = locationManager.getBestProvider(criteria,
+                    false);
+            if (ActivityCompat.checkSelfPermission(this.ctx, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+                    && ActivityCompat.checkSelfPermission(this.ctx, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)
+                mLocation = locationManager
+                        .getLastKnownLocation(provider);
+        }
         if (isSimSupport()) {
             if (isNetworkEnable()) {
+
                 if (mLocation != null) {
                     return mLocation;
                 } else {

@@ -159,6 +159,7 @@ public class MainActivity extends Activity {
                 Intent intent_screen = new Intent(MainActivity.this,
                         ScreenMap.class);
                 startActivityForResult(intent_screen, SharedPreference.ACTIVITY_RESULT_CODE.MAP_SCREEN);
+                updateWidget(isLocationSaved);
             } else
                 saveLocation();
 
@@ -254,8 +255,6 @@ public class MainActivity extends Activity {
         int cur_minute = time.get(Calendar.MINUTE);
         SharedPreference.SaveTime(this, cur_day, cur_hour,
                 cur_minute);
-
-        NetworkManager nwM = new NetworkManager(this);
 
 //                                 SharedPreference.SaveLocation(this, 55.928,
 //                                 37.520);
