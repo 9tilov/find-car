@@ -14,7 +14,7 @@
     <string name="duration">Время в пути: </string>
     <string name="screen_info">Инфо</string>
     <string name="screen_map">Карта</string>
-    <string name="parking_time">Время парковки</string>
+    <string name="parking_time">Время парковки:</string>
     <string name="programm_description">Если вы часто забываете, где оставили свою машину, \n
          								то это приложение для вас! Вы можете сохранить координаты \n
          								своего автомобиля и пойти по делам. После этого \n 
