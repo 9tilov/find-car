@@ -58,8 +58,6 @@ public class ScreenMap extends TrackedActivity {
     final static String LOG_TAG = "myLogs";
     TextView tvDistance, tvDuration;
 
-    InterstitialAd mInterstitialAd;
-
     public enum locationType {
         USER_LOCATION, CAR_LOCATION
     }
@@ -75,6 +73,7 @@ public class ScreenMap extends TrackedActivity {
 
         setUpMapIfNeeded();
 
+
         tvDistance = (TextView) findViewById(R.id.tv_distance_time);
         tvDuration = (TextView) findViewById(R.id.tv_duration_time);
         Typeface font = Typeface.createFromAsset(getAssets(), "Dashley.ttf");
@@ -85,27 +84,33 @@ public class ScreenMap extends TrackedActivity {
         AdView mAdView = (AdView) findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);
-        mInterstitialAd = new InterstitialAd(this);
-        mInterstitialAd.setAdUnitId(getResources().getString(R.string.banner_ad_unit_id_map_interstitial));
-        mInterstitialAd.loadAd(adRequest);
-        mInterstitialAd.setAdListener(new AdListener() {
-            @Override
-            public void onAdLoaded() {
 
-                if (mInterstitialAd.isLoaded()) {
-                    mInterstitialAd.show();
+        int randomNum = 1 + (int) (Math.random() * 2);
+        Log.d(LOG_TAG, "randomNum = " + randomNum);
+
+        if (randomNum == 2) {
+            final InterstitialAd mInterstitialAd = new InterstitialAd(this);
+            mInterstitialAd.setAdUnitId(getResources().getString(R.string.banner_ad_unit_id_map_interstitial));
+            mInterstitialAd.loadAd(adRequest);
+            mInterstitialAd.setAdListener(new AdListener() {
+                @Override
+                public void onAdLoaded() {
+
+                    if (mInterstitialAd.isLoaded()) {
+                        mInterstitialAd.show();
+                    }
                 }
-            }
 
-            @Override
-            public void onAdOpened() {
-            }
+                @Override
+                public void onAdOpened() {
+                }
 
-            @Override
-            public void onAdFailedToLoad(int errorCode) {
+                @Override
+                public void onAdFailedToLoad(int errorCode) {
 
-            }
-        });
+                }
+            });
+        }
         btnFindCar.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
