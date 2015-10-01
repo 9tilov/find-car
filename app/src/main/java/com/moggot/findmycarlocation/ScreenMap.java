@@ -68,7 +68,7 @@ public class ScreenMap extends TrackedActivity {
 
     NetworkManager nwM;
 
-    static boolean showLocationSettings ;
+    static boolean showLocationSettings;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -173,7 +173,7 @@ public class ScreenMap extends TrackedActivity {
         String provider = nwM.locationManager.getBestProvider(criteria,
                 false);
 
-        if(showLocationSettings)
+        if (showLocationSettings)
             nwM.checkLocationSettings();
         Location location = null;
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
@@ -446,7 +446,6 @@ public class ScreenMap extends TrackedActivity {
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
-
 
 
     @Override

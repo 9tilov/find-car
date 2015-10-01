@@ -127,7 +127,6 @@ public class MainActivity extends Activity {
     }
 
 
-
     private void updateWidget(boolean isLocationSavedValue) {
         if (widgetID == -1)
             return;
