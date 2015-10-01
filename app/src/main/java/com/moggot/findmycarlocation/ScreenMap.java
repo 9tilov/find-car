@@ -79,7 +79,7 @@ public class ScreenMap extends TrackedActivity {
         Typeface font = Typeface.createFromAsset(getAssets(), "Dashley.ttf");
         tvDistance.setTypeface(font);
         tvDuration.setTypeface(font);
-        Button btnFindCar = (Button) findViewById(R.id.buttonFindCar);
+
 
         AdView mAdView = (AdView) findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
@@ -108,25 +108,24 @@ public class ScreenMap extends TrackedActivity {
                 @Override
                 public void onAdFailedToLoad(int errorCode) {
 
-                }
-            });
-        }
-        btnFindCar.setOnClickListener(new OnClickListener() {
             @Override
-            public void onClick(View v) {
-                SharedPreference.SaveIsLocationSavedState(getApplicationContext(), false);
-                finish();
+            public void onAdFailedToLoad(int errorCode) {
+
             }
         });
 
 
     }
 
+    public void btnFindCarClick(View view) {
+        SharedPreference.SaveIsLocationSavedState(getApplicationContext(), false);
+        finish();
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
         setUpMapIfNeeded();
-
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             nwM.locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,

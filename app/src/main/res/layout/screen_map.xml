@@ -84,6 +84,7 @@
                 android:layout_marginRight="5dp"
                 android:textColor="#000000"
                 android:background="#87CEEB"
+                android:onClick="btnFindCarClick"
                 android:textSize="@dimen/text_size_checkbox" />
         </RelativeLayout>
     </LinearLayout>
