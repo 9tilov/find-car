@@ -448,11 +448,6 @@ public class ScreenMap extends TrackedActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            startActivity(new Intent(
-                    android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
-            return true;
-        }
         if (id == R.id.info) {
             Intent intent = new Intent(ScreenMap.this, ScreenInfo.class);
             startActivityForResult(intent, 3);
