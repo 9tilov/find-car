@@ -1,6 +1,7 @@
 package com.moggot.findmycarlocation;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Intent;
@@ -8,6 +9,7 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.AsyncTask;
@@ -18,8 +20,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -58,6 +58,8 @@ public class ScreenMap extends TrackedActivity {
     final static String LOG_TAG = "myLogs";
     TextView tvDistance, tvDuration;
 
+    InterstitialAd mInterstitialAd;
+
     public enum locationType {
         USER_LOCATION, CAR_LOCATION
     }
@@ -66,14 +68,18 @@ public class ScreenMap extends TrackedActivity {
 
     NetworkManager nwM;
 
+    static boolean showLocationSettings ;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.screen_map);
-
+        nwM = new NetworkManager(this);
+        showLocationSettings = true;
+        mMap = null;
         setUpMapIfNeeded();
 
-
+        Log.d(LOG_TAG, "showLocationSettings = " + showLocationSettings);
         tvDistance = (TextView) findViewById(R.id.tv_distance_time);
         tvDuration = (TextView) findViewById(R.id.tv_duration_time);
         Typeface font = Typeface.createFromAsset(getAssets(), "Dashley.ttf");
@@ -84,29 +90,21 @@ public class ScreenMap extends TrackedActivity {
         AdView mAdView = (AdView) findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);
+        mInterstitialAd = new InterstitialAd(this);
+        mInterstitialAd.setAdUnitId(getResources().getString(R.string.banner_ad_unit_id_map_interstitial));
+        mInterstitialAd.loadAd(adRequest);
+        mInterstitialAd.setAdListener(new AdListener() {
+            @Override
+            public void onAdLoaded() {
 
-        int randomNum = 1 + (int) (Math.random() * 2);
-        Log.d(LOG_TAG, "randomNum = " + randomNum);
-
-        if (randomNum == 2) {
-            final InterstitialAd mInterstitialAd = new InterstitialAd(this);
-            mInterstitialAd.setAdUnitId(getResources().getString(R.string.banner_ad_unit_id_map_interstitial));
-            mInterstitialAd.loadAd(adRequest);
-            mInterstitialAd.setAdListener(new AdListener() {
-                @Override
-                public void onAdLoaded() {
-
-                    if (mInterstitialAd.isLoaded()) {
-                        mInterstitialAd.show();
-                    }
+                if (mInterstitialAd.isLoaded()) {
+                    mInterstitialAd.show();
                 }
+            }
 
-                @Override
-                public void onAdOpened() {
-                }
-
-                @Override
-                public void onAdFailedToLoad(int errorCode) {
+            @Override
+            public void onAdOpened() {
+            }
 
             @Override
             public void onAdFailedToLoad(int errorCode) {
@@ -134,15 +132,20 @@ public class ScreenMap extends TrackedActivity {
                     LocationManager.NETWORK_PROVIDER, 1000 * 10, 10,
                     nwM.locationListener);
         }
-
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)
-            nwM.locationManager.removeUpdates(nwM.locationListener);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (receiver != null) {
+            unregisterReceiver(receiver);
+            receiver = null;
+        }
     }
 
     private void setUpMapIfNeeded() {
@@ -163,11 +166,20 @@ public class ScreenMap extends TrackedActivity {
         final ArrayList<LatLng> markerPoints = new ArrayList<>();
         mMap.setTrafficEnabled(true);
         mMap.setMyLocationEnabled(true);
-        nwM = new NetworkManager(this);
+
         LatLng arrivalPoint = SharedPreference.LoadLocation(this);
 
-        Location location = nwM._getLocation();
-        Log.d(LOG_TAG, "location_map = " + location);
+        Criteria criteria = new Criteria();
+        String provider = nwM.locationManager.getBestProvider(criteria,
+                false);
+
+        if(showLocationSettings)
+            nwM.checkLocationSettings();
+        Location location = null;
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)
+            location = nwM.locationManager.getLastKnownLocation(provider);
+        Log.d(LOG_TAG, "locationMap = " + location);
         if (location == null) {
             Log.d(LOG_TAG, "location_map = null");
             return;
@@ -435,14 +447,7 @@ public class ScreenMap extends TrackedActivity {
         return true;
     }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-        if (receiver != null) {
-            unregisterReceiver(receiver);
-            receiver = null;
-        }
-    }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -499,5 +504,29 @@ public class ScreenMap extends TrackedActivity {
     private void no_points() {
         Toast.makeText(getBaseContext(), R.string.no_points, Toast.LENGTH_SHORT)
                 .show();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.d(LOG_TAG, "requestCode = " + requestCode);
+        final int REQUEST_CHECK_SETTINGS = 199;
+        switch (requestCode) {
+            case REQUEST_CHECK_SETTINGS:
+                switch (resultCode) {
+                    case Activity.RESULT_OK:
+                        Log.i(LOG_TAG, "User agreed to make required location settings changes.");
+                        nwM.startLocationUpdates();
+                        setUpMap();
+                        break;
+                    case Activity.RESULT_CANCELED:
+                        showLocationSettings = false;
+                        nwM.startLocationUpdates();
+                        setUpMap();
+                        Log.i(LOG_TAG, "User chose not to make required location settings changes.");
+                        break;
+                }
+                break;
+        }
+
     }
 }

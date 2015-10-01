@@ -6,8 +6,8 @@ import android.appwidget.AppWidgetManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.location.Criteria;
 import android.location.Location;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.util.DisplayMetrics;
@@ -52,6 +52,7 @@ public class MainActivity extends Activity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_main);
+        Log.d(LOG_TAG, "MainActivity");
         nwM = new NetworkManager(this);
         isLocationSaved = SharedPreference.LoadIsLocationSavedState(this);
         img_animation = (ImageView) findViewById(R.id.ivTrigger);
@@ -67,10 +68,6 @@ public class MainActivity extends Activity {
         DisplayMetrics displaymetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
         height = displaymetrics.heightPixels;
-
-        Log.d(LOG_TAG, "wifi = " + nwM.isWifiEnable());
-        Log.d(LOG_TAG, "sim = " + nwM.isSimSupport());
-
     }
 
 
@@ -130,6 +127,7 @@ public class MainActivity extends Activity {
     }
 
 
+
     private void updateWidget(boolean isLocationSavedValue) {
         if (widgetID == -1)
             return;
@@ -170,9 +168,6 @@ public class MainActivity extends Activity {
             resultValue = new Intent();
             resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetID);
             // отрицательный ответ
-            setResult(RESULT_CANCELED, resultValue);
-            sp = getSharedPreferences(MyWidget.WIDGET_PREF, MODE_PRIVATE);
-            setResult(RESULT_OK, resultValue);
             isLocationSaved = SharedPreference
                     .LoadIsLocationSavedState(this);
             updateWidget(isLocationSaved);
@@ -248,7 +243,7 @@ public class MainActivity extends Activity {
     }
 
     private void saveLocation() {
-        animationUP();
+
         Calendar time = Calendar.getInstance();
         int cur_day = time.get(Calendar.DAY_OF_MONTH);
         int cur_hour = time.get(Calendar.HOUR_OF_DAY);
@@ -258,9 +253,18 @@ public class MainActivity extends Activity {
 
 //                                 SharedPreference.SaveLocation(this, 55.928,
 //                                 37.520);
-        Location location = nwM._getLocation();
+
+        nwM.checkLocationSettings();
+        Criteria criteria = new Criteria();
+        String provider = nwM.locationManager.getBestProvider(criteria,
+                false);
+        Location location = null;
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)
+            location = nwM.locationManager.getLastKnownLocation(provider);
         Log.d(LOG_TAG, "location = " + location);
         if (location != null) {
+            animationUP();
             isLocationSaved = true;
             updateWidget(isLocationSaved);
             SharedPreference.SaveIsLocationSavedState(this, isLocationSaved);
@@ -291,31 +295,11 @@ public class MainActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
-//    private void addShortcut() {
-//        //Adding shortcut for MainActivity
-//        //on Home screen
-//        Intent shortcutIntent = new Intent(getApplicationContext(),
-//                MainActivity.class);
-//
-//        shortcutIntent.setAction(Intent.ACTION_MAIN);
-//
-//        Intent addIntent = new Intent();
-//        addIntent
-//                .putExtra(Intent.EXTRA_SHORTCUT_INTENT, shortcutIntent);
-//        addIntent.putExtra(Intent.EXTRA_SHORTCUT_NAME, getResources().getString(R.string.app_name));
-//        addIntent.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE,
-//                Intent.ShortcutIconResource.fromContext(getApplicationContext(),
-//                        R.mipmap.logo));
-//
-//        addIntent
-//                .setAction("com.android.launcher.action.INSTALL_SHORTCUT");
-//        getApplicationContext().sendBroadcast(addIntent);
-//    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         Log.d(LOG_TAG, "requestCode = " + requestCode);
         isLocationSaved = SharedPreference.LoadIsLocationSavedState(this);
+        final int REQUEST_CHECK_SETTINGS = 199;
         switch (requestCode) {
             case SharedPreference.ACTIVITY_RESULT_CODE.MAP_SCREEN:
                 animationDown(height / 9, 0);
@@ -323,42 +307,21 @@ public class MainActivity extends Activity {
                 show_map = false;
                 updateWidget(isLocationSaved);
                 break;
-            case SharedPreference.ACTIVITY_RESULT_CODE.LOCATION_SETTINGS:
-                if (!nwM.isNetworkEnable())
-                    no_internet();
+            case REQUEST_CHECK_SETTINGS:
+                switch (resultCode) {
+                    case Activity.RESULT_OK:
+                        Log.i(LOG_TAG, "User agreed to make required location settings changes.");
+                        nwM.startLocationUpdates();
+                        break;
+                    case Activity.RESULT_CANCELED:
+                        nwM.startLocationUpdates();
+                        Log.i(LOG_TAG, "User chose not to make required location settings changes.");
+                        break;
+                }
                 break;
-            case SharedPreference.ACTIVITY_RESULT_CODE.WIFI_SETTINGS:
-                if (!nwM.isWifiEnable())
-                    no_internet();
-                break;
+
         }
 
-    }
-
-    private void no_internet() {
-        Toast.makeText(this, R.string.no_internet,
-                Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            nwM.locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
-                    1000 * 10, 10, nwM.locationListener);
-            nwM.locationManager.requestLocationUpdates(
-                    LocationManager.NETWORK_PROVIDER, 1000 * 10, 10,
-                    nwM.locationListener);
-        }
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)
-            nwM.locationManager.removeUpdates(nwM.locationListener);
     }
 
     private void find_your_car() {
@@ -374,18 +337,17 @@ public class MainActivity extends Activity {
     @Override
     protected void onStart() {
         super.onStart();
-        // Get an Analytics tracker to report app starts & uncaught exceptions
-        // etc.
+        Log.i(LOG_TAG, "onStart");
         GoogleAnalytics.getInstance(this).reportActivityStart(this);
-
     }
 
     @Override
     protected void onStop() {
-
         // Stop the analytics tracking
         GoogleAnalytics.getInstance(this).reportActivityStop(this);
         super.onStop();
+        setResult(RESULT_OK, resultValue);
+        Log.i(LOG_TAG, "onStop");
     }
 
     private void car_loc_save_success() {
