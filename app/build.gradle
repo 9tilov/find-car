@@ -10,13 +10,13 @@ android {
         }
     }
     compileSdkVersion 23
-    buildToolsVersion "23.0.0"
+    buildToolsVersion "23.0.1"
     defaultConfig {
         applicationId "com.moggot.findmycarlocation"
         minSdkVersion 9
         targetSdkVersion 23
-        versionCode 9
-        versionName "1.4.3"
+        versionCode 10
+        versionName "1.5.0"
         signingConfig signingConfigs.moggot
     }
     buildTypes {
@@ -37,8 +37,8 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:appcompat-v7:23.0.0'
-    compile 'com.google.android.gms:play-services:7.8.0'
-    compile 'com.google.android.gms:play-services-ads:7.8.0'
-    compile 'com.google.android.gms:play-services-analytics:7.8.0'
+    compile 'com.android.support:appcompat-v7:23.0.1'
+    compile 'com.google.android.gms:play-services:8.1.0'
+    compile 'com.google.android.gms:play-services-ads:8.1.0'
+    compile 'com.google.android.gms:play-services-analytics:8.1.0'
 }
