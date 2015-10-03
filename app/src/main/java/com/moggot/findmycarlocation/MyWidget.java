@@ -60,9 +60,9 @@ public class MyWidget extends AppWidgetProvider {
 
         Log.d(LOG_TAG, "isCarParked1_MyWidget = " + isCarParked);
         if (isCarParked)
-            widgetView.setImageViewResource(R.id.widget_save_location, R.mipmap.find_car);
+            widgetView.setImageViewResource(R.id.widget_save_location, R.mipmap.find_car1);
         else
-            widgetView.setImageViewResource(R.id.widget_save_location, R.mipmap.park_car);
+            widgetView.setImageViewResource(R.id.widget_save_location, R.mipmap.park_car1);
         // Счетчик нажатий (третья зона)
         Intent countIntent = new Intent(ctx, MyWidget.class);
         countIntent.setAction(ACTION_CHANGE);
