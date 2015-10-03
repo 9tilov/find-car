@@ -388,6 +388,8 @@ public class ScreenMap extends TrackedActivity {
             PolylineOptions lineOptions = null;
             String distance = "";
             String duration = "";
+            if (result == null)
+                return;
             for (int i = 0; i < result.size(); i++) {
                 points = new ArrayList<LatLng>();
                 lineOptions = new PolylineOptions();
