@@ -1,15 +1,12 @@
 package com.moggot.findmycarlocation;
 
-import android.Manifest;
 import android.app.Activity;
 import android.appwidget.AppWidgetManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.location.Criteria;
 import android.location.Location;
 import android.os.Bundle;
-import android.support.v4.app.ActivityCompat;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
@@ -254,13 +251,8 @@ public class MainActivity extends Activity {
 //                                 37.520);
 
         nwM.checkLocationSettings();
-        Criteria criteria = new Criteria();
-        String provider = nwM.locationManager.getBestProvider(criteria,
-                false);
         Location location = null;
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)
-            location = nwM.locationManager.getLastKnownLocation(provider);
+        location = nwM.getLocation();
         Log.d(LOG_TAG, "location = " + location);
         if (location != null) {
             animationUP();

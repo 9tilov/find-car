@@ -66,6 +66,10 @@ public class NetworkManager implements
 
     }
 
+    public Location getLocation() {
+        return mCurrentLocation;
+    }
+
     public LocationListener locationListener = new LocationListener() {
 
         @Override

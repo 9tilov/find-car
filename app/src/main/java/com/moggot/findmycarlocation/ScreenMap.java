@@ -9,7 +9,6 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.AsyncTask;
@@ -169,16 +168,9 @@ public class ScreenMap extends TrackedActivity {
 
         LatLng arrivalPoint = SharedPreference.LoadLocation(this);
 
-        Criteria criteria = new Criteria();
-        String provider = nwM.locationManager.getBestProvider(criteria,
-                false);
-
         if (showLocationSettings)
             nwM.checkLocationSettings();
-        Location location = null;
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)
-            location = nwM.locationManager.getLastKnownLocation(provider);
+        Location location = nwM.getLocation();
         Log.d(LOG_TAG, "locationMap = " + location);
         if (location == null) {
             Log.d(LOG_TAG, "location_map = null");
