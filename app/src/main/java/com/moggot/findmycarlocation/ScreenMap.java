@@ -511,6 +511,7 @@ public class ScreenMap extends TrackedActivity {
                         nwM.startLocationUpdates();
                         setUpMap();
                         break;
+
                     case Activity.RESULT_CANCELED:
                         showLocationSettings = false;
                         nwM.startLocationUpdates();
@@ -518,6 +519,8 @@ public class ScreenMap extends TrackedActivity {
                         Log.i(LOG_TAG, "User chose not to make required location settings changes.");
                         break;
                 }
+            case SharedPreference.ACTIVITY_RESULT_CODE.LOCATION_SETTINGS:
+                setUpMap();
                 break;
         }
 

@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.appwidget.AppWidgetManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.location.Criteria;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
@@ -32,6 +31,8 @@ public class MainActivity extends Activity {
     int height;
 
     int trigger = 0;
+
+
     final static String LOG_TAG = "myLogs";
     boolean isLocationSaved;
 
@@ -249,10 +250,8 @@ public class MainActivity extends Activity {
 
 //                                 SharedPreference.SaveLocation(this, 55.928,
 //                                 37.520);
-
         nwM.checkLocationSettings();
-        Location location = null;
-        location = nwM.getLocation();
+        Location location = nwM.getLocation();
         Log.d(LOG_TAG, "location = " + location);
         if (location != null) {
             animationUP();
@@ -274,6 +273,8 @@ public class MainActivity extends Activity {
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
+
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -297,6 +298,9 @@ public class MainActivity extends Activity {
                 trigger = 0;
                 show_map = false;
                 updateWidget(isLocationSaved);
+                break;
+            case SharedPreference.ACTIVITY_RESULT_CODE.LOCATION_SETTINGS:
+                saveLocation();
                 break;
             case REQUEST_CHECK_SETTINGS:
                 switch (resultCode) {
@@ -345,5 +349,10 @@ public class MainActivity extends Activity {
         Toast.makeText(this, R.string.save_car_location_success,
                 Toast.LENGTH_SHORT).show();
     }
+
+//    private void no_location() {
+//        Toast.makeText(this, R.string.no_location,
+//                Toast.LENGTH_SHORT).show();
+//    }
 
 }

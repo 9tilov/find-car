@@ -2,14 +2,13 @@
 <resources>
 
     <string name="app_name">Где моя машина?!</string>
+    <string name="version">1.5.1v</string>
     <string name="action_settings">Настройки</string>
     <string name="save_car_location_success">Координаты машины сохранены</string>
-    <string name="no_internet">Нет интернет соединения</string>
-    <string name="turn_on_wifi">Включите Wi-Fi</string>
     <string name="no_points">Нет пути</string>
     <string name="car_found">Машина здесь!</string>
     <string name="find_your_car">Сначала вы должны найти свою машину</string>
-    <string name="you_should_save_car_location">Сначала вы должны сохранить координаты машины</string>
+    <string name="you_should_save_car_location">Сначала вы должны припарковаться</string>
     <string name="distance">Расстояние: </string>
     <string name="duration">Время в пути: </string>
     <string name="screen_info">Инфо</string>

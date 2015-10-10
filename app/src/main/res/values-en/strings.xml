@@ -1,13 +1,13 @@
 <resources>
     <string name="app_name">Find My Car Location</string>
+    <string name="version">1.5.1v</string>
     <string name="action_settings">Settings</string>
     <string name="save_car_location_success">Car location has been saved</string>
-    <string name="no_internet">No Internet connection</string>
-    <string name="turn_on_wifi">Turn on Wi-Fi</string>
+    <string name="no_location">location cannot be retrieved</string>
     <string name="no_points">No points</string>
     <string name="car_found">Car is here!</string>
-    <string name="find_your_car">You should find your car.</string>
-    <string name="you_should_save_car_location">You should save car location.</string>
+    <string name="find_your_car">You should find your car</string>
+    <string name="you_should_save_car_location">You should park your car</string>
     <string name="distance">Distance: </string>
     <string name="duration">Duration: </string>
     <string name="screen_info">Info</string>

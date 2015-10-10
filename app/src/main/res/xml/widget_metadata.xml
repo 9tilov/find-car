@@ -6,4 +6,5 @@
     android:minWidth="40dp"
     android:previewImage="@mipmap/logo4"
     android:resizeMode="horizontal|vertical"
-    android:updatePeriodMillis="0"></appwidget-provider>
+    android:updatePeriodMillis="0"
+    android:widgetCategory="keyguard|home_screen"/>
