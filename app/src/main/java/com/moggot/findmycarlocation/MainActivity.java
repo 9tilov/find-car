@@ -47,6 +47,7 @@ public class MainActivity extends Activity {
     Intent resultValue;
     SharedPreferences sp;
     NetworkManager nwM;
+    Location location;
     boolean isWidgetInstalled = false;
 
     @Override
@@ -87,7 +88,6 @@ public class MainActivity extends Activity {
                 y2 = touchevent.getY();
 
                 if (y1 < y2) {
-//                    isLocationSaved = SharedPreference.LoadIsLocationSavedState(this);
                     updateWidget(isLocationSaved);
                     // if UP to DOWN sweep event on screen
                     if (trigger == 0) {
@@ -95,9 +95,7 @@ public class MainActivity extends Activity {
                             save_car_location();
                             break;
                         }
-                        show_map = true;
-                        animationDown(0, height / 9);
-                        trigger = -1;
+                        showMap();
                         break;
                     }
                 }
@@ -133,8 +131,6 @@ public class MainActivity extends Activity {
         sp = getSharedPreferences(MyWidget.WIDGET_PREF, MODE_PRIVATE);
         sp.edit().putBoolean(SharedPreference.s_state_location_save, isLocationSavedValue).apply();
         Log.d(LOG_TAG,
-                "isLocationSavedValue = " + isLocationSavedValue);
-        Log.d(LOG_TAG,
                 "widgetIDValue = " + widgetID);
         MyWidget.updateMyWidget(this, AppWidgetManager.getInstance(this), widgetID);
         setResult(RESULT_OK, resultValue);
@@ -159,7 +155,6 @@ public class MainActivity extends Activity {
                 updateWidget(isLocationSaved);
             }
             isWidgetInstalled = SharedPreference.LoadInstallWidgetState(this);
-            Log.d(LOG_TAG, "isWidgetInstalled = " + isWidgetInstalled);
             if (isWidgetInstalled == false) {
                 isWidgetInstalled = true;
                 SharedPreference.SaveInstallWidgetState(this, isWidgetInstalled);
@@ -216,10 +211,8 @@ public class MainActivity extends Activity {
     }
 
     void animationDown(float start, float end) {
-        Log.d(LOG_TAG, "1");
         TranslateAnimation animation = new TranslateAnimation(0.0f, 0.0f,
                 start, end);
-        Log.d(LOG_TAG, "2");
         isLocationSaved = SharedPreference.LoadIsLocationSavedState(this);
         updateWidget(isLocationSaved);
         animation.setAnimationListener(new AnimationListener() {
@@ -243,11 +236,9 @@ public class MainActivity extends Activity {
             public void onAnimationRepeat(Animation animation) {
             }
         });
-        Log.d(LOG_TAG, "3");
         animation.setDuration(500);
         animation.setFillAfter(true);
         img_animation.startAnimation(animation);
-        Log.d(LOG_TAG, "4");
     }
 
     private void saveLocation() {
@@ -262,8 +253,14 @@ public class MainActivity extends Activity {
 //                                 SharedPreference.SaveLocation(this, 55.928,
 //                                 37.520);
         nwM.checkLocationSettings();
-        Location location = nwM.getLocation();
-        Log.d(LOG_TAG, "location = " + location);
+        String provider = nwM.locationManager.NETWORK_PROVIDER;
+        location = nwM.getLocation();
+        if (location == null) {
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+                    && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                location = nwM.locationManager.getLastKnownLocation(provider);
+            }
+        }
         if (location != null) {
             animationUP();
             isLocationSaved = true;
@@ -276,6 +273,13 @@ public class MainActivity extends Activity {
 
         }
         trigger = 0;
+    }
+
+    public void showMap() {
+        isLocationSaved = SharedPreference.LoadIsLocationSavedState(this);
+        show_map = true;
+        animationDown(0, height / 9);
+        trigger = -1;
     }
 
 
@@ -299,7 +303,6 @@ public class MainActivity extends Activity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.d(LOG_TAG, "requestCode = " + requestCode);
         isLocationSaved = SharedPreference.LoadIsLocationSavedState(this);
         final int REQUEST_CHECK_SETTINGS = 199;
         switch (requestCode) {
@@ -309,9 +312,6 @@ public class MainActivity extends Activity {
                 show_map = false;
                 updateWidget(isLocationSaved);
                 break;
-            case SharedPreference.ACTIVITY_RESULT_CODE.LOCATION_SETTINGS:
-                saveLocation();
-                break;
             case REQUEST_CHECK_SETTINGS:
                 switch (resultCode) {
                     case Activity.RESULT_OK:
@@ -319,7 +319,6 @@ public class MainActivity extends Activity {
                         nwM.startLocationUpdates();
                         break;
                     case Activity.RESULT_CANCELED:
-                        nwM.startLocationUpdates();
                         Log.i(LOG_TAG, "User chose not to make required location settings changes.");
                         break;
                 }

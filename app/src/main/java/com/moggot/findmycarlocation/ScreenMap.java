@@ -9,11 +9,10 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.location.Criteria;
 import android.location.Location;
-import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -67,19 +66,16 @@ public class ScreenMap extends TrackedActivity {
     final String PROX_ALERT_INTENT = "com.example.findmycar";
 
     NetworkManager nwM;
-
-    static boolean showLocationSettings;
+    Location mLocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.screen_map);
         nwM = new NetworkManager(this);
-        showLocationSettings = true;
         mMap = null;
         setUpMapIfNeeded();
 
-        Log.d(LOG_TAG, "showLocationSettings = " + showLocationSettings);
         tvDistance = (TextView) findViewById(R.id.tv_distance_time);
         tvDuration = (TextView) findViewById(R.id.tv_duration_time);
         Typeface font = Typeface.createFromAsset(getAssets(), "Dashley.ttf");
@@ -124,14 +120,6 @@ public class ScreenMap extends TrackedActivity {
     protected void onResume() {
         super.onResume();
         setUpMapIfNeeded();
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            nwM.locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
-                    1000 * 10, 10, nwM.locationListener);
-            nwM.locationManager.requestLocationUpdates(
-                    LocationManager.NETWORK_PROVIDER, 1000 * 10, 10,
-                    nwM.locationListener);
-        }
     }
 
     @Override
@@ -169,25 +157,20 @@ public class ScreenMap extends TrackedActivity {
 
         LatLng arrivalPoint = SharedPreference.LoadLocation(this);
 
-        if (showLocationSettings)
-            nwM.checkLocationSettings();
-        Criteria criteria = new Criteria();
-        String provider = nwM.locationManager.getBestProvider(criteria,
-                false);
-        Location location = null;
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)
-            location = nwM.locationManager.getLastKnownLocation(provider);
-        Log.d(LOG_TAG, "locationMap = " + location);
-        if (location == null) {
-            Log.d(LOG_TAG, "location_map = null");
+        nwM.checkLocationSettings();
+
+        String provider = nwM.locationManager.NETWORK_PROVIDER;
+        mLocation = nwM.getLocation();
+        if (mLocation == null) {
+            mLocation = nwM.locationManager.getLastKnownLocation(provider);
+        }
+
+        if (mLocation == null) {
             return;
         }
 
-        LatLng departurePoint = new LatLng(location.getLatitude(),
-                location.getLongitude());
-        Log.d(LOG_TAG, "arrivalPoint_lat = " + arrivalPoint.latitude);
-        Log.d(LOG_TAG, "arrivalPoint_lng = " + arrivalPoint.longitude);
+        LatLng departurePoint = new LatLng(mLocation.getLatitude(),
+                mLocation.getLongitude());
         markerPoints.add(departurePoint);
         MarkerOptions departureOptions = new MarkerOptions();
         departureOptions.position(departurePoint);
@@ -206,7 +189,6 @@ public class ScreenMap extends TrackedActivity {
         if (markerPoints.size() == 1) {
             no_points();
         } else if (markerPoints.size() == 2) {
-            Log.d(LOG_TAG, "markerPoints");
             LatLngBounds.Builder builder = new LatLngBounds.Builder();
             builder.include(departurePoint);
             builder.include(arrivalPoint);
@@ -245,7 +227,6 @@ public class ScreenMap extends TrackedActivity {
             IntentFilter filter = new IntentFilter(PROX_ALERT_INTENT);
             receiver = new ProximityIntentReceiver();
             registerReceiver(receiver, filter);
-            Log.d(LOG_TAG, "markerPoints_end");
         }
 
     }
@@ -313,7 +294,6 @@ public class ScreenMap extends TrackedActivity {
             br.close();
 
         } catch (Exception e) {
-            Log.d(LOG_TAG, "Exception = " + e.toString());
         } finally {
             iStream.close();
             urlConnection.disconnect();
@@ -335,7 +315,6 @@ public class ScreenMap extends TrackedActivity {
                 // Fetching the data from web service
                 data = downloadUrl(url[0]);
             } catch (Exception e) {
-                Log.d(LOG_TAG, "Background Task = " + e.toString());
             }
             return data;
         }
@@ -428,9 +407,6 @@ public class ScreenMap extends TrackedActivity {
                 no_points();
                 return;
             }
-            Log.d(LOG_TAG, "distance = " + distance);
-            Log.d(LOG_TAG, "duration = " + duration);
-
             tvDistance.setText(getResources().getString(R.string.distance)
                     + " " + distance);
             tvDuration.setText(getResources().getString(R.string.duration)
@@ -508,7 +484,6 @@ public class ScreenMap extends TrackedActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.d(LOG_TAG, "requestCode = " + requestCode);
         final int REQUEST_CHECK_SETTINGS = 199;
         switch (requestCode) {
             case REQUEST_CHECK_SETTINGS:
@@ -520,15 +495,9 @@ public class ScreenMap extends TrackedActivity {
                         break;
 
                     case Activity.RESULT_CANCELED:
-                        showLocationSettings = false;
-                        nwM.startLocationUpdates();
-                        setUpMap();
                         Log.i(LOG_TAG, "User chose not to make required location settings changes.");
                         break;
                 }
-            case SharedPreference.ACTIVITY_RESULT_CODE.LOCATION_SETTINGS:
-                setUpMap();
-                break;
         }
 
     }

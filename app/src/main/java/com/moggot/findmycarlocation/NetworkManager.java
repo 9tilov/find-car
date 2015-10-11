@@ -62,7 +62,6 @@ public class NetworkManager implements
         buildGoogleApiClient();
         createLocationRequest();
         buildLocationSettingsRequest();
-        Log.d(LOG_TAG, "constructor NetworkManager");
 
     }
 
@@ -74,7 +73,6 @@ public class NetworkManager implements
 
         @Override
         public void onLocationChanged(Location location) {
-
             mCurrentLocation = location;
         }
 
@@ -84,21 +82,17 @@ public class NetworkManager implements
 
         @Override
         public void onProviderEnabled(String provider) {
-            Log.d(LOG_TAG, "onProviderEnabled");
         }
 
         @Override
         public void onStatusChanged(String provider, int status, Bundle extras) {
             if (provider.equals(LocationManager.GPS_PROVIDER)) {
-                Log.d(LOG_TAG, "Status_gps1: " + String.valueOf(status));
             } else if (provider.equals(LocationManager.NETWORK_PROVIDER)) {
-                Log.d(LOG_TAG, "Status_network1: " + String.valueOf(status));
             }
         }
     };
 
     public void onLocationChanged(Location location) {
-
         mCurrentLocation = location;
     }
 
@@ -107,7 +101,6 @@ public class NetworkManager implements
      * LocationServices API.
      */
     public synchronized void buildGoogleApiClient() {
-        Log.i(LOG_TAG, "Building GoogleApiClient");
         mGoogleApiClient = new GoogleApiClient.Builder(ctx)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
