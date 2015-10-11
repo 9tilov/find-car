@@ -490,8 +490,14 @@ public class ScreenMap extends TrackedActivity {
                 switch (resultCode) {
                     case Activity.RESULT_OK:
                         Log.i(LOG_TAG, "User agreed to make required location settings changes.");
-                        nwM.startLocationUpdates();
-                        setUpMap();
+                        final Handler handler = new Handler();
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                nwM.startLocationUpdates();
+                                setUpMap();
+                            }
+                        }, 2000);
                         break;
 
                     case Activity.RESULT_CANCELED:

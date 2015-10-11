@@ -149,9 +149,23 @@ public class MainActivity extends Activity {
             SharedPreference.SaveWidgetID(this, widgetID);
 
             if (isLocationSaved) {
-                Intent intent_screen = new Intent(MainActivity.this,
-                        ScreenMap.class);
-                startActivityForResult(intent_screen, SharedPreference.ACTIVITY_RESULT_CODE.MAP_SCREEN);
+                final Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        showMap();
+                    }
+                }, 500);
+
+                updateWidget(isLocationSaved);
+            } else {
+                final Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        saveLocation();
+                    }
+                }, 500);
                 updateWidget(isLocationSaved);
             }
             isWidgetInstalled = SharedPreference.LoadInstallWidgetState(this);
@@ -305,9 +319,15 @@ public class MainActivity extends Activity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         isLocationSaved = SharedPreference.LoadIsLocationSavedState(this);
         final int REQUEST_CHECK_SETTINGS = 199;
+        final Handler handler = new Handler();
         switch (requestCode) {
             case SharedPreference.ACTIVITY_RESULT_CODE.MAP_SCREEN:
-                animationDown(height / 9, 0);
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        animationDown(height / 9, 0);
+                    }
+                }, 500);
                 trigger = 0;
                 show_map = false;
                 updateWidget(isLocationSaved);
@@ -316,7 +336,12 @@ public class MainActivity extends Activity {
                 switch (resultCode) {
                     case Activity.RESULT_OK:
                         Log.i(LOG_TAG, "User agreed to make required location settings changes.");
-                        nwM.startLocationUpdates();
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                saveLocation();
+                            }
+                        }, 2000);
                         break;
                     case Activity.RESULT_CANCELED:
                         Log.i(LOG_TAG, "User chose not to make required location settings changes.");
