@@ -1,11 +1,15 @@
 package com.moggot.findmycarlocation;
 
+import android.Manifest;
 import android.app.Activity;
 import android.appwidget.AppWidgetManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
+import android.support.v4.app.ActivityCompat;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
@@ -43,6 +47,7 @@ public class MainActivity extends Activity {
     Intent resultValue;
     SharedPreferences sp;
     NetworkManager nwM;
+    boolean isWidgetInstalled = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +55,6 @@ public class MainActivity extends Activity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_main);
-        Log.d(LOG_TAG, "MainActivity");
         nwM = new NetworkManager(this);
         isLocationSaved = SharedPreference.LoadIsLocationSavedState(this);
         img_animation = (ImageView) findViewById(R.id.ivTrigger);
@@ -83,9 +87,7 @@ public class MainActivity extends Activity {
                 y2 = touchevent.getY();
 
                 if (y1 < y2) {
-                    Log.d(LOG_TAG, "isLocationSaved = " + isLocationSaved);
-                    Log.d(LOG_TAG, "trigger = " + trigger);
-                    isLocationSaved = SharedPreference.LoadIsLocationSavedState(this);
+//                    isLocationSaved = SharedPreference.LoadIsLocationSavedState(this);
                     updateWidget(isLocationSaved);
                     // if UP to DOWN sweep event on screen
                     if (trigger == 0) {
@@ -155,8 +157,14 @@ public class MainActivity extends Activity {
                         ScreenMap.class);
                 startActivityForResult(intent_screen, SharedPreference.ACTIVITY_RESULT_CODE.MAP_SCREEN);
                 updateWidget(isLocationSaved);
-            } else
-                saveLocation();
+            }
+            isWidgetInstalled = SharedPreference.LoadInstallWidgetState(this);
+            Log.d(LOG_TAG, "isWidgetInstalled = " + isWidgetInstalled);
+            if (isWidgetInstalled == false) {
+                isWidgetInstalled = true;
+                SharedPreference.SaveInstallWidgetState(this, isWidgetInstalled);
+                finish();
+            }
 
         }
         // и проверяем его корректность
@@ -169,6 +177,7 @@ public class MainActivity extends Activity {
                     .LoadIsLocationSavedState(this);
             updateWidget(isLocationSaved);
         }
+
     }
 
     void animationUP() {
@@ -207,9 +216,10 @@ public class MainActivity extends Activity {
     }
 
     void animationDown(float start, float end) {
+        Log.d(LOG_TAG, "1");
         TranslateAnimation animation = new TranslateAnimation(0.0f, 0.0f,
                 start, end);
-
+        Log.d(LOG_TAG, "2");
         isLocationSaved = SharedPreference.LoadIsLocationSavedState(this);
         updateWidget(isLocationSaved);
         animation.setAnimationListener(new AnimationListener() {
@@ -233,10 +243,11 @@ public class MainActivity extends Activity {
             public void onAnimationRepeat(Animation animation) {
             }
         });
+        Log.d(LOG_TAG, "3");
         animation.setDuration(500);
         animation.setFillAfter(true);
         img_animation.startAnimation(animation);
-
+        Log.d(LOG_TAG, "4");
     }
 
     private void saveLocation() {
@@ -273,7 +284,6 @@ public class MainActivity extends Activity {
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
-
 
 
     @Override
@@ -332,7 +342,6 @@ public class MainActivity extends Activity {
     @Override
     protected void onStart() {
         super.onStart();
-        Log.i(LOG_TAG, "onStart");
         GoogleAnalytics.getInstance(this).reportActivityStart(this);
     }
 
@@ -342,17 +351,11 @@ public class MainActivity extends Activity {
         GoogleAnalytics.getInstance(this).reportActivityStop(this);
         super.onStop();
         setResult(RESULT_OK, resultValue);
-        Log.i(LOG_TAG, "onStop");
     }
 
     private void car_loc_save_success() {
         Toast.makeText(this, R.string.save_car_location_success,
                 Toast.LENGTH_SHORT).show();
     }
-
-//    private void no_location() {
-//        Toast.makeText(this, R.string.no_location,
-//                Toast.LENGTH_SHORT).show();
-//    }
 
 }

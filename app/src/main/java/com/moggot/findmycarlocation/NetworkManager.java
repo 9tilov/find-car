@@ -57,7 +57,7 @@ public class NetworkManager implements
     public LocationManager locationManager;
 
     public NetworkManager(Context context) {
-        this.ctx = context;
+        ctx = context;
         locationManager = (LocationManager) ctx.getSystemService(Context.LOCATION_SERVICE);
         buildGoogleApiClient();
         createLocationRequest();

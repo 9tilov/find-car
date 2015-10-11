@@ -36,6 +36,7 @@ public class MyWidget extends AppWidgetProvider {
             editor.remove(WIDGET_IS_CAR_PARKED + widgetID);
         }
         editor.commit();
+        SharedPreference.SaveInstallWidgetState(context, false);
     }
 
     static void updateMyWidget(Context ctx, AppWidgetManager appWidgetManager,

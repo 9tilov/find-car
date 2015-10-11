@@ -22,6 +22,7 @@ public class SharedPreference {
     public static final String s_day = "day";
     public static final String s_state_location_save = "state_location";
     public static final String s_widget_id = "widget_id";
+    public static final String s_widget_installed = "widget_installed";
 
     static public void SaveLocation(Context ctx, double lat, double lng) {
         SharedPreferences sharedPreferences = PreferenceManager
@@ -111,5 +112,21 @@ public class SharedPreference {
         int id = sharedPreferences.getInt(s_widget_id,
                 -1);
         return id;
+    }
+
+    static public void SaveInstallWidgetState(Context ctx, boolean state) {
+        SharedPreferences sharedPreferences = PreferenceManager
+                .getDefaultSharedPreferences(ctx);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.remove(s_widget_installed);
+        editor.putBoolean(s_widget_installed, state);
+        editor.commit();
+    }
+
+    static public boolean LoadInstallWidgetState(Context ctx) {
+        SharedPreferences sharedPreferences = PreferenceManager
+                .getDefaultSharedPreferences(ctx);
+        boolean state = sharedPreferences.getBoolean(s_widget_installed, false);
+        return state;
     }
 }
