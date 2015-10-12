@@ -3,6 +3,7 @@ package com.moggot.findmycarlocation;
 import android.Manifest;
 import android.app.Activity;
 import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -71,6 +72,8 @@ public class MainActivity extends Activity {
         DisplayMetrics displaymetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
         height = displaymetrics.heightPixels;
+        if (AppWidgetManager.getInstance(this).getAppWidgetIds(new ComponentName(this, MyWidget.class)).length == 0)
+            SharedPreference.SaveInstallWidgetState(this, false);
     }
 
 
@@ -147,7 +150,23 @@ public class MainActivity extends Activity {
                     AppWidgetManager.INVALID_APPWIDGET_ID);
             Log.d(LOG_TAG, "widgetID_extras = " + widgetID);
             SharedPreference.SaveWidgetID(this, widgetID);
-
+        }
+        // и проверяем его корректность
+        if (widgetID != AppWidgetManager.INVALID_APPWIDGET_ID) {
+            isWidgetInstalled = SharedPreference.LoadInstallWidgetState(this);
+            if (isWidgetInstalled == false) {
+                updateWidget(isLocationSaved);
+                isWidgetInstalled = true;
+                SharedPreference.SaveInstallWidgetState(this, isWidgetInstalled);
+                finish();
+                return;
+            }
+            // формируем intent ответа
+            resultValue = new Intent();
+            resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetID);
+            // отрицательный ответ
+            isLocationSaved = SharedPreference
+                    .LoadIsLocationSavedState(this);
             if (isLocationSaved) {
                 final Handler handler = new Handler();
                 handler.postDelayed(new Runnable() {
@@ -156,8 +175,6 @@ public class MainActivity extends Activity {
                         showMap();
                     }
                 }, 500);
-
-                updateWidget(isLocationSaved);
             } else {
                 final Handler handler = new Handler();
                 handler.postDelayed(new Runnable() {
@@ -166,27 +183,9 @@ public class MainActivity extends Activity {
                         saveLocation();
                     }
                 }, 500);
-                updateWidget(isLocationSaved);
             }
-            isWidgetInstalled = SharedPreference.LoadInstallWidgetState(this);
-            if (isWidgetInstalled == false) {
-                isWidgetInstalled = true;
-                SharedPreference.SaveInstallWidgetState(this, isWidgetInstalled);
-                finish();
-            }
-
         }
-        // и проверяем его корректность
-        if (widgetID != AppWidgetManager.INVALID_APPWIDGET_ID) {
-            // формируем intent ответа
-            resultValue = new Intent();
-            resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetID);
-            // отрицательный ответ
-            isLocationSaved = SharedPreference
-                    .LoadIsLocationSavedState(this);
-            updateWidget(isLocationSaved);
-        }
-
+        updateWidget(isLocationSaved);
     }
 
     void animationUP() {

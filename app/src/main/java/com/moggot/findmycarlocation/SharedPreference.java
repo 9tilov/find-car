@@ -110,7 +110,7 @@ public class SharedPreference {
         SharedPreferences sharedPreferences = PreferenceManager
                 .getDefaultSharedPreferences(ctx);
         int id = sharedPreferences.getInt(s_widget_id,
-                -1);
+                0);
         return id;
     }
 
