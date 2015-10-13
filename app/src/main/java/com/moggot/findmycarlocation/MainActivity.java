@@ -62,8 +62,9 @@ public class MainActivity extends Activity {
         AdView mAdView = (AdView) findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);
-        ((AnalyticsApplication) getApplication())
+        Tracker t = ((AnalyticsApplication) getApplication())
                 .getTracker(AnalyticsApplication.TrackerName.APP_TRACKER);
+        t.enableAdvertisingIdCollection(true);
 
 
         DisplayMetrics displaymetrics = new DisplayMetrics();

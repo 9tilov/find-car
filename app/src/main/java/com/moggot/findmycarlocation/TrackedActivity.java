@@ -4,15 +4,16 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 
 import com.google.android.gms.analytics.GoogleAnalytics;
+import com.google.android.gms.analytics.Tracker;
 
 public class TrackedActivity extends FragmentActivity {
 
     protected void onCreate(Bundle savedInstanceState, String tag) {
         super.onCreate(savedInstanceState);
         // Get a Tracker (should auto-report)
-        ((AnalyticsApplication) getApplication())
+        Tracker t = ((AnalyticsApplication) getApplication())
                 .getTracker(AnalyticsApplication.TrackerName.APP_TRACKER);
-
+        t.enableAdvertisingIdCollection(true);
     }
 
     @Override

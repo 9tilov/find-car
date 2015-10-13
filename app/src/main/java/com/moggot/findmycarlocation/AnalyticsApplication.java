@@ -47,6 +47,7 @@ public class AnalyticsApplication extends Application {
             Tracker t = (trackerId == TrackerName.APP_TRACKER) ? analytics
                     .newTracker(R.xml.app_tracker) : analytics
                     .newTracker(PROPERTY_ID);
+            t.enableAdvertisingIdCollection(true);
             mTrackers.put(trackerId, t);
 
         }
