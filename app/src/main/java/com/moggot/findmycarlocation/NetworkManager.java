@@ -31,9 +31,6 @@ public class NetworkManager implements
     private Context ctx;
 
     public static final int REQUEST_CHECK_SETTINGS = 199;
-    private static final long UPDATE_INTERVAL_IN_MILLISECONDS = 10000;
-    private static final long FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS =
-            UPDATE_INTERVAL_IN_MILLISECONDS / 2;
 
     private GoogleApiClient mGoogleApiClient;
 
@@ -128,10 +125,13 @@ public class NetworkManager implements
         // inexact. You may not receive updates at all if no location sources are available, or
         // you may receive them slower than requested. You may also receive updates faster than
         // requested if other applications are requesting location at a faster interval.
+        final long UPDATE_INTERVAL_IN_MILLISECONDS = 10000;
         mLocationRequest.setInterval(UPDATE_INTERVAL_IN_MILLISECONDS);
 
         // Sets the fastest rate for active location updates. This interval is exact, and your
         // application will never receive updates faster than this value.
+        final long FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS =
+                UPDATE_INTERVAL_IN_MILLISECONDS / 2;
         mLocationRequest.setFastestInterval(FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS);
 
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);

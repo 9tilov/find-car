@@ -10,9 +10,7 @@ public class SharedPreference {
 
     public class ACTIVITY_RESULT_CODE {
         final static int MAP_SCREEN = 0;
-        final static int WIFI_SETTINGS = 1;
-        final static int LOCATION_SETTINGS = 2;
-        final static int INFO_SCREEN = 3;
+        final static int INFO_SCREEN = 1;
     }
 
     public static final String s_lat = "latitude";
@@ -32,7 +30,7 @@ public class SharedPreference {
         editor.remove(s_lng);
         editor.putLong(s_lat, Double.doubleToLongBits(lat));
         editor.putLong(s_lng, Double.doubleToLongBits(lng));
-        editor.commit();
+        editor.apply();
     }
 
     static public LatLng LoadLocation(Context ctx) {
@@ -42,8 +40,7 @@ public class SharedPreference {
                 .getLong(s_lat, 0));
         double lng = Double.longBitsToDouble(sharedPreferences
                 .getLong(s_lng, 0));
-        LatLng latLng = new LatLng(lat, lng);
-        return latLng;
+        return new LatLng(lat, lng);
     }
 
     static public void SaveTime(Context ctx, int day, int hour, int minute) {
@@ -56,7 +53,7 @@ public class SharedPreference {
         editor.putInt(s_day, day);
         editor.putInt(s_hour, hour);
         editor.putInt(s_minute, minute);
-        editor.commit();
+        editor.apply();
     }
 
     static public String LoadTime(Context ctx) {
@@ -65,8 +62,7 @@ public class SharedPreference {
         int day = sharedPreferences.getInt(s_day, 0);
         int hour = sharedPreferences.getInt(s_hour, 0);
         int minute = sharedPreferences.getInt(s_minute, 0);
-        String time = String.valueOf(day + " " + hour + ":" + minute);
-        return time;
+        return String.valueOf(day + " " + hour + ":" + minute);
     }
 
     static public void SaveIsLocationSavedState(Context ctx, boolean state) {
@@ -75,15 +71,14 @@ public class SharedPreference {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.remove(s_state_location_save);
         editor.putBoolean(s_state_location_save, state);
-        editor.commit();
+        editor.apply();
     }
 
     static public boolean LoadIsLocationSavedState(Context ctx) {
         SharedPreferences sharedPreferences = PreferenceManager
                 .getDefaultSharedPreferences(ctx);
-        boolean state = sharedPreferences.getBoolean(s_state_location_save,
+        return sharedPreferences.getBoolean(s_state_location_save,
                 false);
-        return state;
     }
 
     static public void clearPref(Context ctx) {
@@ -103,15 +98,13 @@ public class SharedPreference {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.remove(s_widget_id);
         editor.putInt(s_widget_id, id);
-        editor.commit();
+        editor.apply();
     }
 
     static public int LoadWidgetID(Context ctx) {
         SharedPreferences sharedPreferences = PreferenceManager
                 .getDefaultSharedPreferences(ctx);
-        int id = sharedPreferences.getInt(s_widget_id,
-                0);
-        return id;
+        return sharedPreferences.getInt(s_widget_id, 0);
     }
 
     static public void SaveInstallWidgetState(Context ctx, boolean state) {
@@ -120,13 +113,12 @@ public class SharedPreference {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.remove(s_widget_installed);
         editor.putBoolean(s_widget_installed, state);
-        editor.commit();
+        editor.apply();
     }
 
     static public boolean LoadInstallWidgetState(Context ctx) {
         SharedPreferences sharedPreferences = PreferenceManager
                 .getDefaultSharedPreferences(ctx);
-        boolean state = sharedPreferences.getBoolean(s_widget_installed, false);
-        return state;
+        return sharedPreferences.getBoolean(s_widget_installed, false);
     }
 }

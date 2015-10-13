@@ -26,17 +26,17 @@ import android.widget.Toast;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.analytics.GoogleAnalytics;
+import com.google.android.gms.analytics.Tracker;
 
 import java.util.Calendar;
 
 public class MainActivity extends Activity {
 
-    float y1, y2;
     ImageView img_animation;
     int height;
 
     int trigger = 0;
-
+    float y1, y2;
 
     final static String LOG_TAG = "myLogs";
     boolean isLocationSaved;
@@ -46,9 +46,6 @@ public class MainActivity extends Activity {
 
     int widgetID = AppWidgetManager.INVALID_APPWIDGET_ID;
     Intent resultValue;
-    SharedPreferences sp;
-    NetworkManager nwM;
-    Location location;
     boolean isWidgetInstalled = false;
 
     @Override
@@ -57,7 +54,7 @@ public class MainActivity extends Activity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_main);
-        nwM = new NetworkManager(this);
+
         isLocationSaved = SharedPreference.LoadIsLocationSavedState(this);
         img_animation = (ImageView) findViewById(R.id.ivTrigger);
         installWidget();
@@ -79,6 +76,7 @@ public class MainActivity extends Activity {
 
     public boolean onTouchEvent(MotionEvent touchevent) {
         isLocationSaved = SharedPreference.LoadIsLocationSavedState(this);
+
         if (isAnimation)
             return false;
         switch (touchevent.getAction()) {
@@ -131,10 +129,9 @@ public class MainActivity extends Activity {
     private void updateWidget(boolean isLocationSavedValue) {
         if (widgetID == -1)
             return;
-        sp = getSharedPreferences(MyWidget.WIDGET_PREF, MODE_PRIVATE);
+
+        SharedPreferences sp = getSharedPreferences(MyWidget.WIDGET_PREF, MODE_PRIVATE);
         sp.edit().putBoolean(SharedPreference.s_state_location_save, isLocationSavedValue).apply();
-        Log.d(LOG_TAG,
-                "widgetIDValue = " + widgetID);
         MyWidget.updateMyWidget(this, AppWidgetManager.getInstance(this), widgetID);
         setResult(RESULT_OK, resultValue);
     }
@@ -144,15 +141,15 @@ public class MainActivity extends Activity {
         Bundle extras = intent.getExtras();
         widgetID = SharedPreference.LoadWidgetID(this);
 
-        Log.d(LOG_TAG, "widgetID = " + widgetID);
+        Log.d(LOG_TAG, "widgetID 1= " + widgetID);
         if (extras != null) {
             widgetID = extras.getInt(AppWidgetManager.EXTRA_APPWIDGET_ID,
                     AppWidgetManager.INVALID_APPWIDGET_ID);
-            Log.d(LOG_TAG, "widgetID_extras = " + widgetID);
             SharedPreference.SaveWidgetID(this, widgetID);
         }
         // и проверяем его корректность
         if (widgetID != AppWidgetManager.INVALID_APPWIDGET_ID) {
+            Log.d(LOG_TAG, "widgetID 2= " + widgetID);
             isWidgetInstalled = SharedPreference.LoadInstallWidgetState(this);
             if (isWidgetInstalled == false) {
                 updateWidget(isLocationSaved);
@@ -265,9 +262,10 @@ public class MainActivity extends Activity {
 
 //                                 SharedPreference.SaveLocation(this, 55.928,
 //                                 37.520);
+        NetworkManager nwM = new NetworkManager(this);
         nwM.checkLocationSettings();
         String provider = nwM.locationManager.NETWORK_PROVIDER;
-        location = nwM.getLocation();
+        Location location = nwM.getLocation();
         if (location == null) {
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
                     && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {

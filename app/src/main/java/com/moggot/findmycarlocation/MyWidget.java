@@ -8,14 +8,13 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.RemoteViews;
 
 public class MyWidget extends AppWidgetProvider {
 
     final static String ACTION_CHANGE = "com.moggot.widgetbutton.change_count";
     final static String LOG_TAG = "myLogs";
-    public final static String WIDGET_IS_CAR_PARKED = "is_car_parked";
+
     public final static String WIDGET_PREF = "widget_pref";
 
     public void onUpdate(Context context, AppWidgetManager appWidgetManager,
@@ -30,8 +29,8 @@ public class MyWidget extends AppWidgetProvider {
     public void onDeleted(Context context, int[] appWidgetIds) {
         super.onDeleted(context, appWidgetIds);
         // Удаляем Preferences
-        Editor editor = context.getSharedPreferences(
-                WIDGET_PREF, Context.MODE_PRIVATE).edit();
+        Editor editor = context.getSharedPreferences(WIDGET_PREF, Context.MODE_PRIVATE).edit();
+        final String WIDGET_IS_CAR_PARKED = "is_car_parked";
         for (int widgetID : appWidgetIds) {
             editor.remove(WIDGET_IS_CAR_PARKED + widgetID);
         }
@@ -44,7 +43,6 @@ public class MyWidget extends AppWidgetProvider {
         SharedPreferences sp = ctx.getSharedPreferences(
                 WIDGET_PREF, Context.MODE_PRIVATE);
 
-        Log.d(LOG_TAG, "widgetID_update_MyWidget = " + widgetID);
         // Читаем счетчик
         boolean isCarParked = sp.getBoolean(SharedPreference.s_state_location_save, false);
 
@@ -59,7 +57,6 @@ public class MyWidget extends AppWidgetProvider {
                 configIntent, 0);
         widgetView.setOnClickPendingIntent(R.id.widget_save_location, pIntent);
 
-        Log.d(LOG_TAG, "isCarParked1_MyWidget = " + isCarParked);
         if (isCarParked)
             widgetView.setImageViewResource(R.id.widget_save_location, R.mipmap.find_car1);
         else
@@ -94,12 +91,10 @@ public class MyWidget extends AppWidgetProvider {
                 SharedPreferences sp = context.getSharedPreferences(
                         WIDGET_PREF, Context.MODE_PRIVATE);
                 boolean isCarParked = sp.getBoolean(SharedPreference.s_state_location_save, false);
-                Log.d(LOG_TAG, "isCarParked_onRecieve_MyWidget = " + isCarParked);
                 sp.edit().putBoolean(SharedPreference.s_state_location_save,
                         isCarParked).commit();
 
                 // Обновляем виджет
-                Log.d(LOG_TAG, "mAppWidgetId_MyWidget = " + mAppWidgetId);
                 updateMyWidget(context, AppWidgetManager.getInstance(context),
                         mAppWidgetId);
             }

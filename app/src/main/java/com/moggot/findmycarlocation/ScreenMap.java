@@ -52,12 +52,10 @@ import java.util.List;
 public class ScreenMap extends TrackedActivity {
 
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
-    SupportMapFragment mapFragment;
+
     private BroadcastReceiver receiver;
     final static String LOG_TAG = "myLogs";
     TextView tvDistance, tvDuration;
-
-    InterstitialAd mInterstitialAd;
 
     public enum locationType {
         USER_LOCATION, CAR_LOCATION
@@ -65,14 +63,12 @@ public class ScreenMap extends TrackedActivity {
 
     final String PROX_ALERT_INTENT = "com.example.findmycar";
 
-    NetworkManager nwM;
-    Location mLocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.screen_map);
-        nwM = new NetworkManager(this);
+
         mMap = null;
         setUpMapIfNeeded();
 
@@ -86,7 +82,7 @@ public class ScreenMap extends TrackedActivity {
         AdView mAdView = (AdView) findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);
-        mInterstitialAd = new InterstitialAd(this);
+        final InterstitialAd mInterstitialAd = new InterstitialAd(this);
         mInterstitialAd.setAdUnitId(getResources().getString(R.string.banner_ad_unit_id_map_interstitial));
         mInterstitialAd.loadAd(adRequest);
         mInterstitialAd.setAdListener(new AdListener() {
@@ -140,7 +136,7 @@ public class ScreenMap extends TrackedActivity {
         // Do a null check to confirm that we have not already instantiated the map.
         if (mMap == null) {
             // Try to obtain the map from the SupportMapFragment.
-            mapFragment = (SupportMapFragment) getSupportFragmentManager()
+            SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                     .findFragmentById(R.id.map);
             mMap = mapFragment.getMap();
             // Check if we were successful in obtaining the map.
@@ -156,11 +152,11 @@ public class ScreenMap extends TrackedActivity {
         mMap.setMyLocationEnabled(true);
 
         LatLng arrivalPoint = SharedPreference.LoadLocation(this);
-
+        NetworkManager nwM = new NetworkManager(this);
         nwM.checkLocationSettings();
 
         String provider = nwM.locationManager.NETWORK_PROVIDER;
-        mLocation = nwM.getLocation();
+        Location mLocation = nwM.getLocation();
         if (mLocation == null) {
             mLocation = nwM.locationManager.getLastKnownLocation(provider);
         }
@@ -494,7 +490,7 @@ public class ScreenMap extends TrackedActivity {
                         handler.postDelayed(new Runnable() {
                             @Override
                             public void run() {
-                                nwM.startLocationUpdates();
+//                                nwM.startLocationUpdates();
                                 setUpMap();
                             }
                         }, 2000);
