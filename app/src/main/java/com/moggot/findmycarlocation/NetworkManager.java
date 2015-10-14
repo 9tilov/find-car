@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.IntentSender;
 import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
@@ -65,29 +64,6 @@ public class NetworkManager implements
     public Location getLocation() {
         return mCurrentLocation;
     }
-
-    public LocationListener locationListener = new LocationListener() {
-
-        @Override
-        public void onLocationChanged(Location location) {
-            mCurrentLocation = location;
-        }
-
-        @Override
-        public void onProviderDisabled(String provider) {
-        }
-
-        @Override
-        public void onProviderEnabled(String provider) {
-        }
-
-        @Override
-        public void onStatusChanged(String provider, int status, Bundle extras) {
-            if (provider.equals(LocationManager.GPS_PROVIDER)) {
-            } else if (provider.equals(LocationManager.NETWORK_PROVIDER)) {
-            }
-        }
-    };
 
     public void onLocationChanged(Location location) {
         mCurrentLocation = location;
@@ -236,7 +212,6 @@ public class NetworkManager implements
             mCurrentLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
         }
     }
-
 
     @Override
     public void onConnectionSuspended(int cause) {
