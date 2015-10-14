@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
-import android.graphics.Typeface;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -74,10 +73,6 @@ public class ScreenMap extends TrackedActivity {
 
         tvDistance = (TextView) findViewById(R.id.tv_distance_time);
         tvDuration = (TextView) findViewById(R.id.tv_duration_time);
-        Typeface font = Typeface.createFromAsset(getAssets(), "Dashley.ttf");
-        tvDistance.setTypeface(font);
-        tvDuration.setTypeface(font);
-
 
         AdView mAdView = (AdView) findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
