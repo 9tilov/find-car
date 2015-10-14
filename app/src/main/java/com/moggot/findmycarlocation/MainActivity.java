@@ -53,11 +53,11 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        installWidget();
         setContentView(R.layout.activity_main);
 
         isLocationSaved = SharedPreference.LoadIsLocationSavedState(this);
         img_animation = (ImageView) findViewById(R.id.ivTrigger);
-        installWidget();
 
         AdView mAdView = (AdView) findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
@@ -90,8 +90,6 @@ public class MainActivity extends Activity {
                 y2 = touchevent.getY();
 
                 if (y1 < y2) {
-                    updateWidget(isLocationSaved);
-                    // if UP to DOWN sweep event on screen
                     if (trigger == 0) {
                         if (!isLocationSaved) {
                             save_car_location();
@@ -128,9 +126,8 @@ public class MainActivity extends Activity {
 
 
     private void updateWidget(boolean isLocationSavedValue) {
-        if (widgetID == -1)
+        if (widgetID == AppWidgetManager.INVALID_APPWIDGET_ID)
             return;
-
         SharedPreferences sp = getSharedPreferences(MyWidget.WIDGET_PREF, MODE_PRIVATE);
         sp.edit().putBoolean(SharedPreference.s_state_location_save, isLocationSavedValue).apply();
         MyWidget.updateMyWidget(this, AppWidgetManager.getInstance(this), widgetID);
@@ -140,17 +137,19 @@ public class MainActivity extends Activity {
     private void installWidget() {
         Intent intent = getIntent();
         Bundle extras = intent.getExtras();
-        widgetID = SharedPreference.LoadWidgetID(this);
 
         Log.d(LOG_TAG, "widgetID 1= " + widgetID);
         if (extras != null) {
             widgetID = extras.getInt(AppWidgetManager.EXTRA_APPWIDGET_ID,
                     AppWidgetManager.INVALID_APPWIDGET_ID);
-            SharedPreference.SaveWidgetID(this, widgetID);
         }
         // и проверяем его корректность
         if (widgetID != AppWidgetManager.INVALID_APPWIDGET_ID) {
-            Log.d(LOG_TAG, "widgetID 2= " + widgetID);
+
+            resultValue = new Intent();
+            resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetID);
+
+            setResult(RESULT_CANCELED, resultValue);
             isWidgetInstalled = SharedPreference.LoadInstallWidgetState(this);
             if (isWidgetInstalled == false) {
                 updateWidget(isLocationSaved);
@@ -159,12 +158,7 @@ public class MainActivity extends Activity {
                 finish();
                 return;
             }
-            // формируем intent ответа
-            resultValue = new Intent();
-            resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetID);
-            // отрицательный ответ
-            isLocationSaved = SharedPreference
-                    .LoadIsLocationSavedState(this);
+
             if (isLocationSaved) {
                 final Handler handler = new Handler();
                 handler.postDelayed(new Runnable() {
@@ -183,7 +177,6 @@ public class MainActivity extends Activity {
                 }, 500);
             }
         }
-        updateWidget(isLocationSaved);
     }
 
     void animationUP() {
@@ -225,7 +218,6 @@ public class MainActivity extends Activity {
         TranslateAnimation animation = new TranslateAnimation(0.0f, 0.0f,
                 start, end);
         isLocationSaved = SharedPreference.LoadIsLocationSavedState(this);
-        updateWidget(isLocationSaved);
         animation.setAnimationListener(new AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {
@@ -276,8 +268,8 @@ public class MainActivity extends Activity {
         if (location != null) {
             animationUP();
             isLocationSaved = true;
-            updateWidget(isLocationSaved);
             SharedPreference.SaveIsLocationSavedState(this, isLocationSaved);
+            updateWidget(isLocationSaved);
             SharedPreference.SaveLocation(this,
                     location.getLatitude(),
                     location.getLongitude());

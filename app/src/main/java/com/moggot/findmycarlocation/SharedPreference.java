@@ -3,6 +3,7 @@ package com.moggot.findmycarlocation;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
 
@@ -19,7 +20,6 @@ public class SharedPreference {
     public static final String s_minute = "minute";
     public static final String s_day = "day";
     public static final String s_state_location_save = "state_location";
-    public static final String s_widget_id = "widget_id";
     public static final String s_widget_installed = "widget_installed";
 
     static public void SaveLocation(Context ctx, double lat, double lng) {
@@ -90,21 +90,6 @@ public class SharedPreference {
         editor.remove(s_minute);
         editor.remove(s_lat);
         editor.remove(s_lng);
-    }
-
-    static public void SaveWidgetID(Context ctx, int id) {
-        SharedPreferences sharedPreferences = PreferenceManager
-                .getDefaultSharedPreferences(ctx);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.remove(s_widget_id);
-        editor.putInt(s_widget_id, id);
-        editor.apply();
-    }
-
-    static public int LoadWidgetID(Context ctx) {
-        SharedPreferences sharedPreferences = PreferenceManager
-                .getDefaultSharedPreferences(ctx);
-        return sharedPreferences.getInt(s_widget_id, 0);
     }
 
     static public void SaveInstallWidgetState(Context ctx, boolean state) {
