@@ -56,7 +56,6 @@ public class MainActivity extends Activity {
         installWidget();
         setContentView(R.layout.activity_main);
 
-        isLocationSaved = SharedPreference.LoadIsLocationSavedState(this);
         img_animation = (ImageView) findViewById(R.id.ivTrigger);
 
         AdView mAdView = (AdView) findViewById(R.id.adView);
@@ -76,8 +75,6 @@ public class MainActivity extends Activity {
 
 
     public boolean onTouchEvent(MotionEvent touchevent) {
-        isLocationSaved = SharedPreference.LoadIsLocationSavedState(this);
-
         if (isAnimation)
             return false;
         switch (touchevent.getAction()) {
@@ -137,8 +134,8 @@ public class MainActivity extends Activity {
     private void installWidget() {
         Intent intent = getIntent();
         Bundle extras = intent.getExtras();
-
-        Log.d(LOG_TAG, "widgetID 1= " + widgetID);
+        isLocationSaved = SharedPreference
+                .LoadIsLocationSavedState(this);
         if (extras != null) {
             widgetID = extras.getInt(AppWidgetManager.EXTRA_APPWIDGET_ID,
                     AppWidgetManager.INVALID_APPWIDGET_ID);
@@ -217,7 +214,6 @@ public class MainActivity extends Activity {
     void animationDown(float start, float end) {
         TranslateAnimation animation = new TranslateAnimation(0.0f, 0.0f,
                 start, end);
-        isLocationSaved = SharedPreference.LoadIsLocationSavedState(this);
         animation.setAnimationListener(new AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {
@@ -280,7 +276,6 @@ public class MainActivity extends Activity {
     }
 
     public void showMap() {
-        isLocationSaved = SharedPreference.LoadIsLocationSavedState(this);
         show_map = true;
         animationDown(0, height / 9);
         trigger = -1;
