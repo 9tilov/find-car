@@ -38,7 +38,7 @@
             android:text="@string/version"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:textColor="#CFCFCF"
-            android:textSize="@dimen/text_size_title" />
+            android:textSize="@dimen/text_version" />
     </RelativeLayout>
 
     <RelativeLayout
