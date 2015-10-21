@@ -3,7 +3,6 @@ package com.moggot.findmycarlocation;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
 
@@ -21,6 +20,8 @@ public class SharedPreference {
     public static final String s_day = "day";
     public static final String s_state_location_save = "state_location";
     public static final String s_widget_installed = "widget_installed";
+    public static final String s_rating_count = "rating_count";
+
 
     static public void SaveLocation(Context ctx, double lat, double lng) {
         SharedPreferences sharedPreferences = PreferenceManager
@@ -105,5 +106,20 @@ public class SharedPreference {
         SharedPreferences sharedPreferences = PreferenceManager
                 .getDefaultSharedPreferences(ctx);
         return sharedPreferences.getBoolean(s_widget_installed, false);
+    }
+
+    static public void SaveRatingCount(Context ctx, int rate_count) {
+        SharedPreferences sharedPreferences = PreferenceManager
+                .getDefaultSharedPreferences(ctx);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.remove(s_rating_count);
+        editor.putInt(s_rating_count, rate_count);
+        editor.apply();
+    }
+
+    static public int LoadRatingCount(Context ctx) {
+        SharedPreferences sharedPreferences = PreferenceManager
+                .getDefaultSharedPreferences(ctx);
+        return sharedPreferences.getInt(s_rating_count, 0);
     }
 }
