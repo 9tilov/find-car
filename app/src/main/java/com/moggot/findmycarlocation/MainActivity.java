@@ -2,12 +2,16 @@ package com.moggot.findmycarlocation;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.appwidget.AppWidgetManager;
+import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
@@ -16,11 +20,13 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
+import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.Toast;
 
 import com.google.android.gms.ads.AdRequest;
@@ -48,6 +54,7 @@ public class MainActivity extends Activity {
     Intent resultValue;
     boolean isWidgetInstalled = false;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,7 +62,6 @@ public class MainActivity extends Activity {
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         installWidget();
         setContentView(R.layout.activity_main);
-
         img_animation = (ImageView) findViewById(R.id.ivTrigger);
 
         AdView mAdView = (AdView) findViewById(R.id.adView);
@@ -65,14 +71,18 @@ public class MainActivity extends Activity {
                 .getTracker(AnalyticsApplication.TrackerName.APP_TRACKER);
         t.enableAdvertisingIdCollection(true);
 
-
         DisplayMetrics displaymetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
         height = displaymetrics.heightPixels;
         if (AppWidgetManager.getInstance(this).getAppWidgetIds(new ComponentName(this, MyWidget.class)).length == 0)
             SharedPreference.SaveInstallWidgetState(this, false);
-    }
 
+        int rate_count = SharedPreference.LoadRatingCount(this);
+        if (rate_count >= 11) {
+            SharedPreference.SaveRatingCount(this, 0);
+            showRatingDialog();
+        }
+    }
 
     public boolean onTouchEvent(MotionEvent touchevent) {
         if (isAnimation)
@@ -107,7 +117,7 @@ public class MainActivity extends Activity {
                     }
                     if (trigger == 0) {
                         if (isLocationSaved) {
-                            find_your_car();
+                            showSaveDialog();
                             break;
                         }
                         saveLocation();
@@ -121,6 +131,67 @@ public class MainActivity extends Activity {
         return false;
     }
 
+    void showSaveDialog() {
+        AlertDialog.Builder ad;
+        ad = new AlertDialog.Builder(MainActivity.this);
+
+        ad.setTitle(getResources().getString(R.string.dialog_title_save_car));
+
+        ad.setMessage(getResources().getString(R.string.dialog_you_not_find_car));
+        ad.setPositiveButton(getResources().getString(R.string.dialog_yes), new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int arg1) {
+                saveLocation();
+            }
+        });
+        ad.setNegativeButton(getResources().getString(R.string.dialog_no), new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int arg1) {
+            }
+        });
+        ad.setCancelable(true);
+        ad.setOnCancelListener(new DialogInterface.OnCancelListener() {
+            public void onCancel(DialogInterface dialog) {
+            }
+        });
+        ad.create();
+        ad.show();
+    }
+
+    public void showRatingDialog() {
+
+        final AlertDialog.Builder ratingdialog = new AlertDialog.Builder(this);
+
+        ratingdialog.setIcon(android.R.drawable.btn_star_big_on);
+        ratingdialog.setTitle(getResources().getString(R.string.rating_title));
+        ratingdialog.setMessage(getResources().getString(R.string.rating_text));
+
+        View linearlayout = getLayoutInflater().inflate(R.layout.rating_dialog, null);
+        ratingdialog.setView(linearlayout);
+
+        final RatingBar rating = (RatingBar) linearlayout.findViewById(R.id.ratingbar);
+
+        rating.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
+
+            @Override
+            public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
+                Uri uri = Uri.parse("https://play.google.com/store/apps/details?id=com.moggot.findmycarlocation");
+                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                if (!MyStartActivity(intent)) ;
+                return;
+            }
+        });
+
+        ratingdialog.create();
+        ratingdialog.show();
+    }
+
+    private boolean MyStartActivity(Intent aIntent) {
+        try {
+            startActivity(aIntent);
+            return true;
+        } catch (ActivityNotFoundException e) {
+            return false;
+        }
+    }
 
     private void updateWidget(boolean isLocationSavedValue) {
         if (widgetID == AppWidgetManager.INVALID_APPWIDGET_ID)
@@ -249,8 +320,7 @@ public class MainActivity extends Activity {
         SharedPreference.SaveTime(this, cur_day, cur_hour,
                 cur_minute);
 
-//                                 SharedPreference.SaveLocation(this, 55.928,
-//                                 37.520);
+
         NetworkManager nwM = new NetworkManager(this);
         nwM.checkLocationSettings();
         String provider = nwM.locationManager.NETWORK_PROVIDER;
@@ -269,6 +339,11 @@ public class MainActivity extends Activity {
             SharedPreference.SaveLocation(this,
                     location.getLatitude(),
                     location.getLongitude());
+//            SharedPreference.SaveLocation(this, 55.928,
+//                    36.520);
+            int rate_count = SharedPreference.LoadRatingCount(this);
+            ++rate_count;
+            SharedPreference.SaveRatingCount(this, rate_count);
             car_loc_save_success();
 
         }
@@ -336,11 +411,6 @@ public class MainActivity extends Activity {
 
         }
 
-    }
-
-    private void find_your_car() {
-        Toast.makeText(getBaseContext(), R.string.find_your_car,
-                Toast.LENGTH_SHORT).show();
     }
 
     private void save_car_location() {

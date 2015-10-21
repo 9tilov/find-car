@@ -2,7 +2,7 @@
 <resources>
 
     <string name="app_name">Где моя машина?!</string>
-    <string name="version">1.5.2v</string>
+    <string name="version">1.6v</string>
     <string name="action_settings">Настройки</string>
     <string name="save_car_location_success">Координаты машины сохранены</string>
     <string name="no_points">Нет пути</string>
@@ -14,10 +14,17 @@
     <string name="screen_info">Инфо</string>
     <string name="screen_map">Карта</string>
     <string name="parking_time">Время парковки:</string>
-    <string name="programm_description">Если вы часто забываете, где оставили свою машину, \n
-         								то это приложение для вас! Вы можете сохранить координаты \n
-         								своего автомобиля и пойти по делам. После этого \n 
-         								приложение построит путь до машины, покажет расстояние, время в пути \n 
+    <string name="dialog_title_save_car">Припарковаться?</string>
+    <string name="dialog_yes">Да</string>
+    <string name="dialog_no">Нет</string>
+    <string name="dialog_you_not_find_car">Вы еще не нашли свою машину</string>
+    <string name="rating_title">Оцените приложение</string>
+    <string name="rating_text">Пожалуйста, это не займет много времени\n
+                               Спасибо!</string>
+    <string name="programm_description">Если вы часто забываете, где оставили свою машину,
+         								то это приложение для вас! Вы можете сохранить координаты
+         								своего автомобиля и пойти по делам. После этого
+         								приложение построит путь до машины, покажет расстояние, время в пути
          								и время парковки (по прибытию). \n 
          								\n
          								Желаем вам приятного использования. \n         								
