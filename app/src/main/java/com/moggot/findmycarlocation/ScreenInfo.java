@@ -1,5 +1,6 @@
 package com.moggot.findmycarlocation;
 
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -18,11 +19,24 @@ public class ScreenInfo extends TrackedActivity {
         imageViewReview.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                Uri uri = Uri
-                        .parse("https://play.google.com/store/apps/details?id=com.moggot.findmycarlocation");
+
+                Uri uri = Uri.parse("https://play.google.com/store/apps/details?id=com.moggot.findmycarlocation");
                 Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-                startActivity(intent);
+                if (!MyStartActivity(intent));
+                    return;
             }
         });
+    }
+
+    private boolean MyStartActivity(Intent aIntent) {
+        try
+        {
+            startActivity(aIntent);
+            return true;
+        }
+        catch (ActivityNotFoundException e)
+        {
+            return false;
+        }
     }
 }
