@@ -169,19 +169,19 @@ public class MainActivity extends Activity {
 
         final RatingBar rating = (RatingBar) linearlayout.findViewById(R.id.ratingbar);
 
+        ratingdialog.create();
+        final AlertDialog ad = ratingdialog.show();
         rating.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
 
             @Override
             public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
                 Uri uri = Uri.parse("https://play.google.com/store/apps/details?id=com.moggot.findmycarlocation");
                 Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-                if (!MyStartActivity(intent)) ;
-                return;
+                if (!MyStartActivity(intent))
+                    return;
+                ad.dismiss();
             }
         });
-
-        ratingdialog.create();
-        ratingdialog.show();
     }
 
     private boolean MyStartActivity(Intent aIntent) {
