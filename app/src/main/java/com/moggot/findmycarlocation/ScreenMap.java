@@ -17,7 +17,6 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -98,13 +97,6 @@ public class ScreenMap extends TrackedActivity {
 
             }
         });
-
-
-    }
-
-    public void btnFindCarClick(View view) {
-        SharedPreference.SaveIsLocationSavedState(getApplicationContext(), false);
-        finish();
     }
 
     @Override
