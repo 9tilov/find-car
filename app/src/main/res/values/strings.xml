@@ -4,10 +4,10 @@
     <string name="banner_ad_unit_id_map_interstitial">ca-app-pub-1475613019168586/8300532952</string>
 
     <string name="app_name">Find My Car Location</string>
-    <string name="version">1.6v</string>
+    <string name="version">1.6.1v</string>
     <string name="action_settings">Settings</string>
     <string name="save_car_location_success">Car location has been saved</string>
-    <string name="no_location">location cannot be retrieved</string>
+    <string name="no_location">Location cannot be retrieved</string>
     <string name="no_points">No points</string>
     <string name="car_found">Car is here!</string>
     <string name="find_your_car">You should find your car</string>
