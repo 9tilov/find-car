@@ -285,6 +285,7 @@ public class MainActivity extends Activity {
         animation.setAnimationListener(new AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {
+                Log.i(LOG_TAG, "onAnimationStart");
                 isAnimation = true;
             }
 
@@ -341,8 +342,7 @@ public class MainActivity extends Activity {
     }
 
     public void showMap() {
-//        show_map = true;
-        if (isLocationSaved/* && show_map*/) {
+        if (isLocationSaved) {
             isAnimation = false;
             trigger = -1;
             Intent intent = new Intent(MainActivity.this,
