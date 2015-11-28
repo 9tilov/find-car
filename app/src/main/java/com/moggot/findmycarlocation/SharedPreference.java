@@ -21,7 +21,7 @@ public class SharedPreference {
     public static final String s_state_location_save = "state_location";
     public static final String s_widget_installed = "widget_installed";
     public static final String s_rating_count = "rating_count";
-
+    public static final String s_widget_id = "widget_id";
 
     static public void SaveLocation(Context ctx, double lat, double lng) {
         SharedPreferences sharedPreferences = PreferenceManager
@@ -122,4 +122,20 @@ public class SharedPreference {
                 .getDefaultSharedPreferences(ctx);
         return sharedPreferences.getInt(s_rating_count, 0);
     }
+
+    static public void SaveWidgetID(Context ctx, int widgetID) {
+        SharedPreferences sharedPreferences = PreferenceManager
+                .getDefaultSharedPreferences(ctx);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.remove(s_widget_id);
+        editor.putInt(s_widget_id, widgetID);
+        editor.apply();
+    }
+
+    static public int LoadWidgetID(Context ctx) {
+        SharedPreferences sharedPreferences = PreferenceManager
+                .getDefaultSharedPreferences(ctx);
+        return sharedPreferences.getInt(s_widget_id, 0);
+    }
+
 }

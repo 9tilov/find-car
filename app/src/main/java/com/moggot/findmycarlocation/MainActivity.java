@@ -48,7 +48,6 @@ public class MainActivity extends Activity {
     boolean isLocationSaved;
 
     private static boolean isAnimation = false;
-    private static boolean show_map = false;
 
     int widgetID = AppWidgetManager.INVALID_APPWIDGET_ID;
     Intent resultValue;
@@ -102,7 +101,14 @@ public class MainActivity extends Activity {
                             save_car_location();
                             break;
                         }
-                        showMap();
+                        animationDown(0, height / 9);
+                        final Handler handler = new Handler();
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                showMap();
+                            }
+                        }, 500);
                         break;
                     }
                 }
@@ -121,6 +127,7 @@ public class MainActivity extends Activity {
                             break;
                         }
                         saveLocation();
+                        animationUP();
                         break;
                     }
                 }
@@ -141,6 +148,7 @@ public class MainActivity extends Activity {
         ad.setPositiveButton(getResources().getString(R.string.dialog_yes), new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int arg1) {
                 saveLocation();
+                animationUP();
             }
         });
         ad.setNegativeButton(getResources().getString(R.string.dialog_no), new DialogInterface.OnClickListener() {
@@ -213,7 +221,7 @@ public class MainActivity extends Activity {
         }
         // и проверяем его корректность
         if (widgetID != AppWidgetManager.INVALID_APPWIDGET_ID) {
-
+            SharedPreference.SaveWidgetID(this, widgetID);
             resultValue = new Intent();
             resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetID);
 
@@ -228,21 +236,10 @@ public class MainActivity extends Activity {
             }
 
             if (isLocationSaved) {
-                final Handler handler = new Handler();
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        showMap();
-                    }
-                }, 500);
+                showMap();
             } else {
-                final Handler handler = new Handler();
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        saveLocation();
-                    }
-                }, 500);
+                saveLocation();
+                finish();
             }
         }
     }
@@ -293,12 +290,6 @@ public class MainActivity extends Activity {
 
             @Override
             public void onAnimationEnd(Animation animation) {
-                if (isLocationSaved && show_map) {
-                    Intent intent = new Intent(MainActivity.this,
-                            ScreenMap.class);
-                    startActivityForResult(intent, SharedPreference.ACTIVITY_RESULT_CODE.MAP_SCREEN);
-                    isAnimation = false;
-                }
                 isAnimation = false;
             }
 
@@ -320,7 +311,6 @@ public class MainActivity extends Activity {
         SharedPreference.SaveTime(this, cur_day, cur_hour,
                 cur_minute);
 
-
         NetworkManager nwM = new NetworkManager(this);
         nwM.checkLocationSettings();
         String provider = nwM.locationManager.NETWORK_PROVIDER;
@@ -332,7 +322,7 @@ public class MainActivity extends Activity {
             }
         }
         if (location != null) {
-            animationUP();
+
             isLocationSaved = true;
             SharedPreference.SaveIsLocationSavedState(this, isLocationSaved);
             updateWidget(isLocationSaved);
@@ -351,9 +341,14 @@ public class MainActivity extends Activity {
     }
 
     public void showMap() {
-        show_map = true;
-        animationDown(0, height / 9);
-        trigger = -1;
+//        show_map = true;
+        if (isLocationSaved/* && show_map*/) {
+            isAnimation = false;
+            trigger = -1;
+            Intent intent = new Intent(MainActivity.this,
+                    ScreenMap.class);
+            startActivityForResult(intent, SharedPreference.ACTIVITY_RESULT_CODE.MAP_SCREEN);
+        }
     }
 
 
@@ -382,14 +377,15 @@ public class MainActivity extends Activity {
         final Handler handler = new Handler();
         switch (requestCode) {
             case SharedPreference.ACTIVITY_RESULT_CODE.MAP_SCREEN:
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        animationDown(height / 9, 0);
-                    }
-                }, 500);
+                if (widgetID == AppWidgetManager.INVALID_APPWIDGET_ID) {
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            animationDown(height / 9, 0);
+                        }
+                    }, 500);
+                }
                 trigger = 0;
-                show_map = false;
                 updateWidget(isLocationSaved);
                 break;
             case REQUEST_CHECK_SETTINGS:
@@ -400,6 +396,7 @@ public class MainActivity extends Activity {
                             @Override
                             public void run() {
                                 saveLocation();
+                                animationUP();
                             }
                         }, 2000);
                         break;
