@@ -238,8 +238,9 @@ public class MainActivity extends Activity {
             if (isLocationSaved) {
                 showMap();
             } else {
-                saveLocation();
-                finish();
+                int res = saveLocation();
+                if (res == 0)
+                    finish();
             }
         }
     }
@@ -303,7 +304,7 @@ public class MainActivity extends Activity {
         img_animation.startAnimation(animation);
     }
 
-    private void saveLocation() {
+    private int saveLocation() {
 
         Calendar time = Calendar.getInstance();
         int cur_day = time.get(Calendar.DAY_OF_MONTH);
@@ -322,6 +323,7 @@ public class MainActivity extends Activity {
                 location = nwM.locationManager.getLastKnownLocation(provider);
             }
         }
+        int res = 0;
         if (location != null) {
 
             isLocationSaved = true;
@@ -336,9 +338,12 @@ public class MainActivity extends Activity {
             ++rate_count;
             SharedPreference.SaveRatingCount(this, rate_count);
             car_loc_save_success();
-
+            res = 0;
+        } else {
+            res = NetworkManager.LOCATION_NOT_BE_RETRIEVED;
         }
         trigger = 0;
+        return res;
     }
 
     public void showMap() {

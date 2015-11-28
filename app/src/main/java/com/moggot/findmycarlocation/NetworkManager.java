@@ -32,6 +32,7 @@ public class NetworkManager implements
     public static final int REQUEST_CHECK_SETTINGS = 199;
 
     private GoogleApiClient mGoogleApiClient;
+    public static final int LOCATION_NOT_BE_RETRIEVED = 1;
 
     /**
      * Stores parameters for requests to the FusedLocationProviderApi.
