@@ -3,9 +3,11 @@ package com.moggot.findmycarlocation;
 import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.NotificationManager;
+import android.appwidget.AppWidgetManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.location.LocationManager;
 import android.os.Build;
@@ -36,6 +38,12 @@ public class ProximityIntentReceiver extends BroadcastReceiver {
             difference = timeDifference(context, park_time, real_time);
             SharedPreference.clearPref(context);
             SharedPreference.SaveIsLocationSavedState(context, false);
+            int widgetID = SharedPreference.LoadWidgetID(context);
+            if (widgetID == AppWidgetManager.INVALID_APPWIDGET_ID)
+                return;
+            SharedPreferences sp = context.getSharedPreferences(MyWidget.WIDGET_PREF, context.MODE_PRIVATE);
+            sp.edit().putBoolean(SharedPreference.s_state_location_save, false).apply();
+            MyWidget.updateMyWidget(context, AppWidgetManager.getInstance(context), widgetID);
         }
         NotificationManager notificationManager = (NotificationManager) context
                 .getSystemService(Context.NOTIFICATION_SERVICE);
