@@ -41,7 +41,6 @@ public class MainActivity extends Activity {
     ImageView img_animation;
     int height;
 
-    int trigger = 0;
     float y1, y2;
 
     final static String LOG_TAG = "myLogs";
@@ -96,40 +95,24 @@ public class MainActivity extends Activity {
                 y2 = touchevent.getY();
 
                 if (y1 < y2) {
-                    if (trigger == 0) {
-                        if (!isLocationSaved) {
-                            save_car_location();
-                            break;
-                        }
-                        animationDown(0, height / 9);
-                        final Handler handler = new Handler();
-                        handler.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                showMap();
-                            }
-                        }, 500);
+                    if (!isLocationSaved) {
+                        save_car_location();
                         break;
                     }
+                    animationFromMiddleToDown();
+                    break;
                 }
 
                 // if Down to UP sweep event on screen
                 if (y1 > y2) {
-
-                    if (trigger == -1) {
-                        animationDown(height / 9, 0);
-                        trigger = 0;
+                    if (isLocationSaved) {
+                        showSaveDialog();
                         break;
                     }
-                    if (trigger == 0) {
-                        if (isLocationSaved) {
-                            showSaveDialog();
-                            break;
-                        }
-                        saveLocation();
+                    int res = saveLocation();
+                    if (res == 0)
                         animationUP();
-                        break;
-                    }
+                    break;
                 }
             }
             break;
@@ -147,8 +130,9 @@ public class MainActivity extends Activity {
         ad.setMessage(getResources().getString(R.string.dialog_you_not_find_car));
         ad.setPositiveButton(getResources().getString(R.string.dialog_yes), new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int arg1) {
-                saveLocation();
-                animationUP();
+                int res = saveLocation();
+                if (res == 0)
+                    animationUP();
             }
         });
         ad.setNegativeButton(getResources().getString(R.string.dialog_no), new DialogInterface.OnClickListener() {
@@ -236,7 +220,14 @@ public class MainActivity extends Activity {
             }
 
             if (isLocationSaved) {
-                showMap();
+                final Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        animationFromMiddleToDown();
+                    }
+                }, 500);
+
             } else {
                 int res = saveLocation();
                 if (res == 0)
@@ -269,6 +260,7 @@ public class MainActivity extends Activity {
                 animation_repeate.setFillAfter(true);
                 img_animation.startAnimation(animation_repeate);
                 isAnimation = false;
+                saveLocation();
             }
 
             @Override
@@ -280,9 +272,9 @@ public class MainActivity extends Activity {
         img_animation.startAnimation(animation);
     }
 
-    void animationDown(float start, float end) {
+    void animationFromDownToMiddle() {
         TranslateAnimation animation = new TranslateAnimation(0.0f, 0.0f,
-                start, end);
+                height / 9, 0);
         animation.setAnimationListener(new AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {
@@ -293,6 +285,31 @@ public class MainActivity extends Activity {
             @Override
             public void onAnimationEnd(Animation animation) {
                 isAnimation = false;
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+            }
+        });
+        animation.setDuration(500);
+        animation.setFillAfter(true);
+        img_animation.startAnimation(animation);
+    }
+
+    void animationFromMiddleToDown() {
+        TranslateAnimation animation = new TranslateAnimation(0.0f, 0.0f,
+                0, height / 9);
+        animation.setAnimationListener(new AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+                Log.i(LOG_TAG, "onAnimationStart");
+                isAnimation = true;
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                isAnimation = false;
+                showMap();
             }
 
             @Override
@@ -323,7 +340,7 @@ public class MainActivity extends Activity {
                 location = nwM.locationManager.getLastKnownLocation(provider);
             }
         }
-        int res = 0;
+        int res;
         if (location != null) {
 
             isLocationSaved = true;
@@ -342,14 +359,12 @@ public class MainActivity extends Activity {
         } else {
             res = NetworkManager.LOCATION_NOT_BE_RETRIEVED;
         }
-        trigger = 0;
         return res;
     }
 
     public void showMap() {
         if (isLocationSaved) {
             isAnimation = false;
-            trigger = -1;
             Intent intent = new Intent(MainActivity.this,
                     ScreenMap.class);
             startActivityForResult(intent, SharedPreference.ACTIVITY_RESULT_CODE.MAP_SCREEN);
@@ -382,28 +397,25 @@ public class MainActivity extends Activity {
         final Handler handler = new Handler();
         switch (requestCode) {
             case SharedPreference.ACTIVITY_RESULT_CODE.MAP_SCREEN:
-                if (widgetID == AppWidgetManager.INVALID_APPWIDGET_ID) {
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            animationDown(height / 9, 0);
-                        }
-                    }, 500);
-                }
-                trigger = 0;
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        animationFromDownToMiddle();
+                    }
+                }, 500);
                 updateWidget(isLocationSaved);
                 break;
             case REQUEST_CHECK_SETTINGS:
                 switch (resultCode) {
                     case Activity.RESULT_OK:
-                        Log.i(LOG_TAG, "User agreed to make required location settings changes.");
                         handler.postDelayed(new Runnable() {
                             @Override
                             public void run() {
-                                saveLocation();
-                                animationUP();
+                                int res = saveLocation();
+                                if (res == 0)
+                                    animationUP();
                             }
-                        }, 2000);
+                        }, 3000);
                         break;
                     case Activity.RESULT_CANCELED:
                         Log.i(LOG_TAG, "User chose not to make required location settings changes.");
