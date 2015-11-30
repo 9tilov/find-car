@@ -65,7 +65,6 @@ public class MyWidget extends AppWidgetProvider {
         Intent countIntent = new Intent(ctx, MyWidget.class);
         countIntent.setAction(ACTION_CHANGE);
         countIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetID);
-//        PendingIntent pIntent = PendingIntent.getBroadcast(ctx, widgetID, countIntent, 0);
         widgetView.setOnClickPendingIntent(R.id.widget_save_location, pIntent);
 
         // Обновляем виджет

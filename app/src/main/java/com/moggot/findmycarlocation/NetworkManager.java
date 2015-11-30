@@ -225,4 +225,6 @@ public class NetworkManager implements
         // onConnectionFailed.
         Log.i(LOG_TAG, "Connection failed: ConnectionResult.getErrorCode() = " + result.getErrorCode());
     }
+
+
 }

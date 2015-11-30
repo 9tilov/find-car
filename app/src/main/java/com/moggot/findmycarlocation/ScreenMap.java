@@ -478,10 +478,9 @@ public class ScreenMap extends TrackedActivity {
                         handler.postDelayed(new Runnable() {
                             @Override
                             public void run() {
-//                                nwM.startLocationUpdates();
                                 setUpMap();
                             }
-                        }, 2000);
+                        }, 3000);
                         break;
 
                     case Activity.RESULT_CANCELED:
