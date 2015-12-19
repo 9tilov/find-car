@@ -2,7 +2,6 @@
 <resources>
 
     <string name="app_name">Где моя машина?!</string>
-    <string name="version">1.6.2v</string>
     <string name="action_settings">Настройки</string>
     <string name="save_car_location_success">Координаты машины сохранены</string>
     <string name="no_points">Нет пути</string>

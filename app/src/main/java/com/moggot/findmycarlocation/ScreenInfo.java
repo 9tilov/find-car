@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 public class ScreenInfo extends TrackedActivity {
 
@@ -15,6 +16,8 @@ public class ScreenInfo extends TrackedActivity {
         setContentView(R.layout.screen_info);
 
         ImageView imageViewReview = (ImageView) findViewById(R.id.ivReview);
+        TextView tvAppVersion = (TextView) findViewById(R.id.textViewVersion);
+        tvAppVersion.setText(BuildConfig.VERSION_NAME);
 
         imageViewReview.setOnClickListener(new OnClickListener() {
             @Override
