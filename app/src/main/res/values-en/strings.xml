@@ -16,7 +16,7 @@
     <string name="dialog_title_save_car">Save car location?</string>
     <string name="dialog_yes">Yes</string>
     <string name="dialog_no">No</string>
-    <string name="dialog_you_not_find_car">You have\'t found your car yet</string>
+    <string name="dialog_you_not_find_car">You haven\'t found your car yet</string>
     <string name="rating_title">Rate this app</string>
     <string name="rating_text">Please, take a moment to rate Find My Car Location\n
                                Thank you!</string>
