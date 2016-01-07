@@ -149,7 +149,6 @@ public class ScreenMap extends TrackedActivity {
         }
 
         if (mLocation == null) {
-            no_location();
             return;
         }
 
@@ -491,9 +490,6 @@ public class ScreenMap extends TrackedActivity {
 
     }
 
-    private void no_location() {
-        Toast.makeText(this, R.string.no_location, Toast.LENGTH_SHORT).show();
-    }
 }
 
 

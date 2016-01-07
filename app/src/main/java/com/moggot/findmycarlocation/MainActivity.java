@@ -167,10 +167,14 @@ public class MainActivity extends Activity {
 
             @Override
             public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
-                Uri uri = Uri.parse("https://play.google.com/store/apps/details?id=com.moggot.findmycarlocation");
-                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-                if (!MyStartActivity(intent))
-                    return;
+                if (rating >= 4) {
+                    Uri uri = Uri.parse("https://play.google.com/store/apps/details?id=com.moggot.findmycarlocation");
+                    Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                    if (!MyStartActivity(intent))
+                        return;
+                } else {
+                    improve_app();
+                }
                 ad.dismiss();
             }
         });
@@ -450,5 +454,10 @@ public class MainActivity extends Activity {
         Toast.makeText(this, R.string.save_car_location_success,
                 Toast.LENGTH_SHORT).show();
     }
+
+    private void improve_app() {
+        Toast.makeText(this, R.string.improve_app, Toast.LENGTH_SHORT).show();
+    }
+
 
 }
