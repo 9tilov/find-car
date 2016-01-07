@@ -7,7 +7,7 @@
     <string name="no_points">Нет пути</string>
     <string name="car_found">Машина здесь!</string>
     <string name="find_your_car">Сначала вы должны найти свою машину</string>
-    <string name="no_location">Позиция не может быть определена</string>
+    <string name="no_location">Позиция не может быть определена. Попробуйте снова.</string>
     <string name="you_should_save_car_location">Сначала вы должны припарковаться</string>
     <string name="distance">Расстояние: </string>
     <string name="duration">Время в пути: </string>
@@ -19,6 +19,7 @@
     <string name="dialog_no">Нет</string>
     <string name="dialog_you_not_find_car">Вы еще не нашли свою машину</string>
     <string name="rating_title">Оцените приложение</string>
+    <string name="improve_app">Спасибо! Мы будем стараться для вас!</string>
     <string name="rating_text">Пожалуйста, это не займет много времени\n
                                Спасибо!</string>
     <string name="programm_description">Если вы часто забываете, где оставили свою машину,
