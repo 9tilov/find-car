@@ -3,10 +3,12 @@ package com.moggot.findmycarlocation;
 import android.app.Activity;
 import android.content.Context;
 import android.content.IntentSender;
+import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -63,10 +65,29 @@ public class NetworkManager implements
     }
 
     public Location getLocation() {
-        return mCurrentLocation;
+        Criteria criteria = new Criteria();
+        criteria.setAccuracy(Criteria.ACCURACY_FINE);
+        Location location = null;
+        Log.i(LOG_TAG, "provider = " + locationManager.getBestProvider(criteria, true));
+        if (locationManager.isProviderEnabled(locationManager.GPS_PROVIDER)) {
+            location = locationManager.getLastKnownLocation(locationManager.GPS_PROVIDER);
+            Log.i(LOG_TAG, "1");
+        }
+        if (locationManager.isProviderEnabled(locationManager.NETWORK_PROVIDER)) {
+            location = locationManager.getLastKnownLocation(locationManager.NETWORK_PROVIDER);
+            Log.i(LOG_TAG, "2");
+        }
+        if (location == null)
+            no_location();
+        return location;
+    }
+
+    private void no_location() {
+        Toast.makeText(ctx, R.string.no_location, Toast.LENGTH_SHORT).show();
     }
 
     public void onLocationChanged(Location location) {
+        Log.i(LOG_TAG, "mCurrentLocation = " + mCurrentLocation);
         mCurrentLocation = location;
     }
 
@@ -111,7 +132,7 @@ public class NetworkManager implements
                 UPDATE_INTERVAL_IN_MILLISECONDS / 2;
         mLocationRequest.setFastestInterval(FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS);
 
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_LOW_POWER);
     }
 
     /**

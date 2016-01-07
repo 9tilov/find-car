@@ -140,12 +140,10 @@ public class ScreenMap extends TrackedActivity {
 
         LatLng arrivalPoint = SharedPreference.LoadLocation(this);
         NetworkManager nwM = new NetworkManager(this);
-        nwM.checkLocationSettings();
 
-        String provider = nwM.locationManager.NETWORK_PROVIDER;
         Location mLocation = nwM.getLocation();
         if (mLocation == null) {
-            mLocation = nwM.locationManager.getLastKnownLocation(provider);
+            nwM.checkLocationSettings();
         }
 
         if (mLocation == null) {

@@ -1,6 +1,5 @@
 package com.moggot.findmycarlocation;
 
-import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.appwidget.AppWidgetManager;
@@ -9,12 +8,10 @@ import android.content.ComponentName;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.app.ActivityCompat;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
@@ -334,35 +331,30 @@ public class MainActivity extends Activity {
         SharedPreference.SaveTime(this, cur_day, cur_hour,
                 cur_minute);
 
+        int res;
         NetworkManager nwM = new NetworkManager(this);
-        nwM.checkLocationSettings();
-        String provider = nwM.locationManager.NETWORK_PROVIDER;
         Location location = nwM.getLocation();
         if (location == null) {
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
-                    && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                location = nwM.locationManager.getLastKnownLocation(provider);
-            }
+            nwM.checkLocationSettings();
+            res = NetworkManager.LOCATION_NOT_BE_RETRIEVED;
+            return res;
         }
-        int res;
-        if (location != null) {
 
-            isLocationSaved = true;
-            SharedPreference.SaveIsLocationSavedState(this, isLocationSaved);
-            updateWidget(isLocationSaved);
-            SharedPreference.SaveLocation(this,
-                    location.getLatitude(),
-                    location.getLongitude());
+        Log.i(LOG_TAG, "location = " + location);
+
+        isLocationSaved = true;
+        SharedPreference.SaveIsLocationSavedState(this, isLocationSaved);
+        updateWidget(isLocationSaved);
+        SharedPreference.SaveLocation(this,
+                location.getLatitude(),
+                location.getLongitude());
 //            SharedPreference.SaveLocation(this, 55.928,
 //                    36.520);
-            int rate_count = SharedPreference.LoadRatingCount(this);
-            ++rate_count;
-            SharedPreference.SaveRatingCount(this, rate_count);
-            car_loc_save_success();
-            res = 0;
-        } else {
-            res = NetworkManager.LOCATION_NOT_BE_RETRIEVED;
-        }
+        int rate_count = SharedPreference.LoadRatingCount(this);
+        ++rate_count;
+        SharedPreference.SaveRatingCount(this, rate_count);
+        car_loc_save_success();
+        res = 0;
         return res;
     }
 
