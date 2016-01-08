@@ -9,6 +9,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -45,6 +47,7 @@ public class MainActivity extends Activity {
 
     private static boolean isAnimation = false;
 
+    Location mCurrentLocation;
     int widgetID = AppWidgetManager.INVALID_APPWIDGET_ID;
     Intent resultValue;
     boolean isWidgetInstalled = false;
@@ -55,6 +58,7 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
         installWidget();
         setContentView(R.layout.activity_main);
         img_animation = (ImageView) findViewById(R.id.ivTrigger);
@@ -332,30 +336,113 @@ public class MainActivity extends Activity {
                 cur_minute);
 
         int res;
-        NetworkManager nwM = new NetworkManager(this);
-        Location location = nwM.getLocation();
-        if (location == null) {
-            nwM.checkLocationSettings();
+        getLocation();
+        if (mCurrentLocation == null) {
             res = NetworkManager.LOCATION_NOT_BE_RETRIEVED;
             return res;
         }
 
-        Log.i(LOG_TAG, "location = " + location);
+        Log.i(LOG_TAG, "location = " + mCurrentLocation);
 
         isLocationSaved = true;
         SharedPreference.SaveIsLocationSavedState(this, isLocationSaved);
         updateWidget(isLocationSaved);
         SharedPreference.SaveLocation(this,
-                location.getLatitude(),
-                location.getLongitude());
-//            SharedPreference.SaveLocation(this, 55.928,
-//                    36.520);
+                mCurrentLocation.getLatitude(),
+                mCurrentLocation.getLongitude());
+//            SharedPreference.SaveLocation(this, 55.910834, 37.500905);
         int rate_count = SharedPreference.LoadRatingCount(this);
         ++rate_count;
         SharedPreference.SaveRatingCount(this, rate_count);
         car_loc_save_success();
         res = 0;
         return res;
+    }
+
+    LocationListener locationListener = new LocationListener() {
+        @Override
+        public void onLocationChanged(Location location) {
+            Log.i(LOG_TAG, "mCurrentLocation1 = " + mCurrentLocation);
+            mCurrentLocation = location;
+        }
+
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras) {
+
+        }
+
+        @Override
+        public void onProviderEnabled(String provider) {
+
+        }
+
+        @Override
+        public void onProviderDisabled(String provider) {
+
+        }
+    };
+
+    public void getLocation() {
+        // The minimum distance to change Updates in meters
+        long MIN_DISTANCE_CHANGE_FOR_UPDATES = 10; // 10 meters
+
+        // The minimum time between updates in milliseconds
+        long MIN_TIME_BW_UPDATES = 1000 * 60 * 1; // 1 minute
+        NetworkManager nwM = new NetworkManager(this);
+        nwM.checkLocationSettings();
+
+        try {
+            LocationManager locationManager = (LocationManager) this
+                    .getSystemService(this.LOCATION_SERVICE);
+
+
+            // getting GPS status
+            boolean isGPSEnabled = locationManager
+                    .isProviderEnabled(LocationManager.GPS_PROVIDER);
+
+            // getting network status
+            boolean isNetworkEnabled = locationManager
+                    .isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+
+            if (!isGPSEnabled && !isNetworkEnabled) {
+                // no network provider is enabled
+            } else {
+//                this.canGetLocation = true;
+                // First get location from Network Provider
+                if (isNetworkEnabled) {
+
+                    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, MIN_TIME_BW_UPDATES,
+                            MIN_DISTANCE_CHANGE_FOR_UPDATES, locationListener);
+                    Log.d("Network", "Network");
+                    if (locationManager != null) {
+                        mCurrentLocation = locationManager
+                                .getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                    }
+                }
+                // if GPS Enabled get lat/long using GPS Services
+                if (isGPSEnabled) {
+                    if (mCurrentLocation == null) {
+                        locationManager.requestLocationUpdates(
+                                LocationManager.GPS_PROVIDER,
+                                MIN_TIME_BW_UPDATES,
+                                MIN_DISTANCE_CHANGE_FOR_UPDATES, locationListener);
+                        Log.d("GPS Enabled", "GPS Enabled");
+                        if (locationManager != null) {
+                            mCurrentLocation = locationManager
+                                    .getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                        }
+                    }
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        if (mCurrentLocation == null) {
+            no_location();
+            return;
+        }
     }
 
     public void showMap() {
@@ -442,6 +529,7 @@ public class MainActivity extends Activity {
         setResult(RESULT_OK, resultValue);
     }
 
+
     private void car_loc_save_success() {
         Toast.makeText(this, R.string.save_car_location_success,
                 Toast.LENGTH_SHORT).show();
@@ -451,5 +539,8 @@ public class MainActivity extends Activity {
         Toast.makeText(this, R.string.improve_app, Toast.LENGTH_SHORT).show();
     }
 
+    private void no_location() {
+        Toast.makeText(this, R.string.no_location, Toast.LENGTH_SHORT).show();
+    }
 
 }

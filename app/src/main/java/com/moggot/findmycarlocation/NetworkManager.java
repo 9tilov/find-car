@@ -3,12 +3,10 @@ package com.moggot.findmycarlocation;
 import android.app.Activity;
 import android.content.Context;
 import android.content.IntentSender;
-import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -26,14 +24,13 @@ import com.google.android.gms.location.LocationSettingsStatusCodes;
 public class NetworkManager implements
         ConnectionCallbacks,
         OnConnectionFailedListener,
-        com.google.android.gms.location.LocationListener,
         ResultCallback<LocationSettingsResult> {
 
     private Context ctx;
 
     public static final int REQUEST_CHECK_SETTINGS = 199;
 
-    private GoogleApiClient mGoogleApiClient;
+    public GoogleApiClient mGoogleApiClient;
     public static final int LOCATION_NOT_BE_RETRIEVED = 1;
 
     /**
@@ -62,33 +59,6 @@ public class NetworkManager implements
         createLocationRequest();
         buildLocationSettingsRequest();
 
-    }
-
-    public Location getLocation() {
-        Criteria criteria = new Criteria();
-        criteria.setAccuracy(Criteria.ACCURACY_FINE);
-        Location location = null;
-        Log.i(LOG_TAG, "provider = " + locationManager.getBestProvider(criteria, true));
-        if (locationManager.isProviderEnabled(locationManager.GPS_PROVIDER)) {
-            location = locationManager.getLastKnownLocation(locationManager.GPS_PROVIDER);
-            Log.i(LOG_TAG, "1");
-        }
-        if (locationManager.isProviderEnabled(locationManager.NETWORK_PROVIDER)) {
-            location = locationManager.getLastKnownLocation(locationManager.NETWORK_PROVIDER);
-            Log.i(LOG_TAG, "2");
-        }
-        if (location == null)
-            no_location();
-        return location;
-    }
-
-    private void no_location() {
-        Toast.makeText(ctx, R.string.no_location, Toast.LENGTH_SHORT).show();
-    }
-
-    public void onLocationChanged(Location location) {
-        Log.i(LOG_TAG, "mCurrentLocation = " + mCurrentLocation);
-        mCurrentLocation = location;
     }
 
     /**
@@ -132,7 +102,7 @@ public class NetworkManager implements
                 UPDATE_INTERVAL_IN_MILLISECONDS / 2;
         mLocationRequest.setFastestInterval(FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS);
 
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_LOW_POWER);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
     }
 
     /**
@@ -176,7 +146,6 @@ public class NetworkManager implements
         switch (status.getStatusCode()) {
             case LocationSettingsStatusCodes.SUCCESS:
                 Log.i(LOG_TAG, "All location settings are satisfied.");
-                startLocationUpdates();
                 break;
             case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
                 Log.i(LOG_TAG, "Location settings are not satisfied. Show the user a dialog to" +
@@ -195,22 +164,6 @@ public class NetworkManager implements
                         "not created.");
                 break;
         }
-    }
-
-    /**
-     * Requests location updates from the FusedLocationApi.
-     */
-    public void startLocationUpdates() {
-        LocationServices.FusedLocationApi.requestLocationUpdates(
-                mGoogleApiClient,
-                mLocationRequest,
-                this
-        ).setResultCallback(new ResultCallback<Status>() {
-            @Override
-            public void onResult(Status status) {
-            }
-        });
-
     }
 
     /**

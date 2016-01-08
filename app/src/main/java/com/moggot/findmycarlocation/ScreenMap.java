@@ -9,6 +9,9 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -17,6 +20,7 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -54,6 +58,7 @@ public class ScreenMap extends TrackedActivity {
     private BroadcastReceiver receiver;
     final static String LOG_TAG = "myLogs";
     TextView tvDistance, tvDuration;
+    Location mCurrentLocation;
 
     public enum locationType {
         USER_LOCATION, CAR_LOCATION
@@ -141,17 +146,13 @@ public class ScreenMap extends TrackedActivity {
         LatLng arrivalPoint = SharedPreference.LoadLocation(this);
         NetworkManager nwM = new NetworkManager(this);
 
-        Location mLocation = nwM.getLocation();
-        if (mLocation == null) {
-            nwM.checkLocationSettings();
-        }
-
-        if (mLocation == null) {
+        getLocation();
+        if (mCurrentLocation == null) {
             return;
         }
 
-        LatLng departurePoint = new LatLng(mLocation.getLatitude(),
-                mLocation.getLongitude());
+        LatLng departurePoint = new LatLng(mCurrentLocation.getLatitude(),
+                mCurrentLocation.getLongitude());
         markerPoints.add(departurePoint);
         MarkerOptions departureOptions = new MarkerOptions();
         departureOptions.position(departurePoint);
@@ -210,6 +211,95 @@ public class ScreenMap extends TrackedActivity {
             registerReceiver(receiver, filter);
         }
 
+    }
+
+    LocationListener locationListener = new LocationListener() {
+        @Override
+        public void onLocationChanged(Location location) {
+            Log.i(LOG_TAG, "mCurrentLocation1 = " + mCurrentLocation);
+            mCurrentLocation = location;
+        }
+
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras) {
+
+        }
+
+        @Override
+        public void onProviderEnabled(String provider) {
+
+        }
+
+        @Override
+        public void onProviderDisabled(String provider) {
+
+        }
+    };
+
+    public void getLocation() {
+        // The minimum distance to change Updates in meters
+        long MIN_DISTANCE_CHANGE_FOR_UPDATES = 10; // 10 meters
+
+        // The minimum time between updates in milliseconds
+        long MIN_TIME_BW_UPDATES = 1000 * 60 * 1; // 1 minute
+        NetworkManager nwM = new NetworkManager(this);
+        nwM.checkLocationSettings();
+
+        try {
+            LocationManager locationManager = (LocationManager) this
+                    .getSystemService(this.LOCATION_SERVICE);
+
+
+            // getting GPS status
+            boolean isGPSEnabled = locationManager
+                    .isProviderEnabled(LocationManager.GPS_PROVIDER);
+
+            // getting network status
+            boolean isNetworkEnabled = locationManager
+                    .isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+
+            if (!isGPSEnabled && !isNetworkEnabled) {
+                // no network provider is enabled
+            } else {
+//                this.canGetLocation = true;
+                // First get location from Network Provider
+                if (isNetworkEnabled) {
+
+                    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, MIN_TIME_BW_UPDATES,
+                            MIN_DISTANCE_CHANGE_FOR_UPDATES, locationListener);
+                    Log.d("Network", "Network");
+                    if (locationManager != null) {
+                        mCurrentLocation = locationManager
+                                .getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                    }
+                }
+                // if GPS Enabled get lat/long using GPS Services
+                if (isGPSEnabled) {
+                    if (mCurrentLocation == null) {
+                        locationManager.requestLocationUpdates(
+                                LocationManager.GPS_PROVIDER,
+                                MIN_TIME_BW_UPDATES,
+                                MIN_DISTANCE_CHANGE_FOR_UPDATES, locationListener);
+                        Log.d("GPS Enabled", "GPS Enabled");
+                        if (locationManager != null) {
+                            mCurrentLocation = locationManager
+                                    .getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                        }
+                    }
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        if (mCurrentLocation == null) {
+            no_location();
+        }
+    }
+
+    private void no_location() {
+        Toast.makeText(this, R.string.no_location, Toast.LENGTH_SHORT).show();
     }
 
     private String getDirectionsUrl(LatLng origin, LatLng dest) {
