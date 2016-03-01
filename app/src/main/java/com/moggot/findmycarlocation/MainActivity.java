@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.appwidget.AppWidgetManager;
 import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -62,7 +63,6 @@ public class MainActivity extends Activity {
         installWidget();
         setContentView(R.layout.activity_main);
         img_animation = (ImageView) findViewById(R.id.ivTrigger);
-
         AdView mAdView = (AdView) findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);
@@ -270,7 +270,6 @@ public class MainActivity extends Activity {
                 animation_repeate.setFillAfter(true);
                 img_animation.startAnimation(animation_repeate);
                 isAnimation = false;
-                saveLocation();
             }
 
             @Override
@@ -343,6 +342,8 @@ public class MainActivity extends Activity {
         int res;
         getLocation();
         if (mCurrentLocation == null) {
+            if (isGPSenable())
+                no_location();
             res = NetworkManager.LOCATION_NOT_BE_RETRIEVED;
             return res;
         }
@@ -387,6 +388,12 @@ public class MainActivity extends Activity {
         }
     };
 
+    private boolean isGPSenable() {
+        LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+        boolean isConnected = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        return isConnected;
+    }
+
     public void getLocation() {
         // The minimum distance to change Updates in meters
         long MIN_DISTANCE_CHANGE_FOR_UPDATES = 10; // 10 meters
@@ -400,7 +407,6 @@ public class MainActivity extends Activity {
             LocationManager locationManager = (LocationManager) this
                     .getSystemService(this.LOCATION_SERVICE);
 
-
             // getting GPS status
             boolean isGPSEnabled = locationManager
                     .isProviderEnabled(LocationManager.GPS_PROVIDER);
@@ -412,16 +418,16 @@ public class MainActivity extends Activity {
             if (!isGPSEnabled && !isNetworkEnabled) {
                 // no network provider is enabled
             } else {
-//                this.canGetLocation = true;
                 // First get location from Network Provider
                 if (isNetworkEnabled) {
-
-                    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, MIN_TIME_BW_UPDATES,
-                            MIN_DISTANCE_CHANGE_FOR_UPDATES, locationListener);
-                    Log.d("Network", "Network");
-                    if (locationManager != null) {
-                        mCurrentLocation = locationManager
-                                .getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                    if (mCurrentLocation == null) {
+                        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, MIN_TIME_BW_UPDATES,
+                                MIN_DISTANCE_CHANGE_FOR_UPDATES, locationListener);
+                        Log.d(LOG_TAG, "Network");
+                        if (locationManager != null) {
+                            mCurrentLocation = locationManager
+                                    .getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                        }
                     }
                 }
                 // if GPS Enabled get lat/long using GPS Services
@@ -431,7 +437,7 @@ public class MainActivity extends Activity {
                                 LocationManager.GPS_PROVIDER,
                                 MIN_TIME_BW_UPDATES,
                                 MIN_DISTANCE_CHANGE_FOR_UPDATES, locationListener);
-                        Log.d("GPS Enabled", "GPS Enabled");
+                        Log.d(LOG_TAG, "GPS Enabled");
                         if (locationManager != null) {
                             mCurrentLocation = locationManager
                                     .getLastKnownLocation(LocationManager.GPS_PROVIDER);
@@ -445,7 +451,6 @@ public class MainActivity extends Activity {
         }
 
         if (mCurrentLocation == null) {
-            no_location();
             return;
         }
     }

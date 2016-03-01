@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
@@ -11,6 +12,8 @@ import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -71,12 +74,16 @@ public class ScreenMap extends TrackedActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.screen_map);
-
+        if (!isInternetEnable()) {
+            Log.i(LOG_TAG, "no_internet");
+            no_internet();
+        }
         mMap = null;
         setUpMapIfNeeded();
 
         tvDistance = (TextView) findViewById(R.id.tv_distance_time);
         tvDuration = (TextView) findViewById(R.id.tv_duration_time);
+
 
         AdView mAdView = (AdView) findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
@@ -139,6 +146,7 @@ public class ScreenMap extends TrackedActivity {
     }
 
     private void setUpMap() {
+
         final ArrayList<LatLng> markerPoints = new ArrayList<>();
         mMap.setTrafficEnabled(true);
         mMap.setMyLocationEnabled(true);
@@ -147,7 +155,11 @@ public class ScreenMap extends TrackedActivity {
         NetworkManager nwM = new NetworkManager(this);
 
         getLocation();
+
+
         if (mCurrentLocation == null) {
+            if (isGPSenable())
+                no_location();
             return;
         }
 
@@ -261,7 +273,6 @@ public class ScreenMap extends TrackedActivity {
             if (!isGPSEnabled && !isNetworkEnabled) {
                 // no network provider is enabled
             } else {
-//                this.canGetLocation = true;
                 // First get location from Network Provider
                 if (isNetworkEnabled) {
 
@@ -294,12 +305,8 @@ public class ScreenMap extends TrackedActivity {
         }
 
         if (mCurrentLocation == null) {
-            no_location();
+            return;
         }
-    }
-
-    private void no_location() {
-        Toast.makeText(this, R.string.no_location, Toast.LENGTH_SHORT).show();
     }
 
     private String getDirectionsUrl(LatLng origin, LatLng dest) {
@@ -488,6 +495,22 @@ public class ScreenMap extends TrackedActivity {
         }
     }
 
+    private boolean isGPSenable() {
+        LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+        if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private boolean isInternetEnable() {
+        ConnectivityManager cm =
+                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        return netInfo != null && netInfo.isConnectedOrConnecting();
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -576,6 +599,14 @@ public class ScreenMap extends TrackedActivity {
                 }
         }
 
+    }
+
+    private void no_location() {
+        Toast.makeText(this, R.string.no_location, Toast.LENGTH_SHORT).show();
+    }
+
+    private void no_internet() {
+        Toast.makeText(this, R.string.no_internet, Toast.LENGTH_SHORT).show();
     }
 
 }
