@@ -64,6 +64,8 @@
                 android:resource="@xml/widget_metadata" />
         </receiver>
 
+        <activity android:name=".OnboardingActivity"/>
+
         <activity
             android:name=".ScreenInfo"
             android:label="@string/screen_info"

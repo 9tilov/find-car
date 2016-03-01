@@ -22,6 +22,7 @@ public class SharedPreference {
     public static final String s_widget_installed = "widget_installed";
     public static final String s_rating_count = "rating_count";
     public static final String s_widget_id = "widget_id";
+    public static final String s_tutorial = "tutorial";
 
     static public void SaveLocation(Context ctx, double lat, double lng) {
         SharedPreferences sharedPreferences = PreferenceManager
@@ -138,4 +139,19 @@ public class SharedPreference {
         return sharedPreferences.getInt(s_widget_id, 0);
     }
 
+    static public void SaveTutorialStatus(Context ctx, boolean status) {
+        SharedPreferences sharedPreferences = PreferenceManager
+                .getDefaultSharedPreferences(ctx);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.remove(s_tutorial);
+        editor.putBoolean(s_tutorial, status);
+        editor.apply();
+    }
+
+    static public boolean LoadTutorialStatus(Context ctx) {
+        SharedPreferences sharedPreferences = PreferenceManager
+                .getDefaultSharedPreferences(ctx);
+
+        return sharedPreferences.getBoolean(s_tutorial, true);
+    }
 }

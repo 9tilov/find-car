@@ -81,6 +81,11 @@ public class MainActivity extends Activity {
             SharedPreference.SaveRatingCount(this, 0);
             showRatingDialog();
         }
+
+        if (SharedPreference.LoadTutorialStatus(this)) {
+            Intent onboarding = new Intent(this, OnboardingActivity.class);
+            startActivity(onboarding);
+        }
     }
 
     public boolean onTouchEvent(MotionEvent touchevent) {
