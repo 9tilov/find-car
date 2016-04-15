@@ -263,6 +263,11 @@ public class ScreenMap extends TrackedActivity {
             boolean isGPSEnabled = locationManager
                     .isProviderEnabled(LocationManager.GPS_PROVIDER);
 
+            if (!isGPSEnabled) {
+                nwM.checkLocationSettings();
+                return;
+            }
+
             // getting network status
             boolean isNetworkEnabled = locationManager
                     .isProviderEnabled(LocationManager.NETWORK_PROVIDER);

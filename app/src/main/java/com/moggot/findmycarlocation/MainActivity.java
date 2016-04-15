@@ -52,6 +52,7 @@ public class MainActivity extends Activity {
     int widgetID = AppWidgetManager.INVALID_APPWIDGET_ID;
     Intent resultValue;
     boolean isWidgetInstalled = false;
+    NetworkManager nwM;
 
 
     @Override
@@ -60,6 +61,7 @@ public class MainActivity extends Activity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
+        nwM = new NetworkManager(this);
         installWidget();
         setContentView(R.layout.activity_main);
         img_animation = (ImageView) findViewById(R.id.ivTrigger);
@@ -395,6 +397,8 @@ public class MainActivity extends Activity {
     }
 
     public void getLocation() {
+
+        Log.d(LOG_TAG, "getLocation");
         // The minimum distance to change Updates in meters
         long MIN_DISTANCE_CHANGE_FOR_UPDATES = 10; // 10 meters
 
@@ -409,6 +413,10 @@ public class MainActivity extends Activity {
             // getting GPS status
             boolean isGPSEnabled = locationManager
                     .isProviderEnabled(LocationManager.GPS_PROVIDER);
+            if (!isGPSEnabled) {
+                nwM.checkLocationSettings();
+                return;
+            }
 
             // getting network status
             boolean isNetworkEnabled = locationManager
@@ -450,7 +458,6 @@ public class MainActivity extends Activity {
         }
 
         if (mCurrentLocation == null) {
-            NetworkManager nwM = new NetworkManager(this);
             nwM.checkLocationSettings();
             return;
         }
