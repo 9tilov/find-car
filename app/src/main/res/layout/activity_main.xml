@@ -9,19 +9,6 @@
     <RelativeLayout
         android:layout_width="fill_parent"
         android:layout_height="0dip"
-        android:layout_weight="1">
-
-        <com.google.android.gms.ads.AdView xmlns:ads="http://schemas.android.com/apk/res-auto"
-            android:id="@+id/adView"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            ads:adSize="SMART_BANNER"
-            ads:adUnitId="@string/banner_ad_unit_id_main"/>
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:layout_width="fill_parent"
-        android:layout_height="0dip"
         android:layout_weight="9"
         android:background="@mipmap/bg_last1">
 
@@ -31,5 +18,19 @@
             android:layout_height="fill_parent"
             android:src="@mipmap/geer6" />
     </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="0dip"
+        android:layout_weight="1">
+
+        <com.google.android.gms.ads.AdView xmlns:ads="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/adView"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            ads:adSize="SMART_BANNER"
+            ads:adUnitId="@string/banner_ad_unit_id_main" />
+    </RelativeLayout>
+
 
 </LinearLayout>
