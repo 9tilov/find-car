@@ -62,6 +62,7 @@ public class ScreenMap extends TrackedActivity {
     final static String LOG_TAG = "myLogs";
     TextView tvDistance, tvDuration;
     Location mCurrentLocation;
+    NetworkManager nwM;
 
     public enum locationType {
         USER_LOCATION, CAR_LOCATION
@@ -152,10 +153,9 @@ public class ScreenMap extends TrackedActivity {
         mMap.setMyLocationEnabled(true);
 
         LatLng arrivalPoint = SharedPreference.LoadLocation(this);
-        NetworkManager nwM = new NetworkManager(this);
+        nwM = new NetworkManager(this);
 
         getLocation();
-
 
         if (mCurrentLocation == null) {
             if (isGPSenable())
@@ -254,8 +254,7 @@ public class ScreenMap extends TrackedActivity {
 
         // The minimum time between updates in milliseconds
         long MIN_TIME_BW_UPDATES = 1000 * 60 * 1; // 1 minute
-        NetworkManager nwM = new NetworkManager(this);
-        nwM.checkLocationSettings();
+
 
         try {
             LocationManager locationManager = (LocationManager) this
@@ -304,7 +303,9 @@ public class ScreenMap extends TrackedActivity {
             e.printStackTrace();
         }
 
+        Log.i(LOG_TAG, "mCurrentLocation111 = " + mCurrentLocation);
         if (mCurrentLocation == null) {
+            nwM.checkLocationSettings();
             return;
         }
     }

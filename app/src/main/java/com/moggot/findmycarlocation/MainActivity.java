@@ -400,8 +400,7 @@ public class MainActivity extends Activity {
 
         // The minimum time between updates in milliseconds
         long MIN_TIME_BW_UPDATES = 1000 * 60 * 1; // 1 minute
-        NetworkManager nwM = new NetworkManager(this);
-        nwM.checkLocationSettings();
+
 
         try {
             LocationManager locationManager = (LocationManager) this
@@ -451,6 +450,8 @@ public class MainActivity extends Activity {
         }
 
         if (mCurrentLocation == null) {
+            NetworkManager nwM = new NetworkManager(this);
+            nwM.checkLocationSettings();
             return;
         }
     }
