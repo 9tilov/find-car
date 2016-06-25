@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">Где моя машина?!</string>
+    <string name="app_name">Find My Car Location</string>
     <string name="action_settings">Настройки</string>
     <string name="save_car_location_success">Координаты машины сохранены</string>
     <string name="no_points">Нет пути</string>
     <string name="car_found">Машина здесь!</string>
     <string name="find_your_car">Сначала вы должны найти свою машину</string>
-    <string name="no_location">GPS включается...Подождите и попробуйте снова</string>
+    <string name="no_location">GPS включается&#8230;Подождите и попробуйте снова</string>
     <string name="no_internet">Нет подключения к Интернету</string>
     <string name="you_should_save_car_location">Сначала вы должны припарковаться</string>
     <string name="distance">Расстояние: </string>
@@ -23,15 +23,5 @@
     <string name="improve_app">Спасибо! Мы будем стараться для вас!</string>
     <string name="rating_text">Пожалуйста, это не займет много времени\n
                                Спасибо!</string>
-    <string name="programm_description">Если вы часто забываете, где оставили свою машину,
-         								то это приложение для вас! Вы можете сохранить координаты
-         								своего автомобиля и пойти по делам. После этого
-         								приложение построит путь до машины, покажет расстояние, время в пути
-         								и время парковки (по прибытию). \n 
-         								\n
-         								Желаем вам приятного использования. \n         								
-         								\n
-        		 						© 2015 by moggot.\n
-										Все права защищены.\n</string>
 
 </resources>

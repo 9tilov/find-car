@@ -1,4 +1,5 @@
 <resources>
+    <string name="app_id" translatable="false">ca-app-pub-1475613019168586~2120488559</string>
     <string name="banner_ad_unit_id_main" translatable="false">ca-app-pub-1475613019168586/6823799751</string>
     <string name="banner_ad_unit_id_map" translatable="false">ca-app-pub-1475613019168586/5207465754</string>
     <string name="banner_ad_unit_id_map_interstitial" translatable="false">ca-app-pub-1475613019168586/8300532952</string>
@@ -6,7 +7,7 @@
     <string name="app_name">Find My Car Location</string>
     <string name="action_settings">Settings</string>
     <string name="save_car_location_success">Car location has been saved</string>
-    <string name="no_location">GPS is turning on...Wait...And try again</string>
+    <string name="no_location">GPS is turning on&#8230;Wait&#8230;And try again</string>
     <string name="no_internet">No Internet connection</string>
     <string name="no_points">No points</string>
     <string name="car_found">Car is here!</string>
@@ -25,14 +26,4 @@
     <string name="improve_app">Thank you! We will try to improve this app!</string>
     <string name="rating_text">Please, take a moment to rate Find My Car Location\n
                                Thank you!</string>
-    <string name="programm_description">If you often forget where you left your car
-         								this app is for you! You may save your
-         								car location and go for a walk. After this
-         								application will show a path to your car,
-         								distance, duration and parking time on arrival.\n
-         								\n
-         								We wish you a pleasant use. \n
-         								\n
-        		 						© 2015 by moggot.\n
-										All rights reserved.\n</string>
 </resources>
