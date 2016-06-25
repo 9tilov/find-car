@@ -483,18 +483,6 @@ public class MainActivity extends Activity {
         return true;
     }
 
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == R.id.info) {
-            Intent intent = new Intent(MainActivity.this, ScreenInfo.class);
-            startActivityForResult(intent, SharedPreference.ACTIVITY_RESULT_CODE.INFO_SCREEN);
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         isLocationSaved = SharedPreference.LoadIsLocationSavedState(this);
