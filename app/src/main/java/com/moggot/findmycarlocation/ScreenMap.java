@@ -52,37 +52,29 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class ScreenMap extends TrackedActivity {
+public class ScreenMap extends TrackedActivity implements OnMapReadyCallback {
 
-    private GoogleMap mMap; // Might be null if Google Play services APK is not available.
-
+    GoogleMap mMap = null;
     private BroadcastReceiver receiver;
     final static String LOG_TAG = "myLogs";
-    TextView tvDistance, tvDuration;
     Location mCurrentLocation;
     NetworkManager nwM;
 
-    public enum locationType {
-        USER_LOCATION, CAR_LOCATION
-    }
-
     final String PROX_ALERT_INTENT = "com.example.findmycar";
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.screen_map);
+
+        MapFragment mapFragment = (MapFragment) getFragmentManager()
+                .findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
+
         if (!isInternetEnable()) {
             Log.i(LOG_TAG, "no_internet");
             no_internet();
         }
-        mMap = null;
-        setUpMapIfNeeded();
-
-        tvDistance = (TextView) findViewById(R.id.tv_distance_time);
-        tvDuration = (TextView) findViewById(R.id.tv_duration_time);
-
 
         AdView mAdView = (AdView) findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
@@ -111,17 +103,14 @@ public class ScreenMap extends TrackedActivity {
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        setUpMapIfNeeded();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
+    public void onMapReady(GoogleMap map) {
+        mMap = map;
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)
             mMap.setMyLocationEnabled(true);
+        mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+        Log.i(LOG_TAG, "3 = " + mMap);
+        setUpMap();
     }
 
     @Override
@@ -133,26 +122,11 @@ public class ScreenMap extends TrackedActivity {
         }
     }
 
-    private void setUpMapIfNeeded() {
-        // Do a null check to confirm that we have not already instantiated the map.
-        if (mMap == null) {
-            // Try to obtain the map from the SupportMapFragment.
-            SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                    .findFragmentById(R.id.map);
-            mMap = mapFragment.getMap();
-            // Check if we were successful in obtaining the map.
-            if (mMap != null) {
-                setUpMap();
-            }
-        }
-    }
-
     private void setUpMap() {
         final ArrayList<LatLng> markerPoints = new ArrayList<>();
-        mMap.setTrafficEnabled(true);
-        mMap.setMyLocationEnabled(true);
 
         LatLng arrivalPoint = SharedPreference.LoadLocation(this);
+//        LatLng arrivalPoint = new LatLng(55.9408549, 37.5223485);
         nwM = new NetworkManager(this);
 
         getLocation();
@@ -165,39 +139,31 @@ public class ScreenMap extends TrackedActivity {
 
         LatLng departurePoint = new LatLng(mCurrentLocation.getLatitude(),
                 mCurrentLocation.getLongitude());
+
+        Log.i(LOG_TAG, "departurePoint = " + departurePoint);
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(departurePoint, 13));
         markerPoints.add(departurePoint);
         MarkerOptions departureOptions = new MarkerOptions();
         departureOptions.position(departurePoint);
         departureOptions.icon(BitmapDescriptorFactory
                 .defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
 
-        drawMarker(departurePoint, locationType.USER_LOCATION);
         markerPoints.add(arrivalPoint);
         MarkerOptions arrivalOptions = new MarkerOptions();
         arrivalOptions.position(arrivalPoint);
         arrivalOptions.icon(BitmapDescriptorFactory
                 .defaultMarker(BitmapDescriptorFactory.HUE_RED));
-        drawMarker(arrivalPoint, locationType.CAR_LOCATION);
+        drawMarker(departurePoint, arrivalPoint);
         drawCircle(arrivalPoint);
 
         if (markerPoints.size() == 1) {
             no_points();
-        } else if (markerPoints.size() == 2) {
+            return;
+        }
+        if (markerPoints.size() == 2) {
             LatLngBounds.Builder builder = new LatLngBounds.Builder();
             builder.include(departurePoint);
             builder.include(arrivalPoint);
-            LatLngBounds bounds = builder.build();
-
-            final DisplayMetrics display = getResources()
-                    .getDisplayMetrics();
-            int width = display.widthPixels;
-            int height = display.heightPixels;
-
-            CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(
-                    bounds, width - (int) (width * 0.2), height
-                            - (int) (height * 0.5), 0);
-            mMap.moveCamera(cu);
-            mMap.animateCamera(cu);
 
             LatLng origin = markerPoints.get(0);
             LatLng dest = markerPoints.get(1);
@@ -248,7 +214,7 @@ public class ScreenMap extends TrackedActivity {
         }
     };
 
-    public void getLocation() {
+    private void getLocation() {
         // The minimum distance to change Updates in meters
         long MIN_DISTANCE_CHANGE_FOR_UPDATES = 10; // 10 meters
 
@@ -257,13 +223,10 @@ public class ScreenMap extends TrackedActivity {
 
 
         try {
-            LocationManager locationManager = (LocationManager) this
-                    .getSystemService(this.LOCATION_SERVICE);
-
+            LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 
             // getting GPS status
-            boolean isGPSEnabled = locationManager
-                    .isProviderEnabled(LocationManager.GPS_PROVIDER);
+            boolean isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
 
             if (!isGPSEnabled) {
                 nwM.checkLocationSettings();
@@ -271,14 +234,7 @@ public class ScreenMap extends TrackedActivity {
             }
 
             // getting network status
-            boolean isNetworkEnabled = locationManager
-                    .isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-
-            if (!isGPSEnabled && !isNetworkEnabled) {
-                // no network provider is enabled
-            } else {
-                // First get location from Network Provider
-                if (isNetworkEnabled) {
+            boolean isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 
             if (isNetworkEnabled) {
                 if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
@@ -381,8 +337,10 @@ public class ScreenMap extends TrackedActivity {
 
         } catch (Exception e) {
         } finally {
-            iStream.close();
-            urlConnection.disconnect();
+            if (iStream != null)
+                iStream.close();
+            if (urlConnection != null)
+                urlConnection.disconnect();
         }
         return data;
     }
@@ -448,15 +406,15 @@ public class ScreenMap extends TrackedActivity {
         // Executes in UI thread, after the parsing process
         @Override
         protected void onPostExecute(List<List<HashMap<String, String>>> result) {
-            ArrayList<LatLng> points = null;
-            PolylineOptions lineOptions = null;
+
             String distance = "";
             String duration = "";
             if (result == null)
                 return;
+            ArrayList<LatLng> points = null;
             for (int i = 0; i < result.size(); i++) {
-                points = new ArrayList<LatLng>();
-                lineOptions = new PolylineOptions();
+                points = new ArrayList<>();
+
 
                 // Fetching i-th route
                 List<HashMap<String, String>> path = result.get(i);
@@ -479,32 +437,34 @@ public class ScreenMap extends TrackedActivity {
 
                     points.add(position);
                 }
-
-                // Adding all the points in the route to LineOptions
-                lineOptions.addAll(points);
-                lineOptions.width(4);
-
-                // Changing the color polyline according to the mode
-                lineOptions.color(Color.BLUE);
-
             }
+
+            PolylineOptions lineOptions = new PolylineOptions();
+            // Adding all the points in the route to LineOptions
+            lineOptions.addAll(points);
+            lineOptions.width(4);
+
+            // Changing the color polyline according to the mode
+            lineOptions.color(Color.BLUE);
 
             if (result.size() < 1) {
                 no_points();
                 return;
             }
-            tvDistance.setText(getResources().getString(R.string.distance)
-                    + " " + distance);
-            tvDuration.setText(getResources().getString(R.string.duration)
-                    + " " + duration);
-            // Drawing polyline in the Google Map for the i-th route
+
+            final String sDistance = getResources().getString(R.string.distance) + " " + distance;
+            final String sDuration = getResources().getString(R.string.duration) + " " + duration;
+            TextView tvDistance = (TextView) findViewById(R.id.tv_distance_time);
+            TextView tvDuration = (TextView) findViewById(R.id.tv_duration_time);
+            tvDistance.setText(sDistance);
+            tvDuration.setText(sDuration);
             mMap.addPolyline(lineOptions);
 
         }
     }
 
     private boolean isGPSenable() {
-        LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             return true;
         } else {
@@ -526,32 +486,19 @@ public class ScreenMap extends TrackedActivity {
         return true;
     }
 
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == R.id.info) {
-            Intent intent = new Intent(ScreenMap.this, ScreenInfo.class);
-            startActivityForResult(intent, 3);
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    private void drawMarker(LatLng point, locationType type) {
+    private void drawMarker(LatLng departurePoint, LatLng arrivalPoint) {
         // Creating an instance of MarkerOptions
-        MarkerOptions markerOptions = new MarkerOptions();
-
+        MarkerOptions departureMarkerOptions = new MarkerOptions();
+        MarkerOptions arrivalOptions = new MarkerOptions();
         // Setting latitude and longitude for the marker
-        markerOptions.position(point);
+        departureMarkerOptions.position(departurePoint);
+        arrivalOptions.position(arrivalPoint);
 
-        // Adding marker on the Google Map
-        if (type == locationType.CAR_LOCATION)
-            mMap.addMarker(markerOptions.icon(BitmapDescriptorFactory
-                    .fromResource(R.mipmap.car)));
-        else
-            mMap.addMarker(markerOptions.icon(BitmapDescriptorFactory
-                    .fromResource(R.mipmap.man)));
+        mMap.addMarker(departureMarkerOptions.icon(BitmapDescriptorFactory
+                .fromResource(R.mipmap.man)));
+
+        mMap.addMarker(arrivalOptions.icon(BitmapDescriptorFactory
+                .fromResource(R.mipmap.car)));
     }
 
     private void drawCircle(LatLng point) {
@@ -618,5 +565,3 @@ public class ScreenMap extends TrackedActivity {
     }
 
 }
-
-
