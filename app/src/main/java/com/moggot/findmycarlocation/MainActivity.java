@@ -9,12 +9,14 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.content.ContextCompat;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
@@ -31,6 +33,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Tracker;
 
@@ -65,9 +68,12 @@ public class MainActivity extends Activity {
         installWidget();
         setContentView(R.layout.activity_main);
         img_animation = (ImageView) findViewById(R.id.ivTrigger);
+
+        MobileAds.initialize(this, getResources().getString(R.string.app_id));
         AdView mAdView = (AdView) findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);
+
         Tracker t = ((AnalyticsApplication) getApplication())
                 .getTracker(AnalyticsApplication.TrackerName.APP_TRACKER);
         t.enableAdvertisingIdCollection(true);
