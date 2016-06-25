@@ -20,7 +20,6 @@ import android.support.v4.content.ContextCompat;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
@@ -69,10 +68,8 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
         img_animation = (ImageView) findViewById(R.id.ivTrigger);
 
-        MobileAds.initialize(this, getResources().getString(R.string.app_id));
-        AdView mAdView = (AdView) findViewById(R.id.adView);
-        AdRequest adRequest = new AdRequest.Builder().build();
-        mAdView.loadAd(adRequest);
+        Ad advertisment = new Ad(this);
+        advertisment.ShowBanner(R.id.adViewMain);
 
         Tracker t = ((AnalyticsApplication) getApplication())
                 .getTracker(AnalyticsApplication.TrackerName.APP_TRACKER);
