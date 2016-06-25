@@ -428,8 +428,10 @@ public class MainActivity extends Activity {
                 // First get location from Network Provider
                 if (isNetworkEnabled) {
                     if (mCurrentLocation == null) {
-                        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, MIN_TIME_BW_UPDATES,
-                                MIN_DISTANCE_CHANGE_FOR_UPDATES, locationListener);
+                        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, MIN_TIME_BW_UPDATES,
+                                    MIN_DISTANCE_CHANGE_FOR_UPDATES, locationListener);
+                        }
                         Log.d(LOG_TAG, "Network");
                         if (locationManager != null) {
                             mCurrentLocation = locationManager
@@ -440,10 +442,12 @@ public class MainActivity extends Activity {
                 // if GPS Enabled get lat/long using GPS Services
                 if (isGPSEnabled) {
                     if (mCurrentLocation == null) {
-                        locationManager.requestLocationUpdates(
-                                LocationManager.GPS_PROVIDER,
-                                MIN_TIME_BW_UPDATES,
-                                MIN_DISTANCE_CHANGE_FOR_UPDATES, locationListener);
+                        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                            locationManager.requestLocationUpdates(
+                                    LocationManager.GPS_PROVIDER,
+                                    MIN_TIME_BW_UPDATES,
+                                    MIN_DISTANCE_CHANGE_FOR_UPDATES, locationListener);
+                        }
                         Log.d(LOG_TAG, "GPS Enabled");
                         if (locationManager != null) {
                             mCurrentLocation = locationManager
