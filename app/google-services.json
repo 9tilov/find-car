@@ -1,35 +1,39 @@
 {
   "project_info": {
-    "project_number": "202524437702",
-    "project_id": "find-my-car-location"
+    "project_number": "162781194915",
+    "firebase_url": "https://admob-app-id-2120488559.firebaseio.com",
+    "project_id": "admob-app-id-2120488559",
+    "storage_bucket": "admob-app-id-2120488559.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:202524437702:android:d96b1e2c2cdd8827",
+        "mobilesdk_app_id": "1:162781194915:android:d96b1e2c2cdd8827",
         "android_client_info": {
           "package_name": "com.moggot.findmycarlocation"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "162781194915-bon0odfjcnn1fi7clsn9jrud9tn77sjr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
-          "current_key": "AIzaSyDhSmcetIRt0aHP5Y2IMlZ2AL3AbKjDvjw"
+          "current_key": "AIzaSyDLbv8Z0AHa2kMeou4ftFnJyu88wXOx5dw"
         }
       ],
       "services": {
         "analytics_service": {
-          "status": 2,
-          "analytics_property": {
-            "tracking_id": "UA-66799500-6"
-          }
+          "status": 1
         },
         "appinvite_service": {
           "status": 1,
           "other_platform_oauth_client": []
         },
         "ads_service": {
-          "status": 1
+          "status": 2
         }
       }
     }
