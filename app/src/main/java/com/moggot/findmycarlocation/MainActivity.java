@@ -30,9 +30,6 @@ import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.Toast;
 
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdView;
-import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Tracker;
 
@@ -55,6 +52,8 @@ public class MainActivity extends Activity {
     Intent resultValue;
     boolean isWidgetInstalled = false;
     NetworkManager nwM;
+
+    static final int NUM_LAUNCH_TO_RATE_APP = 11;
 
 
     @Override
@@ -82,7 +81,7 @@ public class MainActivity extends Activity {
             SharedPreference.SaveInstallWidgetState(this, false);
 
         int rate_count = SharedPreference.LoadRatingCount(this);
-        if (rate_count >= 11) {
+        if (rate_count >= NUM_LAUNCH_TO_RATE_APP) {
             SharedPreference.SaveRatingCount(this, 0);
             showRatingDialog();
         }
