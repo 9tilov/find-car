@@ -15,8 +15,8 @@ android {
         applicationId "com.moggot.findmycarlocation"
         minSdkVersion 11
         targetSdkVersion 23
-        versionCode 25
-        versionName "1.8.1"
+        versionCode 26
+        versionName "1.8.2"
         signingConfig signingConfigs.moggot
     }
     buildTypes {
