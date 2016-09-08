@@ -8,18 +8,17 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.app.ActivityCompat;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
@@ -32,12 +31,59 @@ import android.widget.Toast;
 
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Tracker;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResult;
+import com.google.android.gms.location.LocationSettingsStatusCodes;
 
 import java.util.Calendar;
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity implements
+        GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener,
+        com.google.android.gms.location.LocationListener,
+        ResultCallback<LocationSettingsResult> {
 
-    ImageView img_animation;
+    /**
+     * The desired interval for location updates. Inexact. Updates may be more or less frequent.
+     */
+    public static final long UPDATE_INTERVAL_IN_MILLISECONDS = 10000;
+
+    /**
+     * The fastest rate for active location updates. Exact. Updates will never be more frequent
+     * than this value.
+     */
+    public static final long FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS =
+            UPDATE_INTERVAL_IN_MILLISECONDS / 2;
+
+    /**
+     * Provides the entry point to Google Play services.
+     */
+    protected GoogleApiClient mGoogleApiClient = null;
+
+    /**
+     * Stores parameters for requests to the FusedLocationProviderApi.
+     */
+    protected LocationRequest mLocationRequest = null;
+
+    /**
+     * Stores the types of location services the client is interested in using. Used for checking
+     * settings to determine if the device has optimal location settings.
+     */
+    protected LocationSettingsRequest mLocationSettingsRequest = null;
+
+    /**
+     * Represents a geographical location.
+     */
+    protected Location mCurrentLocation = null;
+
+    ImageView img_animation = null;
     int height;
 
     float y1, y2;
@@ -47,24 +93,27 @@ public class MainActivity extends Activity {
 
     private static boolean isAnimation = false;
 
-    Location mCurrentLocation;
     int widgetID = AppWidgetManager.INVALID_APPWIDGET_ID;
     Intent resultValue;
-    boolean isWidgetInstalled = false;
-    NetworkManager nwM;
 
     static final int NUM_LAUNCH_TO_RATE_APP = 11;
 
+    public class ERROR_CODE {
+        final static int OK = 0;
+        final static int LOCATION_NOT_RETRIEVED = 1;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
-
-        nwM = new NetworkManager(this);
+        buildGoogleApiClient();
+        createLocationRequest();
+        buildLocationSettingsRequest();
         installWidget();
         setContentView(R.layout.activity_main);
+
         img_animation = (ImageView) findViewById(R.id.ivTrigger);
 
         Ad advertisment = new Ad(this);
@@ -104,6 +153,7 @@ public class MainActivity extends Activity {
             case MotionEvent.ACTION_UP: {
                 y2 = touchevent.getY();
 
+                boolean isLocationSaved = SharedPreference.LoadIsLocationSavedState(this);
                 if (y1 < y2) {
                     if (!isLocationSaved) {
                         save_car_location();
@@ -119,9 +169,7 @@ public class MainActivity extends Activity {
                         showSaveDialog();
                         break;
                     }
-                    int res = saveLocation();
-                    if (res == 0)
-                        animationUP();
+                    saveLocation();
                     break;
                 }
             }
@@ -140,9 +188,7 @@ public class MainActivity extends Activity {
         ad.setMessage(getResources().getString(R.string.dialog_you_not_find_car));
         ad.setPositiveButton(getResources().getString(R.string.dialog_yes), new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int arg1) {
-                int res = saveLocation();
-                if (res == 0)
-                    animationUP();
+                saveLocation();
             }
         });
         ad.setNegativeButton(getResources().getString(R.string.dialog_no), new DialogInterface.OnClickListener() {
@@ -211,12 +257,13 @@ public class MainActivity extends Activity {
     private void installWidget() {
         Intent intent = getIntent();
         Bundle extras = intent.getExtras();
-        isLocationSaved = SharedPreference
-                .LoadIsLocationSavedState(this);
+
         if (extras != null) {
             widgetID = extras.getInt(AppWidgetManager.EXTRA_APPWIDGET_ID,
                     AppWidgetManager.INVALID_APPWIDGET_ID);
         }
+        Log.i(LOG_TAG, "widgetID = " + widgetID);
+
         // и проверяем его корректность
         if (widgetID != AppWidgetManager.INVALID_APPWIDGET_ID) {
             SharedPreference.SaveWidgetID(this, widgetID);
@@ -224,7 +271,9 @@ public class MainActivity extends Activity {
             resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetID);
 
             setResult(RESULT_CANCELED, resultValue);
-            isWidgetInstalled = SharedPreference.LoadInstallWidgetState(this);
+            boolean isWidgetInstalled = SharedPreference.LoadInstallWidgetState(this);
+            boolean isLocationSaved = SharedPreference
+                    .LoadIsLocationSavedState(this);
             if (isWidgetInstalled == false) {
                 updateWidget(isLocationSaved);
                 isWidgetInstalled = true;
@@ -241,11 +290,8 @@ public class MainActivity extends Activity {
                         animationFromMiddleToDown();
                     }
                 }, 500);
-
             } else {
-                int res = saveLocation();
-                if (res == 0)
-                    finish();
+                saveLocation();
             }
         }
     }
@@ -334,8 +380,30 @@ public class MainActivity extends Activity {
         img_animation.startAnimation(animation);
     }
 
-    private int saveLocation() {
+    public int saveLocation() {
+        Log.i(LOG_TAG, "saveLocation");
+        int res = ERROR_CODE.OK;
+        if (mCurrentLocation == null) {
+            checkLocationSettings();
+            res = ERROR_CODE.LOCATION_NOT_RETRIEVED;
+            return res;
+        }
 
+        saveLocationToSharedMemory(mCurrentLocation);
+
+        Log.i(LOG_TAG, "lat = " + mCurrentLocation.getLatitude());
+        Log.i(LOG_TAG, "lng = " + mCurrentLocation.getLongitude());
+        saveRatingCountToSharedMemory();
+        animationUP();
+        car_loc_save_success();
+        if (widgetID != 0) {
+            finish();
+            return res;
+        }
+        return res;
+    }
+
+    private void saveLocationToSharedMemory(Location location) {
         Calendar time = Calendar.getInstance();
         int cur_day = time.get(Calendar.DAY_OF_MONTH);
         int cur_hour = time.get(Calendar.HOUR_OF_DAY);
@@ -343,133 +411,22 @@ public class MainActivity extends Activity {
         SharedPreference.SaveTime(this, cur_day, cur_hour,
                 cur_minute);
 
-        int res;
-        getLocation();
-        if (mCurrentLocation == null) {
-            if (isGPSenable())
-                no_location();
-            res = NetworkManager.LOCATION_NOT_BE_RETRIEVED;
-            return res;
-        }
-
-        Log.i(LOG_TAG, "location = " + mCurrentLocation);
-
-        isLocationSaved = true;
-        SharedPreference.SaveIsLocationSavedState(this, isLocationSaved);
+        boolean isLocationSaved = true;
         updateWidget(isLocationSaved);
+        SharedPreference.SaveIsLocationSavedState(this, isLocationSaved);
         SharedPreference.SaveLocation(this,
-                mCurrentLocation.getLatitude(),
-                mCurrentLocation.getLongitude());
-//            SharedPreference.SaveLocation(this, 55.910834, 37.500905);
+                location.getLatitude(),
+                location.getLongitude());
+    }
+
+    private void saveRatingCountToSharedMemory() {
         int rate_count = SharedPreference.LoadRatingCount(this);
         ++rate_count;
         SharedPreference.SaveRatingCount(this, rate_count);
-        car_loc_save_success();
-        res = 0;
-        return res;
     }
 
-    LocationListener locationListener = new LocationListener() {
-        @Override
-        public void onLocationChanged(Location location) {
-            Log.i(LOG_TAG, "mCurrentLocation1 = " + mCurrentLocation);
-            mCurrentLocation = location;
-        }
-
-        @Override
-        public void onStatusChanged(String provider, int status, Bundle extras) {
-
-        }
-
-        @Override
-        public void onProviderEnabled(String provider) {
-
-        }
-
-        @Override
-        public void onProviderDisabled(String provider) {
-
-        }
-    };
-
-    private boolean isGPSenable() {
-        LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-        boolean isConnected = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-        return isConnected;
-    }
-
-    public void getLocation() {
-
-        Log.d(LOG_TAG, "getLocation");
-        // The minimum distance to change Updates in meters
-        long MIN_DISTANCE_CHANGE_FOR_UPDATES = 10; // 10 meters
-
-        // The minimum time between updates in milliseconds
-        long MIN_TIME_BW_UPDATES = 1000 * 60 * 1; // 1 minute
-
-
-        try {
-            LocationManager locationManager = (LocationManager) this
-                    .getSystemService(this.LOCATION_SERVICE);
-
-            // getting GPS status
-            boolean isGPSEnabled = locationManager
-                    .isProviderEnabled(LocationManager.GPS_PROVIDER);
-            if (!isGPSEnabled) {
-                nwM.checkLocationSettings();
-                return;
-            }
-
-            // getting network status
-            boolean isNetworkEnabled = locationManager
-                    .isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-
-            if (!isGPSEnabled && !isNetworkEnabled) {
-                // no network provider is enabled
-            } else {
-                // First get location from Network Provider
-                if (isNetworkEnabled) {
-                    if (mCurrentLocation == null) {
-                        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, MIN_TIME_BW_UPDATES,
-                                    MIN_DISTANCE_CHANGE_FOR_UPDATES, locationListener);
-                        }
-                        Log.d(LOG_TAG, "Network");
-                        if (locationManager != null) {
-                            mCurrentLocation = locationManager
-                                    .getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-                        }
-                    }
-                }
-                // if GPS Enabled get lat/long using GPS Services
-                if (isGPSEnabled) {
-                    if (mCurrentLocation == null) {
-                        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                            locationManager.requestLocationUpdates(
-                                    LocationManager.GPS_PROVIDER,
-                                    MIN_TIME_BW_UPDATES,
-                                    MIN_DISTANCE_CHANGE_FOR_UPDATES, locationListener);
-                        }
-                        Log.d(LOG_TAG, "GPS Enabled");
-                        if (locationManager != null) {
-                            mCurrentLocation = locationManager
-                                    .getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                        }
-                    }
-                }
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        if (mCurrentLocation == null) {
-            nwM.checkLocationSettings();
-            return;
-        }
-    }
-
-    public void showMap() {
+    private void showMap() {
+        boolean isLocationSaved = SharedPreference.LoadIsLocationSavedState(this);
         if (isLocationSaved) {
             isAnimation = false;
             Intent intent = new Intent(MainActivity.this,
@@ -478,17 +435,114 @@ public class MainActivity extends Activity {
         }
     }
 
+    /**
+     * Builds a GoogleApiClient. Uses the {@code #addApi} method to request the
+     * LocationServices API.
+     */
+    protected synchronized void buildGoogleApiClient() {
+        Log.i(LOG_TAG, "Building GoogleApiClient");
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build();
+    }
 
+    /**
+     * Sets up the location request. Android has two location request settings:
+     * {@code ACCESS_COARSE_LOCATION} and {@code ACCESS_FINE_LOCATION}. These settings control
+     * the accuracy of the current location. This sample uses ACCESS_FINE_LOCATION, as defined in
+     * the AndroidManifest.xml.
+     * <p/>
+     * When the ACCESS_FINE_LOCATION setting is specified, combined with a fast update
+     * interval (5 seconds), the Fused Location Provider API returns location updates that are
+     * accurate to within a few feet.
+     * <p/>
+     * These settings are appropriate for mapping applications that show real-time location
+     * updates.
+     */
+    protected void createLocationRequest() {
+        mLocationRequest = new LocationRequest();
+
+        // Sets the desired interval for active location updates. This interval is
+        // inexact. You may not receive updates at all if no location sources are available, or
+        // you may receive them slower than requested. You may also receive updates faster than
+        // requested if other applications are requesting location at a faster interval.
+        mLocationRequest.setInterval(UPDATE_INTERVAL_IN_MILLISECONDS);
+
+        // Sets the fastest rate for active location updates. This interval is exact, and your
+        // application will never receive updates faster than this value.
+        mLocationRequest.setFastestInterval(FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS);
+
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+    }
+
+    /**
+     * Uses a {@link com.google.android.gms.location.LocationSettingsRequest.Builder} to build
+     * a {@link com.google.android.gms.location.LocationSettingsRequest} that is used for checking
+     * if a device has the needed location settings.
+     */
+    protected void buildLocationSettingsRequest() {
+        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder();
+        builder.addLocationRequest(mLocationRequest);
+        mLocationSettingsRequest = builder.build();
+    }
+
+    /**
+     * Check if the device's location settings are adequate for the app's needs using the
+     * {@link com.google.android.gms.location.SettingsApi#checkLocationSettings(GoogleApiClient,
+     * LocationSettingsRequest)} method, with the results provided through a {@code PendingResult}.
+     */
+    protected void checkLocationSettings() {
+        PendingResult<LocationSettingsResult> result =
+                LocationServices.SettingsApi.checkLocationSettings(
+                        mGoogleApiClient,
+                        mLocationSettingsRequest
+                );
+        result.setResultCallback(this);
+    }
+
+    /**
+     * The callback invoked when
+     * {@link com.google.android.gms.location.SettingsApi#checkLocationSettings(GoogleApiClient,
+     * LocationSettingsRequest)} is called. Examines the
+     * {@link com.google.android.gms.location.LocationSettingsResult} object and determines if
+     * location settings are adequate. If they are not, begins the process of presenting a location
+     * settings dialog to the user.
+     */
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
+    public void onResult(LocationSettingsResult locationSettingsResult) {
+        final Status status = locationSettingsResult.getStatus();
+        switch (status.getStatusCode()) {
+            case LocationSettingsStatusCodes.SUCCESS:
+                Log.i(LOG_TAG, "All location settings are satisfied.");
+                startLocationUpdates();
+                if (mCurrentLocation == null)
+                    no_location();
+                break;
+            case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
+                Log.i(LOG_TAG, "Location settings are not satisfied. Show the user a dialog to" +
+                        "upgrade location settings ");
+
+                try {
+                    // Show the dialog by calling startResolutionForResult(), and check the result
+                    // in onActivityResult().
+                    status.startResolutionForResult(MainActivity.this,
+                            SharedPreference.ACTIVITY_RESULT_CODE.REQUEST_CHECK_SETTINGS);
+                } catch (IntentSender.SendIntentException e) {
+                    Log.i(LOG_TAG, "PendingIntent unable to execute request.");
+                }
+                break;
+            case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
+                Log.i(LOG_TAG, "Location settings are inadequate, and cannot be fixed here. Dialog " +
+                        "not created.");
+                break;
+        }
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        isLocationSaved = SharedPreference.LoadIsLocationSavedState(this);
-        final int REQUEST_CHECK_SETTINGS = 199;
+        boolean isLocationSaved = SharedPreference.LoadIsLocationSavedState(this);
         final Handler handler = new Handler();
         switch (requestCode) {
             case SharedPreference.ACTIVITY_RESULT_CODE.MAP_SCREEN:
@@ -500,17 +554,11 @@ public class MainActivity extends Activity {
                 }, 500);
                 updateWidget(isLocationSaved);
                 break;
-            case REQUEST_CHECK_SETTINGS:
+            case SharedPreference.ACTIVITY_RESULT_CODE.REQUEST_CHECK_SETTINGS:
                 switch (resultCode) {
                     case Activity.RESULT_OK:
-                        handler.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                int res = saveLocation();
-                                if (res == 0)
-                                    animationUP();
-                            }
-                        }, 3000);
+                        Log.i(LOG_TAG, "User agreed to make required location settings changes.");
+                        startLocationUpdates();
                         break;
                     case Activity.RESULT_CANCELED:
                         Log.i(LOG_TAG, "User chose not to make required location settings changes.");
@@ -522,6 +570,42 @@ public class MainActivity extends Activity {
 
     }
 
+    /**
+     * Requests location updates from the FusedLocationApi.
+     */
+    protected void startLocationUpdates() {
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            LocationServices.FusedLocationApi.requestLocationUpdates(
+                    mGoogleApiClient,
+                    mLocationRequest,
+                    this
+            ).setResultCallback(new ResultCallback<Status>() {
+                @Override
+                public void onResult(Status status) {
+                }
+            });
+        }
+
+    }
+
+    /**
+     * Removes location updates from the FusedLocationApi.
+     */
+    protected void stopLocationUpdates() {
+        // It is a good practice to remove location requests when the activity is in a paused or
+        // stopped state. Doing so helps battery performance and is especially
+        // recommended in applications that request frequent location updates.
+        LocationServices.FusedLocationApi.removeLocationUpdates(
+                mGoogleApiClient,
+                this
+        ).setResultCallback(new ResultCallback<Status>() {
+            @Override
+            public void onResult(Status status) {
+            }
+        });
+    }
+
     private void save_car_location() {
         Toast.makeText(getBaseContext(), R.string.you_should_save_car_location,
                 Toast.LENGTH_SHORT).show();
@@ -530,7 +614,28 @@ public class MainActivity extends Activity {
     @Override
     protected void onStart() {
         super.onStart();
+        mGoogleApiClient.connect();
         GoogleAnalytics.getInstance(this).reportActivityStart(this);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        // Within {@code onPause()}, we pause location updates, but leave the
+        // connection to GoogleApiClient intact.  Here, we resume receiving
+        // location updates if the user has requested them.
+        if (mGoogleApiClient.isConnected()) {
+            startLocationUpdates();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        // Stop location updates to save battery, but don't disconnect the GoogleApiClient object.
+        if (mGoogleApiClient.isConnected()) {
+            stopLocationUpdates();
+        }
     }
 
     @Override
@@ -538,9 +643,61 @@ public class MainActivity extends Activity {
         // Stop the analytics tracking
         GoogleAnalytics.getInstance(this).reportActivityStop(this);
         super.onStop();
+        mGoogleApiClient.disconnect();
         setResult(RESULT_OK, resultValue);
     }
 
+    /**
+     * Runs when a GoogleApiClient object successfully connects.
+     */
+    @Override
+    public void onConnected(Bundle connectionHint) {
+        Log.i(LOG_TAG, "Connected to GoogleApiClient");
+
+        // If the initial location was never previously requested, we use
+        // FusedLocationApi.getLastLocation() to get it. If it was previously requested, we store
+        // its value in the Bundle and check for it in onCreate(). We
+        // do not request it again unless the user specifically requests location updates by pressing
+        // the Start Updates button.
+        //
+        // Because we cache the value of the initial location in the Bundle, it means that if the
+        // user launches the activity,
+        // moves to a new location, and then changes the device orientation, the original location
+        // is displayed as the activity is re-created.
+        if (mCurrentLocation == null) {
+            if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+                    && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                mCurrentLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+            }
+            Log.i(LOG_TAG, "mCurrentLocation1 = " + mCurrentLocation);
+        }
+    }
+
+    /**
+     * Callback that fires when the location changes.
+     */
+    @Override
+    public void onLocationChanged(Location location) {
+        mCurrentLocation = location;
+        Log.i(LOG_TAG, "mCurrentLocation2 = " + mCurrentLocation);
+        if (mCurrentLocation != null) {
+            saveLocation();
+            stopLocationUpdates();
+            return;
+        }
+    }
+
+    @Override
+    public void onConnectionSuspended(int cause) {
+        Log.i(LOG_TAG, "Connection suspended");
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult result) {
+        // Refer to the javadoc for ConnectionResult to see what error codes might be returned in
+        // onConnectionFailed.
+        Log.i(LOG_TAG, "Connection failed: ConnectionResult.getErrorCode() = " + result.getErrorCode());
+    }
 
     private void car_loc_save_success() {
         Toast.makeText(this, R.string.save_car_location_success,

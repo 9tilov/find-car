@@ -7,16 +7,15 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.view.Menu;
@@ -24,15 +23,22 @@ import android.view.WindowManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.ads.AdListener;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdView;
-import com.google.android.gms.ads.InterstitialAd;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResult;
+import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
@@ -51,13 +57,48 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class ScreenMap extends TrackedActivity implements OnMapReadyCallback {
+public class ScreenMap extends TrackedActivity implements OnMapReadyCallback,
+        GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener,
+        com.google.android.gms.location.LocationListener,
+        ResultCallback<LocationSettingsResult> {
 
+    /**
+     * The desired interval for location updates. Inexact. Updates may be more or less frequent.
+     */
+    public static final long UPDATE_INTERVAL_IN_MILLISECONDS = 10000;
+
+    /**
+     * The fastest rate for active location updates. Exact. Updates will never be more frequent
+     * than this value.
+     */
+    public static final long FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS =
+            UPDATE_INTERVAL_IN_MILLISECONDS / 2;
+
+    /**
+     * Provides the entry point to Google Play services.
+     */
+    protected GoogleApiClient mGoogleApiClient = null;
+
+    /**
+     * Stores parameters for requests to the FusedLocationProviderApi.
+     */
+    protected LocationRequest mLocationRequest = null;
+
+    /**
+     * Stores the types of location services the client is interested in using. Used for checking
+     * settings to determine if the device has optimal location settings.
+     */
+    protected LocationSettingsRequest mLocationSettingsRequest = null;
+
+    /**
+     * Represents a geographical location.
+     */
     GoogleMap mMap = null;
-    private BroadcastReceiver receiver;
+    private BroadcastReceiver receiver = null;
     final static String LOG_TAG = "myLogs";
-    Location mCurrentLocation;
-    NetworkManager nwM;
+    private Location mCurrentLocation = null;
+    private LocationManager mLocationManager = null;
 
     final String PROX_ALERT_INTENT = "com.example.findmycar";
 
@@ -67,6 +108,11 @@ public class ScreenMap extends TrackedActivity implements OnMapReadyCallback {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.screen_map);
+
+        mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        buildGoogleApiClient();
+        createLocationRequest();
+        buildLocationSettingsRequest();
 
         MapFragment mapFragment = (MapFragment) getFragmentManager()
                 .findFragmentById(R.id.map);
@@ -89,31 +135,214 @@ public class ScreenMap extends TrackedActivity implements OnMapReadyCallback {
                 && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)
             mMap.setMyLocationEnabled(true);
         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-        Log.i(LOG_TAG, "3 = " + mMap);
+
         setUpMap();
     }
 
+
+    /**
+     * Builds a GoogleApiClient. Uses the {@code #addApi} method to request the
+     * LocationServices API.
+     */
+    protected synchronized void buildGoogleApiClient() {
+        Log.i(LOG_TAG, "Building GoogleApiClient");
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build();
+    }
+
+    /**
+     * Sets up the location request. Android has two location request settings:
+     * {@code ACCESS_COARSE_LOCATION} and {@code ACCESS_FINE_LOCATION}. These settings control
+     * the accuracy of the current location. This sample uses ACCESS_FINE_LOCATION, as defined in
+     * the AndroidManifest.xml.
+     * <p/>
+     * When the ACCESS_FINE_LOCATION setting is specified, combined with a fast update
+     * interval (5 seconds), the Fused Location Provider API returns location updates that are
+     * accurate to within a few feet.
+     * <p/>
+     * These settings are appropriate for mapping applications that show real-time location
+     * updates.
+     */
+    protected void createLocationRequest() {
+        mLocationRequest = new LocationRequest();
+
+        // Sets the desired interval for active location updates. This interval is
+        // inexact. You may not receive updates at all if no location sources are available, or
+        // you may receive them slower than requested. You may also receive updates faster than
+        // requested if other applications are requesting location at a faster interval.
+        mLocationRequest.setInterval(UPDATE_INTERVAL_IN_MILLISECONDS);
+
+        // Sets the fastest rate for active location updates. This interval is exact, and your
+        // application will never receive updates faster than this value.
+        mLocationRequest.setFastestInterval(FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS);
+
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+    }
+
+    /**
+     * Uses a {@link com.google.android.gms.location.LocationSettingsRequest.Builder} to build
+     * a {@link com.google.android.gms.location.LocationSettingsRequest} that is used for checking
+     * if a device has the needed location settings.
+     */
+    protected void buildLocationSettingsRequest() {
+        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder();
+        builder.addLocationRequest(mLocationRequest);
+        mLocationSettingsRequest = builder.build();
+    }
+
+    /**
+     * Check if the device's location settings are adequate for the app's needs using the
+     * {@link com.google.android.gms.location.SettingsApi#checkLocationSettings(GoogleApiClient,
+     * LocationSettingsRequest)} method, with the results provided through a {@code PendingResult}.
+     */
+    protected void checkLocationSettings() {
+        PendingResult<LocationSettingsResult> result =
+                LocationServices.SettingsApi.checkLocationSettings(
+                        mGoogleApiClient,
+                        mLocationSettingsRequest
+                );
+        result.setResultCallback(this);
+    }
+
+    /**
+     * The callback invoked when
+     * {@link com.google.android.gms.location.SettingsApi#checkLocationSettings(GoogleApiClient,
+     * LocationSettingsRequest)} is called. Examines the
+     * {@link com.google.android.gms.location.LocationSettingsResult} object and determines if
+     * location settings are adequate. If they are not, begins the process of presenting a location
+     * settings dialog to the user.
+     */
     @Override
-    protected void onStop() {
-        super.onStop();
-        if (receiver != null) {
-            unregisterReceiver(receiver);
-            receiver = null;
+    public void onResult(LocationSettingsResult locationSettingsResult) {
+        final Status status = locationSettingsResult.getStatus();
+        switch (status.getStatusCode()) {
+            case LocationSettingsStatusCodes.SUCCESS:
+                Log.i(LOG_TAG, "All location settings are satisfied.");
+                startLocationUpdates();
+                if (mCurrentLocation == null)
+                    no_location();
+                break;
+            case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
+                Log.i(LOG_TAG, "Location settings are not satisfied. Show the user a dialog to" +
+                        "upgrade location settings ");
+
+                try {
+                    // Show the dialog by calling startResolutionForResult(), and check the result
+                    // in onActivityResult().
+                    status.startResolutionForResult(this,
+                            SharedPreference.ACTIVITY_RESULT_CODE.REQUEST_CHECK_SETTINGS);
+                } catch (IntentSender.SendIntentException e) {
+                    Log.i(LOG_TAG, "PendingIntent unable to execute request.");
+                }
+                break;
+            case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
+                Log.i(LOG_TAG, "Location settings are inadequate, and cannot be fixed here. Dialog " +
+                        "not created.");
+                break;
         }
+    }
+
+    /**
+     * Requests location updates from the FusedLocationApi.
+     */
+    protected void startLocationUpdates() {
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            LocationServices.FusedLocationApi.requestLocationUpdates(
+                    mGoogleApiClient,
+                    mLocationRequest,
+                    this
+            ).setResultCallback(new ResultCallback<Status>() {
+                @Override
+                public void onResult(Status status) {
+                }
+            });
+        }
+
+    }
+
+    /**
+     * Removes location updates from the FusedLocationApi.
+     */
+    protected void stopLocationUpdates() {
+        // It is a good practice to remove location requests when the activity is in a paused or
+        // stopped state. Doing so helps battery performance and is especially
+        // recommended in applications that request frequent location updates.
+        LocationServices.FusedLocationApi.removeLocationUpdates(
+                mGoogleApiClient,
+                this
+        ).setResultCallback(new ResultCallback<Status>() {
+            @Override
+            public void onResult(Status status) {
+            }
+        });
+    }
+
+    /**
+     * Runs when a GoogleApiClient object successfully connects.
+     */
+    @Override
+    public void onConnected(Bundle connectionHint) {
+        Log.i(LOG_TAG, "Connected to GoogleApiClient");
+
+        // If the initial location was never previously requested, we use
+        // FusedLocationApi.getLastLocation() to get it. If it was previously requested, we store
+        // its value in the Bundle and check for it in onCreate(). We
+        // do not request it again unless the user specifically requests location updates by pressing
+        // the Start Updates button.
+        //
+        // Because we cache the value of the initial location in the Bundle, it means that if the
+        // user launches the activity,
+        // moves to a new location, and then changes the device orientation, the original location
+        // is displayed as the activity is re-created.
+        if (mCurrentLocation == null) {
+            if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+                    && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                mCurrentLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+            }
+            Log.i(LOG_TAG, "mCurrentLocation1 = " + mCurrentLocation);
+        }
+    }
+
+    /**
+     * Callback that fires when the location changes.
+     */
+    @Override
+    public void onLocationChanged(Location location) {
+        mCurrentLocation = location;
+        if (mCurrentLocation != null) {
+            setUpMap();
+            stopLocationUpdates();
+            return;
+        }
+        Log.i(LOG_TAG, "mCurrentLocation2 = " + mCurrentLocation);
+    }
+
+    @Override
+    public void onConnectionSuspended(int cause) {
+        Log.i(LOG_TAG, "Connection suspended");
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult result) {
+        // Refer to the javadoc for ConnectionResult to see what error codes might be returned in
+        // onConnectionFailed.
+        Log.i(LOG_TAG, "Connection failed: ConnectionResult.getErrorCode() = " + result.getErrorCode());
     }
 
     private void setUpMap() {
         final ArrayList<LatLng> markerPoints = new ArrayList<>();
 
         LatLng arrivalPoint = SharedPreference.LoadLocation(this);
-//        LatLng arrivalPoint = new LatLng(55.9408549, 37.5223485);
-        nwM = new NetworkManager(this);
+//        LatLng arrivalPoint = new LatLng(51.6393382, 39.28);
+        Log.i(LOG_TAG, "arrivalPoint = " + arrivalPoint);
 
-        getLocation();
-
+        Log.i(LOG_TAG, "mCurrentLocation3 = " + mCurrentLocation);
         if (mCurrentLocation == null) {
-            if (isGPSenable())
-                no_location();
+            checkLocationSettings();
             return;
         }
 
@@ -121,7 +350,7 @@ public class ScreenMap extends TrackedActivity implements OnMapReadyCallback {
                 mCurrentLocation.getLongitude());
 
         Log.i(LOG_TAG, "departurePoint = " + departurePoint);
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(departurePoint, 13));
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(departurePoint, 15.0f));
         markerPoints.add(departurePoint);
         MarkerOptions departureOptions = new MarkerOptions();
         departureOptions.position(departurePoint);
@@ -161,96 +390,14 @@ public class ScreenMap extends TrackedActivity implements OnMapReadyCallback {
                     this, 0, intent, 0);
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
                     && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)
-                nwM.locationManager.addProximityAlert(arrivalPoint.latitude,
-                        arrivalPoint.longitude, 2, -1, proximityIntent);
+                mLocationManager.addProximityAlert(arrivalPoint.latitude,
+                        arrivalPoint.longitude, 5, -1, proximityIntent);
 
             IntentFilter filter = new IntentFilter(PROX_ALERT_INTENT);
             receiver = new ProximityIntentReceiver();
             registerReceiver(receiver, filter);
         }
 
-    }
-
-    LocationListener locationListener = new LocationListener() {
-        @Override
-        public void onLocationChanged(Location location) {
-            Log.i(LOG_TAG, "mCurrentLocation1 = " + mCurrentLocation);
-            mCurrentLocation = location;
-        }
-
-        @Override
-        public void onStatusChanged(String provider, int status, Bundle extras) {
-
-        }
-
-        @Override
-        public void onProviderEnabled(String provider) {
-
-        }
-
-        @Override
-        public void onProviderDisabled(String provider) {
-
-        }
-    };
-
-    private void getLocation() {
-        // The minimum distance to change Updates in meters
-        long MIN_DISTANCE_CHANGE_FOR_UPDATES = 10; // 10 meters
-
-        // The minimum time between updates in milliseconds
-        long MIN_TIME_BW_UPDATES = 1000 * 60 * 1; // 1 minute
-
-
-        try {
-            LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-
-            // getting GPS status
-            boolean isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-
-            if (!isGPSEnabled) {
-                nwM.checkLocationSettings();
-                return;
-            }
-
-            // getting network status
-            boolean isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-
-            if (isNetworkEnabled) {
-                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
-                        && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)
-                    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, MIN_TIME_BW_UPDATES,
-                            MIN_DISTANCE_CHANGE_FOR_UPDATES, locationListener);
-                Log.d("Network", "Network");
-                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
-                        && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)
-                    mCurrentLocation = locationManager
-                            .getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-            }
-            // if GPS Enabled get lat/long using GPS Services
-            if (mCurrentLocation == null) {
-                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
-                        && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)
-                    locationManager.requestLocationUpdates(
-                            LocationManager.GPS_PROVIDER,
-                            MIN_TIME_BW_UPDATES,
-                            MIN_DISTANCE_CHANGE_FOR_UPDATES, locationListener);
-                Log.d("GPS Enabled", "GPS Enabled");
-                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
-                        && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)
-                    mCurrentLocation = locationManager
-                            .getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        Log.i(LOG_TAG, "mCurrentLocation111 = " + mCurrentLocation);
-        if (mCurrentLocation == null) {
-            nwM.checkLocationSettings();
-            return;
-        }
     }
 
     private String getDirectionsUrl(LatLng origin, LatLng dest) {
@@ -490,7 +637,7 @@ public class ScreenMap extends TrackedActivity implements OnMapReadyCallback {
         circleOptions.center(point);
 
         // Radius of the circle
-        circleOptions.radius(2);
+        circleOptions.radius(10);
 
         // Border color of the circle
         circleOptions.strokeColor(Color.BLACK);
@@ -513,19 +660,11 @@ public class ScreenMap extends TrackedActivity implements OnMapReadyCallback {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        final int REQUEST_CHECK_SETTINGS = 199;
         switch (requestCode) {
-            case REQUEST_CHECK_SETTINGS:
+            case SharedPreference.ACTIVITY_RESULT_CODE.REQUEST_CHECK_SETTINGS:
                 switch (resultCode) {
                     case Activity.RESULT_OK:
-                        Log.i(LOG_TAG, "User agreed to make required location settings changes.");
-                        final Handler handler = new Handler();
-                        handler.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                setUpMap();
-                            }
-                        }, 3000);
+                        startLocationUpdates();
                         break;
 
                     case Activity.RESULT_CANCELED:
@@ -542,6 +681,42 @@ public class ScreenMap extends TrackedActivity implements OnMapReadyCallback {
 
     private void no_internet() {
         Toast.makeText(this, R.string.no_internet, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mGoogleApiClient.connect();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        // Within {@code onPause()}, we pause location updates, but leave the
+        // connection to GoogleApiClient intact.  Here, we resume receiving
+        // location updates if the user has requested them.
+        if (mGoogleApiClient.isConnected()) {
+            startLocationUpdates();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        // Stop location updates to save battery, but don't disconnect the GoogleApiClient object.
+        if (mGoogleApiClient.isConnected()) {
+            stopLocationUpdates();
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        mGoogleApiClient.disconnect();
+        if (receiver != null) {
+            unregisterReceiver(receiver);
+            receiver = null;
+        }
     }
 
 }

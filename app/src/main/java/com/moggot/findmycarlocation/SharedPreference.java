@@ -10,7 +10,8 @@ public class SharedPreference {
 
     public class ACTIVITY_RESULT_CODE {
         final static int MAP_SCREEN = 0;
-        final static int INFO_SCREEN = 1;
+        final static int ONBOARDING_SCREEN = 1;
+        final static int REQUEST_CHECK_SETTINGS = 2;
     }
 
     public static final String s_lat = "latitude";
