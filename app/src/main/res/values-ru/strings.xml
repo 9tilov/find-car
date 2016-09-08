@@ -7,7 +7,7 @@
     <string name="no_points">Нет пути</string>
     <string name="car_found">Машина здесь!</string>
     <string name="find_your_car">Сначала вы должны найти свою машину</string>
-    <string name="no_location">GPS включается&#8230;Подождите и попробуйте снова</string>
+    <string name="no_location">GPS включается&#8230;Подождите&#8230;</string>
     <string name="no_internet">Нет подключения к Интернету</string>
     <string name="you_should_save_car_location">Сначала вы должны припарковаться</string>
     <string name="distance">Расстояние: </string>
