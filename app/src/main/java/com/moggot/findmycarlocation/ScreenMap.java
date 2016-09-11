@@ -38,7 +38,6 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
@@ -119,7 +118,6 @@ public class ScreenMap extends TrackedActivity implements OnMapReadyCallback,
         mapFragment.getMapAsync(this);
 
         if (!isInternetEnable()) {
-            Log.i(LOG_TAG, "no_internet");
             no_internet();
         }
 
@@ -303,7 +301,6 @@ public class ScreenMap extends TrackedActivity implements OnMapReadyCallback,
                     && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                 mCurrentLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
             }
-            Log.i(LOG_TAG, "mCurrentLocation1 = " + mCurrentLocation);
         }
     }
 
@@ -318,7 +315,6 @@ public class ScreenMap extends TrackedActivity implements OnMapReadyCallback,
             stopLocationUpdates();
             return;
         }
-        Log.i(LOG_TAG, "mCurrentLocation2 = " + mCurrentLocation);
     }
 
     @Override
@@ -338,9 +334,6 @@ public class ScreenMap extends TrackedActivity implements OnMapReadyCallback,
 
         LatLng arrivalPoint = SharedPreference.LoadLocation(this);
 //        LatLng arrivalPoint = new LatLng(51.6393382, 39.28);
-        Log.i(LOG_TAG, "arrivalPoint = " + arrivalPoint);
-
-        Log.i(LOG_TAG, "mCurrentLocation3 = " + mCurrentLocation);
         if (mCurrentLocation == null) {
             checkLocationSettings();
             return;
@@ -349,7 +342,6 @@ public class ScreenMap extends TrackedActivity implements OnMapReadyCallback,
         LatLng departurePoint = new LatLng(mCurrentLocation.getLatitude(),
                 mCurrentLocation.getLongitude());
 
-        Log.i(LOG_TAG, "departurePoint = " + departurePoint);
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(departurePoint, 15.0f));
         markerPoints.add(departurePoint);
         MarkerOptions departureOptions = new MarkerOptions();

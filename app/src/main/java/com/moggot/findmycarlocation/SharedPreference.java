@@ -93,6 +93,7 @@ public class SharedPreference {
         editor.remove(s_minute);
         editor.remove(s_lat);
         editor.remove(s_lng);
+        editor.apply();
     }
 
     static public void SaveInstallWidgetState(Context ctx, boolean state) {

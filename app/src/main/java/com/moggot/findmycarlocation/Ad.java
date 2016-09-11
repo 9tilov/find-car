@@ -8,9 +8,6 @@ import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.MobileAds;
 
-/**
- * Created by moggot on 25.06.16.
- */
 final public class Ad {
     private Activity mActivity;
 

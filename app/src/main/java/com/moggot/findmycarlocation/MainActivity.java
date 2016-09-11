@@ -5,7 +5,6 @@ import android.app.AlertDialog;
 import android.appwidget.AppWidgetManager;
 import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
@@ -15,7 +14,6 @@ import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.app.ActivityCompat;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -53,13 +51,13 @@ public class MainActivity extends Activity implements
     /**
      * The desired interval for location updates. Inexact. Updates may be more or less frequent.
      */
-    public static final long UPDATE_INTERVAL_IN_MILLISECONDS = 10000;
+    private static final long UPDATE_INTERVAL_IN_MILLISECONDS = 10000;
 
     /**
      * The fastest rate for active location updates. Exact. Updates will never be more frequent
      * than this value.
      */
-    public static final long FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS =
+    private static final long FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS =
             UPDATE_INTERVAL_IN_MILLISECONDS / 2;
 
     /**
@@ -83,22 +81,21 @@ public class MainActivity extends Activity implements
      */
     protected Location mCurrentLocation = null;
 
-    ImageView img_animation = null;
-    int height;
+    private ImageView img_animation = null;
+    private int heightScreen = 0;
 
-    float y1, y2;
+    private float y1 = 0, y2 = 0;
 
-    final static String LOG_TAG = "myLogs";
-    boolean isLocationSaved;
+    private final static String LOG_TAG = "myLogs";
 
     private static boolean isAnimation = false;
 
-    int widgetID = AppWidgetManager.INVALID_APPWIDGET_ID;
-    Intent resultValue;
+    private int widgetID = AppWidgetManager.INVALID_APPWIDGET_ID;
+    private Intent resultValue = null;
 
-    static final int NUM_LAUNCH_TO_RATE_APP = 11;
+    private static final int NUM_LAUNCH_TO_RATE_APP = 11;
 
-    public class ERROR_CODE {
+    private class ERROR_CODE {
         final static int OK = 0;
         final static int LOCATION_NOT_RETRIEVED = 1;
     }
@@ -125,7 +122,7 @@ public class MainActivity extends Activity implements
 
         DisplayMetrics displaymetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
-        height = displaymetrics.heightPixels;
+        heightScreen = displaymetrics.heightPixels;
         if (AppWidgetManager.getInstance(this).getAppWidgetIds(new ComponentName(this, MyWidget.class)).length == 0)
             SharedPreference.SaveInstallWidgetState(this, false);
 
@@ -179,9 +176,8 @@ public class MainActivity extends Activity implements
         return false;
     }
 
-    void showSaveDialog() {
-        AlertDialog.Builder ad;
-        ad = new AlertDialog.Builder(MainActivity.this);
+    private void showSaveDialog() {
+        AlertDialog.Builder ad = new AlertDialog.Builder(MainActivity.this);
 
         ad.setTitle(getResources().getString(R.string.dialog_title_save_car));
 
@@ -204,7 +200,7 @@ public class MainActivity extends Activity implements
         ad.show();
     }
 
-    public void showRatingDialog() {
+    private void showRatingDialog() {
 
         final AlertDialog.Builder ratingdialog = new AlertDialog.Builder(this);
 
@@ -274,7 +270,7 @@ public class MainActivity extends Activity implements
             boolean isWidgetInstalled = SharedPreference.LoadInstallWidgetState(this);
             boolean isLocationSaved = SharedPreference
                     .LoadIsLocationSavedState(this);
-            if (isWidgetInstalled == false) {
+            if (!isWidgetInstalled) {
                 updateWidget(isLocationSaved);
                 isWidgetInstalled = true;
                 SharedPreference.SaveInstallWidgetState(this, isWidgetInstalled);
@@ -296,9 +292,9 @@ public class MainActivity extends Activity implements
         }
     }
 
-    void animationUP() {
+    private void animationUP() {
         TranslateAnimation animation = new TranslateAnimation(0.0f, 0.0f,
-                0, -height / 9);
+                0, -heightScreen / 9);
 
         final int[] count_anim = {0};
 
@@ -315,7 +311,7 @@ public class MainActivity extends Activity implements
                 if (count_anim[0] == 2)
                     return;
                 TranslateAnimation animation_repeate = new TranslateAnimation(0.0f, 0.0f,
-                        -height / 9, 0);
+                        -heightScreen / 9, 0);
                 animation_repeate.setDuration(500);
                 animation_repeate.setFillAfter(true);
                 img_animation.startAnimation(animation_repeate);
@@ -331,13 +327,12 @@ public class MainActivity extends Activity implements
         img_animation.startAnimation(animation);
     }
 
-    void animationFromDownToMiddle() {
+    private void animationFromDownToMiddle() {
         TranslateAnimation animation = new TranslateAnimation(0.0f, 0.0f,
-                height / 9, 0);
+                heightScreen / 9, 0);
         animation.setAnimationListener(new AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {
-                Log.i(LOG_TAG, "onAnimationStart");
                 isAnimation = true;
             }
 
@@ -355,13 +350,12 @@ public class MainActivity extends Activity implements
         img_animation.startAnimation(animation);
     }
 
-    void animationFromMiddleToDown() {
+    private void animationFromMiddleToDown() {
         TranslateAnimation animation = new TranslateAnimation(0.0f, 0.0f,
-                0, height / 9);
+                0, heightScreen / 9);
         animation.setAnimationListener(new AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {
-                Log.i(LOG_TAG, "onAnimationStart");
                 isAnimation = true;
             }
 
@@ -380,8 +374,7 @@ public class MainActivity extends Activity implements
         img_animation.startAnimation(animation);
     }
 
-    public int saveLocation() {
-        Log.i(LOG_TAG, "saveLocation");
+    private int saveLocation() {
         int res = ERROR_CODE.OK;
         if (mCurrentLocation == null) {
             checkLocationSettings();
@@ -391,8 +384,6 @@ public class MainActivity extends Activity implements
 
         saveLocationToSharedMemory(mCurrentLocation);
 
-        Log.i(LOG_TAG, "lat = " + mCurrentLocation.getLatitude());
-        Log.i(LOG_TAG, "lng = " + mCurrentLocation.getLongitude());
         saveRatingCountToSharedMemory();
         animationUP();
         car_loc_save_success();
@@ -669,7 +660,6 @@ public class MainActivity extends Activity implements
                     && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                 mCurrentLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
             }
-            Log.i(LOG_TAG, "mCurrentLocation1 = " + mCurrentLocation);
         }
     }
 
@@ -679,7 +669,6 @@ public class MainActivity extends Activity implements
     @Override
     public void onLocationChanged(Location location) {
         mCurrentLocation = location;
-        Log.i(LOG_TAG, "mCurrentLocation2 = " + mCurrentLocation);
         if (mCurrentLocation != null) {
             saveLocation();
             stopLocationUpdates();
