@@ -14,6 +14,7 @@ import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -502,7 +503,7 @@ public class MainActivity extends Activity implements
      * settings dialog to the user.
      */
     @Override
-    public void onResult(LocationSettingsResult locationSettingsResult) {
+    public void onResult(@NonNull LocationSettingsResult locationSettingsResult) {
         final Status status = locationSettingsResult.getStatus();
         switch (status.getStatusCode()) {
             case LocationSettingsStatusCodes.SUCCESS:
@@ -573,7 +574,7 @@ public class MainActivity extends Activity implements
                     this
             ).setResultCallback(new ResultCallback<Status>() {
                 @Override
-                public void onResult(Status status) {
+                public void onResult(@NonNull Status status) {
                 }
             });
         }
@@ -592,7 +593,7 @@ public class MainActivity extends Activity implements
                 this
         ).setResultCallback(new ResultCallback<Status>() {
             @Override
-            public void onResult(Status status) {
+            public void onResult(@NonNull Status status) {
             }
         });
     }
@@ -672,7 +673,6 @@ public class MainActivity extends Activity implements
         if (mCurrentLocation != null) {
             saveLocation();
             stopLocationUpdates();
-            return;
         }
     }
 

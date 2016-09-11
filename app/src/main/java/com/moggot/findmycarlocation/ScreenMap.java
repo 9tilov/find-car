@@ -16,6 +16,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.view.Menu;
@@ -214,7 +215,7 @@ public class ScreenMap extends TrackedActivity implements OnMapReadyCallback,
      * settings dialog to the user.
      */
     @Override
-    public void onResult(LocationSettingsResult locationSettingsResult) {
+    public void onResult(@NonNull LocationSettingsResult locationSettingsResult) {
         final Status status = locationSettingsResult.getStatus();
         switch (status.getStatusCode()) {
             case LocationSettingsStatusCodes.SUCCESS:
@@ -255,7 +256,7 @@ public class ScreenMap extends TrackedActivity implements OnMapReadyCallback,
                     this
             ).setResultCallback(new ResultCallback<Status>() {
                 @Override
-                public void onResult(Status status) {
+                public void onResult(@NonNull Status status) {
                 }
             });
         }
@@ -274,7 +275,7 @@ public class ScreenMap extends TrackedActivity implements OnMapReadyCallback,
                 this
         ).setResultCallback(new ResultCallback<Status>() {
             @Override
-            public void onResult(Status status) {
+            public void onResult(@NonNull Status status) {
             }
         });
     }
@@ -313,7 +314,6 @@ public class ScreenMap extends TrackedActivity implements OnMapReadyCallback,
         if (mCurrentLocation != null) {
             setUpMap();
             stopLocationUpdates();
-            return;
         }
     }
 
@@ -323,7 +323,7 @@ public class ScreenMap extends TrackedActivity implements OnMapReadyCallback,
     }
 
     @Override
-    public void onConnectionFailed(ConnectionResult result) {
+    public void onConnectionFailed(@NonNull ConnectionResult result) {
         // Refer to the javadoc for ConnectionResult to see what error codes might be returned in
         // onConnectionFailed.
         Log.i(LOG_TAG, "Connection failed: ConnectionResult.getErrorCode() = " + result.getErrorCode());
@@ -443,7 +443,7 @@ public class ScreenMap extends TrackedActivity implements OnMapReadyCallback,
             BufferedReader br = new BufferedReader(new InputStreamReader(
                     iStream));
 
-            StringBuffer sb = new StringBuffer();
+            StringBuilder sb = new StringBuilder();
 
             String line = "";
             while ((line = br.readLine()) != null) {
@@ -558,36 +558,29 @@ public class ScreenMap extends TrackedActivity implements OnMapReadyCallback,
                 }
             }
 
-            PolylineOptions lineOptions = new PolylineOptions();
-            // Adding all the points in the route to LineOptions
-            lineOptions.addAll(points);
-            lineOptions.width(4);
+            if (points != null) {
+                PolylineOptions lineOptions = new PolylineOptions();
+                // Adding all the points in the route to LineOptions
+                lineOptions.addAll(points);
+                lineOptions.width(4);
 
-            // Changing the color polyline according to the mode
-            lineOptions.color(Color.BLUE);
+                // Changing the color polyline according to the mode
+                lineOptions.color(Color.BLUE);
 
-            if (result.size() < 1) {
-                no_points();
-                return;
+                if (result.size() < 1) {
+                    no_points();
+                    return;
+                }
+
+                final String sDistance = getResources().getString(R.string.distance) + " " + distance;
+                final String sDuration = getResources().getString(R.string.duration) + " " + duration;
+                TextView tvDistance = (TextView) findViewById(R.id.tv_distance_time);
+                TextView tvDuration = (TextView) findViewById(R.id.tv_duration_time);
+                tvDistance.setText(sDistance);
+                tvDuration.setText(sDuration);
+                mMap.addPolyline(lineOptions);
             }
 
-            final String sDistance = getResources().getString(R.string.distance) + " " + distance;
-            final String sDuration = getResources().getString(R.string.duration) + " " + duration;
-            TextView tvDistance = (TextView) findViewById(R.id.tv_distance_time);
-            TextView tvDuration = (TextView) findViewById(R.id.tv_duration_time);
-            tvDistance.setText(sDistance);
-            tvDuration.setText(sDuration);
-            mMap.addPolyline(lineOptions);
-
-        }
-    }
-
-    private boolean isGPSenable() {
-        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-            return true;
-        } else {
-            return false;
         }
     }
 

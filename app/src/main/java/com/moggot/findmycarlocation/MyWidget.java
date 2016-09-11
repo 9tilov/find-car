@@ -91,7 +91,7 @@ public class MyWidget extends AppWidgetProvider {
                         WIDGET_PREF, Context.MODE_PRIVATE);
                 boolean isCarParked = sp.getBoolean(SharedPreference.s_state_location_save, false);
                 sp.edit().putBoolean(SharedPreference.s_state_location_save,
-                        isCarParked).commit();
+                        isCarParked).apply();
 
                 // Обновляем виджет
                 updateMyWidget(context, AppWidgetManager.getInstance(context),
