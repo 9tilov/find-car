@@ -137,7 +137,7 @@ public class MainActivity extends Activity implements
 
         if (SharedPreference.LoadTutorialStatus(this)) {
             Intent onboarding = new Intent(this, OnboardingActivity.class);
-            startActivity(onboarding);
+            startActivityForResult(onboarding, SharedPreference.ACTIVITY_RESULT_CODE.ONBOARDING_SCREEN);
         }
     }
 
