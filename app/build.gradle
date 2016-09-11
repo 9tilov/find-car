@@ -9,12 +9,12 @@ android {
             storePassword ',e,tyDmitry68'
         }
     }
-    compileSdkVersion 23
+    compileSdkVersion 24
     buildToolsVersion "23.0.3"
     defaultConfig {
         applicationId "com.moggot.findmycarlocation"
-        minSdkVersion 11
-        targetSdkVersion 23
+        minSdkVersion 14
+        targetSdkVersion 24
         versionCode 28
         versionName "1.8.4"
         signingConfig signingConfigs.moggot
