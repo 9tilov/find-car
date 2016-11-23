@@ -24,13 +24,12 @@
             android:value="@integer/google_play_services_version" />
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyCCyT0NyTH7h3uLGohE8G3xdczPIo0it1o" />
+            android:value="AIzaSyBiG-MjAZOrUP7uLFyAiRhnyPwNm6vf9_Q" />
 
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait">
-            >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
