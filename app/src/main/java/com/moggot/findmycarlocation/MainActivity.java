@@ -32,7 +32,7 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 
 import java.util.Calendar;
 
-public class MainActivity extends NetworkActivity{
+public class MainActivity extends NetworkActivity implements NetworkActivity.LocationObserver {
 
     private ImageView img_animation;
     private int heightScreen = 0;
@@ -53,10 +53,10 @@ public class MainActivity extends NetworkActivity{
         super.onCreate(savedInstanceState);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        registerLocationObserver(this);
+        initLocationServices();
         installWidget();
         setContentView(R.layout.activity_main);
-
-        initLocationServices();
 
         img_animation = (ImageView) findViewById(R.id.ivTrigger);
 
@@ -208,8 +208,7 @@ public class MainActivity extends NetworkActivity{
     }
 
     private void installWidget() {
-        Intent intent = getIntent();
-        Bundle extras = intent.getExtras();
+        Bundle extras = getIntent().getExtras();
 
         if (extras != null) {
             widgetID = extras.getInt(AppWidgetManager.EXTRA_APPWIDGET_ID,
@@ -219,6 +218,7 @@ public class MainActivity extends NetworkActivity{
 
         // и проверяем его корректность
         if (widgetID != AppWidgetManager.INVALID_APPWIDGET_ID) {
+            Log.i(LOG_TAG, "widgetID correct");
             SharedPreference.SaveWidgetID(this, widgetID);
             resultValue = new Intent();
             resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetID);
@@ -236,6 +236,7 @@ public class MainActivity extends NetworkActivity{
             }
 
             if (isLocationSaved) {
+                Log.i(LOG_TAG, "widgetID isLocationSaved");
                 final Handler handler = new Handler();
                 handler.postDelayed(new Runnable() {
                     @Override
@@ -244,6 +245,8 @@ public class MainActivity extends NetworkActivity{
                     }
                 }, 500);
             } else {
+                checkLocationSettings();
+                Log.i(LOG_TAG, "widgetID !isLocationSaved");
                 saveLocation();
             }
         }
@@ -332,13 +335,14 @@ public class MainActivity extends NetworkActivity{
     }
 
     private void saveLocation() {
-        Location mCurrentLocation = getLocation();
-        if (mCurrentLocation == null) {
+        Location location = getLocation();
+        Log.v(LOG_TAG, "location = " + location);
+        if (location == null) {
             checkLocationSettings();
             return;
         }
 
-        saveLocationToSharedMemory(mCurrentLocation);
+        saveLocationToSharedMemory(location);
         saveRatingCountToSharedMemory();
 
         if (widgetID != 0) {
@@ -400,6 +404,17 @@ public class MainActivity extends NetworkActivity{
     }
 
     @Override
+    public void onScanLocationStarted(final NetworkActivity activity) {
+        Log.i(LOG_TAG, "MaponScanLocationStarted");
+    }
+
+    @Override
+    public void onScanLocationFinished(final NetworkActivity activity) {
+        Log.i(LOG_TAG, "MaponScanLocationFinished");
+        saveLocation();
+    }
+
+    @Override
     public void onStop() {
         // Stop the analytics tracking
         GoogleAnalytics.getInstance(this).reportActivityStop(this);
@@ -410,6 +425,7 @@ public class MainActivity extends NetworkActivity{
     @Override
     public void onDestroy() {
         super.onDestroy();
+        unregisterLocationObserver(this);
     }
 
     private void save_car_location() {
