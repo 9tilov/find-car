@@ -18,7 +18,6 @@
 
 
     <screenName name="com.moggot.findmycarlocation.MainActivity">MainActivity</screenName>
-    <screenName name="com.moggot.findmycarlocation.ScreenMap">ScreenMap</screenName>
-    <screenName name="com.moggot.findmycarlocation.ScreenInfo">ScreenInfo</screenName>
+    <screenName name="com.moggot.findmycarlocation.MapActivity">MapActivity</screenName>
 
 </resources>

@@ -8,7 +8,7 @@ public class OnboardingActivity extends AppIntro2 {
     @Override
     public void init(Bundle savedInstanceState) {
 
-// Здесь указываем количество слайдов, например нам нужно 3
+        SharedPreference.SaveTutorialStatus(this, false);
         addSlide(OnboardingFragment.newInstance(R.layout.onboarding_screen1)); //
         addSlide(OnboardingFragment.newInstance(R.layout.onboarding_screen2));
         addSlide(OnboardingFragment.newInstance(R.layout.onboarding_screen3));
@@ -22,7 +22,7 @@ public class OnboardingActivity extends AppIntro2 {
 
     @Override
     public void onDonePressed() {
-        SharedPreference.SaveTutorialStatus(this, false);
+
         finish();
     }
 

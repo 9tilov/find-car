@@ -6,26 +6,20 @@ import android.preference.PreferenceManager;
 
 import com.google.android.gms.maps.model.LatLng;
 
-public class SharedPreference {
+final class SharedPreference {
 
-    public class ACTIVITY_RESULT_CODE {
-        final static int MAP_SCREEN = 0;
-        final static int ONBOARDING_SCREEN = 1;
-        final static int REQUEST_CHECK_SETTINGS = 2;
-    }
+    static final String s_lat = "latitude";
+    static final String s_lng = "longitude";
+    static final String s_hour = "hour";
+    static final String s_minute = "minute";
+    static final String s_day = "day";
+    static final String s_state_location_save = "state_location";
+    static final String s_widget_installed = "widget_installed";
+    static final String s_rating_count = "rating_count";
+    static final String s_widget_id = "widget_id";
+    static final String s_tutorial = "tutorial";
 
-    public static final String s_lat = "latitude";
-    public static final String s_lng = "longitude";
-    public static final String s_hour = "hour";
-    public static final String s_minute = "minute";
-    public static final String s_day = "day";
-    public static final String s_state_location_save = "state_location";
-    public static final String s_widget_installed = "widget_installed";
-    public static final String s_rating_count = "rating_count";
-    public static final String s_widget_id = "widget_id";
-    public static final String s_tutorial = "tutorial";
-
-    static public void SaveLocation(Context ctx, double lat, double lng) {
+    static void SaveLocation(Context ctx, double lat, double lng) {
         SharedPreferences sharedPreferences = PreferenceManager
                 .getDefaultSharedPreferences(ctx);
         SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -36,7 +30,7 @@ public class SharedPreference {
         editor.apply();
     }
 
-    static public LatLng LoadLocation(Context ctx) {
+    static LatLng LoadLocation(Context ctx) {
         SharedPreferences sharedPreferences = PreferenceManager
                 .getDefaultSharedPreferences(ctx);
         double lat = Double.longBitsToDouble(sharedPreferences
@@ -46,7 +40,7 @@ public class SharedPreference {
         return new LatLng(lat, lng);
     }
 
-    static public void SaveTime(Context ctx, int day, int hour, int minute) {
+    static void SaveTime(Context ctx, int day, int hour, int minute) {
         SharedPreferences sharedPreferences = PreferenceManager
                 .getDefaultSharedPreferences(ctx);
         SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -59,7 +53,7 @@ public class SharedPreference {
         editor.apply();
     }
 
-    static public String LoadTime(Context ctx) {
+    static String LoadTime(Context ctx) {
         SharedPreferences sharedPreferences = PreferenceManager
                 .getDefaultSharedPreferences(ctx);
         int day = sharedPreferences.getInt(s_day, 0);
@@ -68,7 +62,7 @@ public class SharedPreference {
         return String.valueOf(day + " " + hour + ":" + minute);
     }
 
-    static public void SaveIsLocationSavedState(Context ctx, boolean state) {
+    static void SaveIsLocationSavedState(Context ctx, boolean state) {
         SharedPreferences sharedPreferences = PreferenceManager
                 .getDefaultSharedPreferences(ctx);
         SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -77,14 +71,14 @@ public class SharedPreference {
         editor.apply();
     }
 
-    static public boolean LoadIsLocationSavedState(Context ctx) {
+    static boolean LoadIsLocationSavedState(Context ctx) {
         SharedPreferences sharedPreferences = PreferenceManager
                 .getDefaultSharedPreferences(ctx);
         return sharedPreferences.getBoolean(s_state_location_save,
                 false);
     }
 
-    static public void clearPref(Context ctx) {
+    static void clearPref(Context ctx) {
         SharedPreferences sharedPreferences = PreferenceManager
                 .getDefaultSharedPreferences(ctx);
         SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -96,7 +90,7 @@ public class SharedPreference {
         editor.apply();
     }
 
-    static public void SaveInstallWidgetState(Context ctx, boolean state) {
+    static void SaveInstallWidgetState(Context ctx, boolean state) {
         SharedPreferences sharedPreferences = PreferenceManager
                 .getDefaultSharedPreferences(ctx);
         SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -105,13 +99,13 @@ public class SharedPreference {
         editor.apply();
     }
 
-    static public boolean LoadInstallWidgetState(Context ctx) {
+    static boolean LoadInstallWidgetState(Context ctx) {
         SharedPreferences sharedPreferences = PreferenceManager
                 .getDefaultSharedPreferences(ctx);
         return sharedPreferences.getBoolean(s_widget_installed, false);
     }
 
-    static public void SaveRatingCount(Context ctx, int rate_count) {
+    static void SaveRatingCount(Context ctx, int rate_count) {
         SharedPreferences sharedPreferences = PreferenceManager
                 .getDefaultSharedPreferences(ctx);
         SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -120,13 +114,13 @@ public class SharedPreference {
         editor.apply();
     }
 
-    static public int LoadRatingCount(Context ctx) {
+    static int LoadRatingCount(Context ctx) {
         SharedPreferences sharedPreferences = PreferenceManager
                 .getDefaultSharedPreferences(ctx);
         return sharedPreferences.getInt(s_rating_count, 0);
     }
 
-    static public void SaveWidgetID(Context ctx, int widgetID) {
+    static void SaveWidgetID(Context ctx, int widgetID) {
         SharedPreferences sharedPreferences = PreferenceManager
                 .getDefaultSharedPreferences(ctx);
         SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -135,13 +129,13 @@ public class SharedPreference {
         editor.apply();
     }
 
-    static public int LoadWidgetID(Context ctx) {
+    static int LoadWidgetID(Context ctx) {
         SharedPreferences sharedPreferences = PreferenceManager
                 .getDefaultSharedPreferences(ctx);
         return sharedPreferences.getInt(s_widget_id, 0);
     }
 
-    static public void SaveTutorialStatus(Context ctx, boolean status) {
+    static void SaveTutorialStatus(Context ctx, boolean status) {
         SharedPreferences sharedPreferences = PreferenceManager
                 .getDefaultSharedPreferences(ctx);
         SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -150,7 +144,7 @@ public class SharedPreference {
         editor.apply();
     }
 
-    static public boolean LoadTutorialStatus(Context ctx) {
+    static boolean LoadTutorialStatus(Context ctx) {
         SharedPreferences sharedPreferences = PreferenceManager
                 .getDefaultSharedPreferences(ctx);
 
