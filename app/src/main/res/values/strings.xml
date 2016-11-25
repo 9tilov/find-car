@@ -1,8 +1,8 @@
 <resources>
     <string name="app_id" translatable="false">ca-app-pub-1475613019168586~2120488559</string>
-    <string name="banner_ad_unit_id_main" translatable="false">ca-app-pub-1475613019168586/6823799751</string>
-    <string name="banner_ad_unit_id_map" translatable="false">ca-app-pub-1475613019168586/5207465754</string>
-    <string name="banner_ad_unit_id_map_interstitial" translatable="false">ca-app-pub-1475613019168586/8300532952</string>
+    <string name="banner_ad_unit_id_main" translatable="false">ca-app-pub-1475613019168586/8301212155</string>
+    <string name="banner_ad_unit_id_map" translatable="false">ca-app-pub-1475613019168586/9777945357</string>
+    <string name="banner_ad_unit_id_map_interstitial" translatable="false">ca-app-pub-1475613019168586/4098011751</string>
     <string name="google_map_api_key" translatable="false">AIzaSyAoYJZLp7IFT4Mmd_Sp6qbsgLo2JJ8mdOY</string>
 
     <string name="app_name">Find My Car Location</string>
