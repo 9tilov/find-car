@@ -1,6 +1,7 @@
 package com.moggot.findmycarlocation;
 
 import android.app.Activity;
+import android.content.Context;
 
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
@@ -9,22 +10,22 @@ import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.MobileAds;
 
 final public class Ad {
-    private Activity mActivity;
+    private Context mCtx;
 
-    public Ad(Activity activity) {
-        mActivity = activity;
-        MobileAds.initialize(mActivity.getApplicationContext(), mActivity.getResources().getString(R.string.app_id));
+    public Ad(Context ctx) {
+        mCtx = ctx;
+        MobileAds.initialize(mCtx.getApplicationContext(), mCtx.getString(R.string.app_id));
     }
 
-    public void ShowBanner(int id) {
-        AdView mAdView = (AdView) mActivity.findViewById(id);
+    public void ShowBanner(final int id) {
+        AdView mAdView = (AdView) ((Activity)mCtx).findViewById(id);
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);
     }
 
     public void ShowInterstitial(int id) {
-        final InterstitialAd interstitialAd = new InterstitialAd(mActivity.getApplicationContext());
-        interstitialAd.setAdUnitId(mActivity.getResources().getString(id));
+        final InterstitialAd interstitialAd = new InterstitialAd(mCtx.getApplicationContext());
+        interstitialAd.setAdUnitId(mCtx.getString(id));
         AdRequest adRequest = new AdRequest.Builder().build();
         interstitialAd.loadAd(adRequest);
         interstitialAd.setAdListener(new AdListener() {

@@ -1,6 +1,5 @@
 package com.moggot.findmycarlocation;
 
-import android.Manifest;
 import android.app.AlertDialog;
 import android.appwidget.AppWidgetManager;
 import android.content.ActivityNotFoundException;
@@ -8,12 +7,10 @@ import android.content.ComponentName;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.app.ActivityCompat;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -26,11 +23,8 @@ import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.Toast;
 
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdView;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Tracker;
-import com.google.firebase.analytics.FirebaseAnalytics;
 
 import java.util.Calendar;
 
@@ -60,9 +54,11 @@ public class MainActivity extends NetworkActivity implements NetworkActivity.Loc
 
         img_animation = (ImageView) findViewById(R.id.ivTrigger);
 
-        AdView mAdView = (AdView) findViewById(R.id.adViewMain);
-        AdRequest adRequest = new AdRequest.Builder().build();
-        mAdView.loadAd(adRequest);
+        Ad advertisment = new Ad(this);
+        advertisment.ShowBanner(R.id.adViewMain);
+
+        FirebaseAnalysis firebase = new FirebaseAnalysis(this);
+        firebase.init();
 
         Tracker t = ((AnalyticsApplication) getApplication())
                 .getTracker(AnalyticsApplication.TrackerName.APP_TRACKER);
@@ -84,16 +80,6 @@ public class MainActivity extends NetworkActivity implements NetworkActivity.Loc
             Intent onboarding = new Intent(this, OnboardingActivity.class);
             startActivityForResult(onboarding, Consts.ONBOARDING_SCREEN);
         }
-
-        FirebaseAnalytics mFirebaseAnalytics = null;
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WAKE_LOCK) == PackageManager.PERMISSION_GRANTED)
-            mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
-
-        Bundle bundle = new Bundle();
-        bundle.putString(FirebaseAnalytics.Param.ITEM_ID, Consts.FIREBASE_ITEM_ID);
-        bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, Consts.FIREBASE_ITEM_NAME);
-        bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, Consts.FIREBASE_CONTENT_TYPE);
-        mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
 
     }
 

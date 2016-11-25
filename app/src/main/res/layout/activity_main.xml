@@ -28,7 +28,7 @@
             android:id="@+id/adViewMain"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            ads:adSize="SMAR_BANNER"
+            ads:adSize="SMART_BANNER"
             ads:adUnitId="@string/banner_ad_unit_id_main" />
     </RelativeLayout>
 

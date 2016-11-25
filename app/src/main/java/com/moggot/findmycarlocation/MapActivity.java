@@ -1,19 +1,15 @@
 package com.moggot.findmycarlocation;
 
-import android.*;
 import android.content.BroadcastReceiver;
 import android.content.IntentFilter;
-import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
-import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.view.WindowManager;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.firebase.analytics.FirebaseAnalytics;
 
 public class MapActivity extends NetworkActivity implements OnMapReadyCallback, NetworkActivity.LocationObserver {
 
@@ -37,22 +33,15 @@ public class MapActivity extends NetworkActivity implements OnMapReadyCallback, 
         advertisment.ShowBanner(R.id.adViewMap);
         advertisment.ShowInterstitial(R.string.banner_ad_unit_id_map_interstitial);
 
+        FirebaseAnalysis firebase = new FirebaseAnalysis(this);
+        firebase.init();
+
         registerLocationObserver(this);
         initLocationServices();
 
         IntentFilter filter = new IntentFilter(Consts.PACKAGE_NAME);
         receiver = new ProximityIntentReceiver();
         registerReceiver(receiver, filter);
-
-        FirebaseAnalytics mFirebaseAnalytics = null;
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.WAKE_LOCK) == PackageManager.PERMISSION_GRANTED)
-            mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
-
-        Bundle bundle = new Bundle();
-        bundle.putString(FirebaseAnalytics.Param.ITEM_ID, Consts.FIREBASE_ITEM_ID);
-        bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, Consts.FIREBASE_ITEM_NAME);
-        bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, Consts.FIREBASE_CONTENT_TYPE);
-        mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
     }
 
     @Override
