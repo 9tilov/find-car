@@ -26,6 +26,8 @@ import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.Toast;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Tracker;
 import com.google.firebase.analytics.FirebaseAnalytics;
@@ -60,8 +62,9 @@ public class MainActivity extends NetworkActivity implements NetworkActivity.Loc
 
         img_animation = (ImageView) findViewById(R.id.ivTrigger);
 
-        Ad advertisment = new Ad(this);
-        advertisment.ShowBanner(R.id.adViewMain);
+        AdView mAdView = (AdView) findViewById(R.id.adViewMain);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
 
         Tracker t = ((AnalyticsApplication) getApplication())
                 .getTracker(AnalyticsApplication.TrackerName.APP_TRACKER);
