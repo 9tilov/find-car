@@ -48,8 +48,6 @@ public class MainActivity extends NetworkActivity implements NetworkActivity.Loc
     private int widgetID = AppWidgetManager.INVALID_APPWIDGET_ID;
     private Intent resultValue;
 
-    private FirebaseAnalytics mFirebaseAnalytics;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -87,6 +85,7 @@ public class MainActivity extends NetworkActivity implements NetworkActivity.Loc
             startActivityForResult(onboarding, Consts.ONBOARDING_SCREEN);
         }
 
+        FirebaseAnalytics mFirebaseAnalytics = null;
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WAKE_LOCK) == PackageManager.PERMISSION_GRANTED)
             mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
