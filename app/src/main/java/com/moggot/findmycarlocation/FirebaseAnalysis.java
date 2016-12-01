@@ -13,13 +13,11 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 
 public class FirebaseAnalysis {
 
-    private Context mCtx;
     private FirebaseAnalytics mFirebaseAnalytics;
 
     public FirebaseAnalysis(Context ctx) {
-        mCtx = ctx;
-        if (ActivityCompat.checkSelfPermission(mCtx, android.Manifest.permission.WAKE_LOCK) == PackageManager.PERMISSION_GRANTED)
-            mFirebaseAnalytics = FirebaseAnalytics.getInstance(mCtx);
+        if (ActivityCompat.checkSelfPermission(ctx, android.Manifest.permission.WAKE_LOCK) == PackageManager.PERMISSION_GRANTED)
+            mFirebaseAnalytics = FirebaseAnalytics.getInstance(ctx);
     }
 
     public void init() {

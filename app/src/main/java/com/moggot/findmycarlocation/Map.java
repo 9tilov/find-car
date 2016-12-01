@@ -59,19 +59,23 @@ class Map {
         mLocationManager = (LocationManager) mCtx.getSystemService(Context.LOCATION_SERVICE);
     }
 
-    void setUpMap(Location locaion) {
+    void setUpMap(Location location) {
+
+        if (location == null)
+            return;
 
         if (!isInternetEnable()) {
             no_internet();
         }
 
         if (mMarkers.size() == 2) {
+            mGoogleMap.clear();
             mMarkers.clear();
         }
 
         LatLng arrivalPoint = SharedPreference.LoadLocation(mCtx);
-        LatLng departurePoint = new LatLng(locaion.getLatitude(),
-                locaion.getLongitude());
+        LatLng departurePoint = new LatLng(location.getLatitude(),
+                location.getLongitude());
 
         mGoogleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(departurePoint, 15.0f));
         mMarkers.add(departurePoint);
