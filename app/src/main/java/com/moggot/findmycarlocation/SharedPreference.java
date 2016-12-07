@@ -8,16 +8,16 @@ import com.google.android.gms.maps.model.LatLng;
 
 final class SharedPreference {
 
-    static final String s_lat = "latitude";
-    static final String s_lng = "longitude";
-    static final String s_hour = "hour";
-    static final String s_minute = "minute";
-    static final String s_day = "day";
-    static final String s_state_location_save = "state_location";
-    static final String s_widget_installed = "widget_installed";
-    static final String s_rating_count = "rating_count";
-    static final String s_widget_id = "widget_id";
-    static final String s_tutorial = "tutorial";
+    private static final String s_lat = "latitude";
+    private static final String s_lng = "longitude";
+    private static final String s_hour = "hour";
+    private static final String s_minute = "minute";
+    private static final String s_day = "day";
+    public static final String s_state_location_save = "state_location";
+    private static final String s_widget_installed = "widget_installed";
+    private static final String s_rating_count = "rating_count";
+    private static final String s_widget_id = "widget_id";
+    private static final String s_tutorial = "tutorial";
 
     static void SaveLocation(Context ctx, double lat, double lng) {
         SharedPreferences sharedPreferences = PreferenceManager
