@@ -9,6 +9,7 @@ import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -28,7 +29,7 @@ import com.google.android.gms.location.LocationSettingsStatusCodes;
  * Created by dmitry on 08.11.16.
  */
 
-public class NetworkActivity extends Activity implements
+public class NetworkActivity extends AppCompatActivity implements
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
         LocationListener,

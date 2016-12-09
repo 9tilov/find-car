@@ -8,8 +8,8 @@ android {
         applicationId "com.moggot.findmycarlocation"
         minSdkVersion 14
         targetSdkVersion 25
-        versionCode 32
-        versionName "1.8.7"
+        versionCode 33
+        versionName "1.8.8"
     }
     buildTypes {
         release {
