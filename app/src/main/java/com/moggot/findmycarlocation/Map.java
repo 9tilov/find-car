@@ -12,6 +12,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.support.v4.app.ActivityCompat;
+import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -42,6 +43,8 @@ import java.util.List;
 
 class Map {
 
+    private static final String LOG_TAG = "Map";
+
     private GoogleMap mGoogleMap;
     private Context mCtx;
     private LocationManager mLocationManager;
@@ -66,16 +69,17 @@ class Map {
 
         if (!isInternetEnable()) {
             no_internet();
-        }
-
-        if (mMarkers.size() == 2) {
-            mGoogleMap.clear();
-            mMarkers.clear();
+            return;
         }
 
         LatLng arrivalPoint = SharedPreference.LoadLocation(mCtx);
         LatLng departurePoint = new LatLng(location.getLatitude(),
                 location.getLongitude());
+
+        if (mMarkers.size() == 2) {
+            buildPath(arrivalPoint, departurePoint);
+            return;
+        }
 
         mGoogleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(departurePoint, 15.0f));
         mMarkers.add(departurePoint);
@@ -96,30 +100,35 @@ class Map {
             no_points();
             return;
         }
-        if (mMarkers.size() == 2) {
-            LatLngBounds.Builder builder = new LatLngBounds.Builder();
-            builder.include(departurePoint);
-            builder.include(arrivalPoint);
 
-            LatLng origin = mMarkers.get(0);
-            LatLng dest = mMarkers.get(1);
+        buildPath(departurePoint, arrivalPoint);
+    }
 
-            // Getting URL to the Google Directions API
-            String url = getDirectionsUrl(origin, dest);
+    private void buildPath(LatLng departurePoint, LatLng arrivalPoint) {
+        if (mMarkers.size() < 2)
+            return;
+        LatLngBounds.Builder builder = new LatLngBounds.Builder();
+        builder.include(departurePoint);
+        builder.include(arrivalPoint);
 
-            DownloadTask downloadTask = new DownloadTask();
+        LatLng origin = mMarkers.get(0);
+        LatLng dest = mMarkers.get(1);
 
-            // Start downloading json data from Google Directions API
-            downloadTask.execute(url);
+        // Getting URL to the Google Directions API
+        String url = getDirectionsUrl(origin, dest);
 
-            Intent intent = new Intent(Consts.PACKAGE_NAME);
-            PendingIntent proximityIntent = PendingIntent.getBroadcast(
-                    mCtx, 0, intent, 0);
-            if (ActivityCompat.checkSelfPermission(mCtx, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
-                    && ActivityCompat.checkSelfPermission(mCtx, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)
-                mLocationManager.addProximityAlert(arrivalPoint.latitude,
-                        arrivalPoint.longitude, 5, -1, proximityIntent);
-        }
+        DownloadTask downloadTask = new DownloadTask();
+
+        // Start downloading json data from Google Directions API
+        downloadTask.execute(url);
+
+        Intent intent = new Intent(Consts.PACKAGE_NAME);
+        PendingIntent proximityIntent = PendingIntent.getBroadcast(
+                mCtx, 0, intent, 0);
+        if (ActivityCompat.checkSelfPermission(mCtx, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(mCtx, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)
+            mLocationManager.addProximityAlert(arrivalPoint.latitude,
+                    arrivalPoint.longitude, 5, -1, proximityIntent);
     }
 
     private String getDirectionsUrl(LatLng origin, LatLng dest) {

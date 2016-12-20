@@ -36,7 +36,6 @@ public class ProximityIntentReceiver extends BroadcastReceiver {
             String real_time = format_time.format(new Date());
             String park_time = SharedPreference.LoadTime(context);
             difference = timeDifference(context, park_time, real_time);
-            SharedPreference.clearPref(context);
             SharedPreference.SaveIsLocationSavedState(context, false);
             int widgetID = SharedPreference.LoadWidgetID(context);
             if (widgetID == AppWidgetManager.INVALID_APPWIDGET_ID)
