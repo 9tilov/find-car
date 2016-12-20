@@ -13,7 +13,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 
 public class MapActivity extends NetworkActivity implements OnMapReadyCallback, NetworkActivity.LocationObserver {
 
-    final static String LOG_TAG = "myLogs";
+    final static String LOG_TAG = "MapActivity";
     private BroadcastReceiver receiver;
 
     private Map mMap;
@@ -58,12 +58,15 @@ public class MapActivity extends NetworkActivity implements OnMapReadyCallback, 
     @Override
     public void onScanLocationFinished(final NetworkActivity activity) {
         Location location = getLocation();
+        if (location == null)
+            return;
         mMap.setUpMap(location);
-        Log.i(LOG_TAG, "MaponScanLocationFinished");
+        Log.i(LOG_TAG, "MaponScanLocationFinished = " + location);
     }
 
     @Override
     public void onStop() {
+        Log.v(LOG_TAG, "onStop");
         super.onStop();
         if (receiver != null) {
             unregisterReceiver(receiver);
@@ -73,6 +76,7 @@ public class MapActivity extends NetworkActivity implements OnMapReadyCallback, 
 
     @Override
     public void onDestroy() {
+        Log.v(LOG_TAG, "onDestroy");
         super.onDestroy();
         unregisterLocationObserver(this);
     }

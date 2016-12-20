@@ -6,7 +6,7 @@ package com.moggot.findmycarlocation;
 
 final class Consts {
 
-    final static String PACKAGE_NAME = "com.example.findmycarlocation";
+    final static String PACKAGE_NAME = "com.example.findmycarlocation.proximity";
     final static int MAP_SCREEN = 0;
     final static int ONBOARDING_SCREEN = 1;
     final static int REQUEST_CHECK_SETTINGS = 2;

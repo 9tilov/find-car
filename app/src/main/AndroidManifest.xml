@@ -40,7 +40,11 @@
             android:label="@string/screen_map"
             android:screenOrientation="portrait" />
 
-        <receiver android:name="com.moggot.findmycarlocation.ProximityIntentReceiver" />
+        <receiver android:name="com.moggot.findmycarlocation.ProximityIntentReceiver">
+            <intent-filter>
+                <action android:name="com.example.findmycarlocation.proximity" />
+            </intent-filter>
+        </receiver>
         <receiver android:name="com.moggot.findmycarlocation.MyWidget">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />

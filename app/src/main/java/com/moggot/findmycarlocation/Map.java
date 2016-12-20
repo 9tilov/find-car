@@ -49,6 +49,8 @@ class Map {
     private Context mCtx;
     private LocationManager mLocationManager;
 
+    private boolean isPathBuild = false;
+
     final ArrayList<LatLng> mMarkers = new ArrayList<>();
 
     Map(Context ctx, GoogleMap map) {
@@ -64,7 +66,7 @@ class Map {
 
     void setUpMap(Location location) {
 
-        if (location == null)
+        if (isPathBuild)
             return;
 
         if (!isInternetEnable()) {
@@ -75,11 +77,6 @@ class Map {
         LatLng arrivalPoint = SharedPreference.LoadLocation(mCtx);
         LatLng departurePoint = new LatLng(location.getLatitude(),
                 location.getLongitude());
-
-        if (mMarkers.size() == 2) {
-            buildPath(arrivalPoint, departurePoint);
-            return;
-        }
 
         mGoogleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(departurePoint, 15.0f));
         mMarkers.add(departurePoint);
@@ -123,12 +120,12 @@ class Map {
         downloadTask.execute(url);
 
         Intent intent = new Intent(Consts.PACKAGE_NAME);
-        PendingIntent proximityIntent = PendingIntent.getBroadcast(
-                mCtx, 0, intent, 0);
+        PendingIntent proximityIntent = PendingIntent.getBroadcast(mCtx, 0, intent, 0);
         if (ActivityCompat.checkSelfPermission(mCtx, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(mCtx, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)
             mLocationManager.addProximityAlert(arrivalPoint.latitude,
                     arrivalPoint.longitude, 5, -1, proximityIntent);
+        isPathBuild = true;
     }
 
     private String getDirectionsUrl(LatLng origin, LatLng dest) {
