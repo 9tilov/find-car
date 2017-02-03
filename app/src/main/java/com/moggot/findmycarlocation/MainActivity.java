@@ -1,9 +1,11 @@
 package com.moggot.findmycarlocation;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.appwidget.AppWidgetManager;
 import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -25,6 +27,8 @@ import android.widget.Toast;
 
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Tracker;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 
 import java.util.Calendar;
 
@@ -35,7 +39,7 @@ public class MainActivity extends NetworkActivity implements NetworkActivity.Loc
 
     private float y1 = 0, y2 = 0;
 
-    private final static String LOG_TAG = "myLogs";
+    private final static String LOG_TAG = "MainActivity";
 
     private static boolean isAnimation = false;
 
@@ -80,6 +84,8 @@ public class MainActivity extends NetworkActivity implements NetworkActivity.Loc
             Intent onboarding = new Intent(this, OnboardingActivity.class);
             startActivityForResult(onboarding, Consts.ONBOARDING_SCREEN);
         }
+
+        isGooglePlayServicesAvailable(this);
 
     }
 
@@ -323,6 +329,9 @@ public class MainActivity extends NetworkActivity implements NetworkActivity.Loc
     }
 
     private void saveLocation() {
+
+        if (!isGooglePlayServicesAvailable(this))
+            return;
         Location location = getLocation();
         Log.v(LOG_TAG, "location = " + location);
         if (location == null) {
@@ -371,6 +380,18 @@ public class MainActivity extends NetworkActivity implements NetworkActivity.Loc
                     MapActivity.class);
             startActivityForResult(intent, Consts.MAP_SCREEN);
         }
+    }
+
+    public boolean isGooglePlayServicesAvailable(Activity activity) {
+        GoogleApiAvailability googleApiAvailability = GoogleApiAvailability.getInstance();
+        int status = googleApiAvailability.isGooglePlayServicesAvailable(activity);
+        if (status != ConnectionResult.SUCCESS) {
+            if (googleApiAvailability.isUserResolvableError(status)) {
+                googleApiAvailability.getErrorDialog(activity, status, 2404).show();
+            }
+            return false;
+        }
+        return true;
     }
 
     @Override
