@@ -51,6 +51,8 @@ public class MainActivity extends NetworkActivity implements NetworkActivity.Loc
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         registerLocationObserver(this);
+
+
         initLocationServices();
         installWidget();
         setContentView(R.layout.activity_main);
