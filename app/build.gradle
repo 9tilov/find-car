@@ -1,41 +1,56 @@
 apply plugin: 'com.android.application'
+apply plugin: 'com.getkeepsafe.dexcount'
 
 android {
-
-    compileSdkVersion 25
-    buildToolsVersion "25.0.2"
-    defaultConfig {
-        applicationId "com.moggot.findmycarlocation"
-        minSdkVersion 14
-        targetSdkVersion 25
-        versionCode 35
-        versionName "1.8.10"
+    signingConfigs {
+        release
     }
-    buildTypes {
-        release {
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+
+    Properties props = new Properties()
+    def propFile = file('../keystore.properties')
+    if (propFile.canRead()) {
+        props.load(new FileInputStream(propFile))
+
+        if (props != null && props.containsKey('STORE_FILE') && props.containsKey('STORE_PASSWORD') &&
+                props.containsKey('KEY_ALIAS') && props.containsKey('KEY_PASSWORD')) {
+
+            signingConfigs.release.storeFile = file(props['STORE_FILE'])
+            signingConfigs.release.storePassword = props['STORE_PASSWORD']
+            signingConfigs.release.keyAlias = props['KEY_ALIAS']
+            signingConfigs.release.keyPassword = props['KEY_PASSWORD']
         }
     }
 
-    sourceSets {
-        debug {
-            manifest.srcFile 'src/debug/AndroidManifest.xml'
+        compileSdkVersion 26
+        defaultConfig {
+            applicationId "com.moggot.findmycarlocation"
+            minSdkVersion 15
+            targetSdkVersion 26
+            versionCode 35
+            versionName "1.8.10"
+            testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         }
-        main { assets.srcDirs = ['src/main/assets', 'src/main/assets/'] }
+        buildTypes {
+            release {
+                minifyEnabled true
+                shrinkResources true
+                proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+                signingConfig signingConfigs.release
+            }
+            debug {
+                minifyEnabled false
+            }
+        }
     }
-    productFlavors {
+
+    dependencies {
+        implementation fileTree(include: ['*.jar'], dir: 'libs')
+        implementation 'com.android.support:appcompat-v7:26.1.0'
+        implementation 'com.google.android.gms:play-services-maps:11.6.0'
+        implementation 'com.google.android.gms:play-services-analytics:11.6.0'
+        implementation 'com.google.android.gms:play-services-location:11.6.0'
+        implementation 'com.google.firebase:firebase-core:11.6.0'
+        implementation 'com.google.firebase:firebase-ads:11.6.0'
     }
-}
 
-dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:appcompat-v7:25.1.1'
-    compile 'com.google.android.gms:play-services-maps:10.0.1'
-    compile 'com.google.android.gms:play-services-analytics:10.0.1'
-    compile 'com.google.android.gms:play-services-location:10.0.1'
-    compile 'com.google.firebase:firebase-core:10.0.1'
-    compile 'com.github.paolorotolo:appintro:3.3.0'
-    compile 'com.google.firebase:firebase-ads:10.0.1'
-}
-
-apply plugin: 'com.google.gms.google-services'
+    apply plugin: 'com.google.gms.google-services'

@@ -17,7 +17,6 @@ final class SharedPreference {
     private static final String s_widget_installed = "widget_installed";
     private static final String s_rating_count = "rating_count";
     private static final String s_widget_id = "widget_id";
-    private static final String s_tutorial = "tutorial";
 
     static void SaveLocation(Context ctx, double lat, double lng) {
         SharedPreferences sharedPreferences = PreferenceManager
@@ -133,21 +132,5 @@ final class SharedPreference {
         SharedPreferences sharedPreferences = PreferenceManager
                 .getDefaultSharedPreferences(ctx);
         return sharedPreferences.getInt(s_widget_id, 0);
-    }
-
-    static void SaveTutorialStatus(Context ctx, boolean status) {
-        SharedPreferences sharedPreferences = PreferenceManager
-                .getDefaultSharedPreferences(ctx);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.remove(s_tutorial);
-        editor.putBoolean(s_tutorial, status);
-        editor.apply();
-    }
-
-    static boolean LoadTutorialStatus(Context ctx) {
-        SharedPreferences sharedPreferences = PreferenceManager
-                .getDefaultSharedPreferences(ctx);
-
-        return sharedPreferences.getBoolean(s_tutorial, true);
     }
 }

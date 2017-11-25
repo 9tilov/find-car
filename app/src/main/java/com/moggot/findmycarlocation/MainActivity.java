@@ -5,7 +5,6 @@ import android.app.AlertDialog;
 import android.appwidget.AppWidgetManager;
 import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -78,11 +77,6 @@ public class MainActivity extends NetworkActivity implements NetworkActivity.Loc
         if (rate_count >= Consts.NUM_LAUNCH_TO_RATE_APP) {
             SharedPreference.SaveRatingCount(this, 0);
             showRatingDialog();
-        }
-
-        if (SharedPreference.LoadTutorialStatus(this)) {
-            Intent onboarding = new Intent(this, OnboardingActivity.class);
-            startActivityForResult(onboarding, Consts.ONBOARDING_SCREEN);
         }
 
         isGooglePlayServicesAvailable(this);
