@@ -60,7 +60,7 @@ public class MainActivity extends NetworkActivity implements NetworkActivity.Loc
         img_animation = (ImageView) findViewById(R.id.ivTrigger);
 
         Ad advertisment = new Ad(this);
-        advertisment.ShowBanner(R.id.adViewMain);
+        advertisment.showBanner(R.id.adViewMain);
 
         FirebaseAnalysis firebase = new FirebaseAnalysis(this);
         firebase.init();

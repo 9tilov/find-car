@@ -30,8 +30,8 @@ public class MapActivity extends NetworkActivity implements OnMapReadyCallback, 
         mapFragment.getMapAsync(this);
 
         Ad advertisment = new Ad(this);
-        advertisment.ShowBanner(R.id.adViewMap);
-        advertisment.ShowInterstitial(R.string.banner_ad_unit_id_map_interstitial);
+        advertisment.showBanner(R.id.adViewMap);
+        advertisment.showInterstitial(R.string.banner_ad_unit_id_map_interstitial);
 
         FirebaseAnalysis firebase = new FirebaseAnalysis(this);
         firebase.init();

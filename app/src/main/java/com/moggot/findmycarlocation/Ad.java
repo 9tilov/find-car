@@ -17,13 +17,13 @@ final public class Ad {
         MobileAds.initialize(mCtx.getApplicationContext(), mCtx.getString(R.string.app_id));
     }
 
-    public void ShowBanner(final int id) {
+    public void showBanner(final int id) {
         AdView mAdView = (AdView) ((Activity)mCtx).findViewById(id);
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);
     }
 
-    public void ShowInterstitial(int id) {
+    public void showInterstitial(int id) {
         final InterstitialAd interstitialAd = new InterstitialAd(mCtx.getApplicationContext());
         interstitialAd.setAdUnitId(mCtx.getString(id));
         AdRequest adRequest = new AdRequest.Builder().build();
