@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <color name="background">#000000</color>
-    <color name="text">#FF0000</color>
+    <color name="background">#ffffff</color>
+    <color name="text">#445568</color>
+    <color name="line">#78748C</color>
 
 </resources>

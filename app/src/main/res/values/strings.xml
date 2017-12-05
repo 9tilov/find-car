@@ -10,7 +10,7 @@
     <string name="save_car_location_success">Car location has been saved</string>
     <string name="no_location">GPS is turning on&#8230;Wait&#8230;</string>
     <string name="no_internet">No Internet connection</string>
-    <string name="no_points">No points</string>
+    <string name="no_path">Couldn\'t build the route</string>
     <string name="car_found">Car is here!</string>
     <string name="find_your_car">You should find your car</string>
     <string name="you_should_save_car_location">You should park your car</string>
