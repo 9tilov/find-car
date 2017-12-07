@@ -1,0 +1,87 @@
+ext.versions = [
+
+        minSdk                    : 15,
+        targetSdk                 : 27,
+        compileSdk                : 27,
+        buildTools                : '27.0.1',
+
+        major                     : '1',
+        minor                     : '9',
+        patch                     : '0',
+        build                     : '36',
+
+        androidGradlePlugin       : '3.0.1',
+        googleServicesGradlePlugin: '3.1.1',
+        dexcountGradlePlugin      : '0.8.1',
+        fabricGradlePlugin        : '1.25.1',
+        retrolambdaGradlePlugin   : '3.7.0',
+
+        analytics                 : '11.6.2',
+
+        supportLibs               : '27.0.2',
+        constraintLayout          : '1.0.2',
+
+        dagger                    : '2.13',
+
+        rxJava                    : '2.1.7',
+        rxLocation                : '1.0.4',
+        rxAndroid                 : '2.0.1',
+
+        retrofit                  : '2.3.0',
+        okhttp                    : '3.9.0',
+
+        butterKnife               : '8.8.1',
+
+        timber                    : '4.6.0',
+
+        mapUtils                  : '0.4',
+
+        leakCanary                : '1.5.4',
+        crashlytics               : '2.7.1@aar'
+]
+
+ext.gradlePlugins = [
+        android       : "com.android.tools.build:gradle:$versions.androidGradlePlugin",
+        googleServices: "com.google.gms:google-services:$versions.googleServicesGradlePlugin",
+        dexcount      : "com.getkeepsafe.dexcount:dexcount-gradle-plugin:$versions.dexcountGradlePlugin",
+        retrolambda   : "me.tatarka:gradle-retrolambda:$versions.retrolambdaGradlePlugin",
+        fabric        : "io.fabric.tools:gradle:$versions.fabricGradlePlugin"
+]
+
+ext.libraries = [
+        dagger             : "com.google.dagger:dagger:$versions.dagger",
+        daggerCompiler     : "com.google.dagger:dagger-compiler:$versions.dagger",
+
+        supportAppCompat   : "com.android.support:appcompat-v7:$versions.supportLibs",
+        supportDesign      : "com.android.support:design:$versions.supportLibs",
+
+        constraintLayout   : "com.android.support.constraint:constraint-layout:$versions.constraintLayout",
+
+        googlePlayAnalytics: "com.google.android.gms:play-services-analytics:$versions.analytics",
+        googlePlayLocation : "com.google.android.gms:play-services-location:$versions.analytics",
+        googlePlayMap      : "com.google.android.gms:play-services-maps:$versions.analytics",
+
+        firebaseCore       : "com.google.firebase:firebase-core:$versions.analytics",
+        firebaseAds        : "com.google.firebase:firebase-ads:$versions.analytics",
+
+        rxJava             : "io.reactivex.rxjava2:rxjava:$versions.rxJava",
+        rxAndroid          : "io.reactivex.rxjava2:rxandroid:$versions.rxAndroid",
+        rxLocation         : "com.patloew.rxlocation:rxlocation:$versions.rxLocation",
+
+        leakCanaryDebug    : "com.squareup.leakcanary:leakcanary-android:$versions.leakCanary",
+        leakCanaryRelease  : "com.squareup.leakcanary:leakcanary-android-no-op:$versions.leakCanary",
+
+        timber             : "com.jakewharton.timber:timber:$versions.timber",
+
+        butterKnife        : "com.jakewharton:butterknife:$versions.butterKnife",
+        butterKnifeCompiler: "com.jakewharton:butterknife-compiler:$versions.butterKnife",
+
+        retrofit           : "com.squareup.retrofit2:retrofit:$versions.retrofit",
+        retrofitConverter  : "com.squareup.retrofit2:converter-gson:$versions.retrofit",
+        retrofitAdapter    : "com.squareup.retrofit2:adapter-rxjava2:$versions.retrofit",
+        okhttpInterceptor  : "com.squareup.okhttp3:logging-interceptor:$versions.okhttp",
+
+        mapUtils           : "com.google.maps.android:android-maps-utils:$versions.mapUtils",
+
+        crashlytics        : "com.crashlytics.sdk.android:crashlytics:$versions.crashlytics"
+]

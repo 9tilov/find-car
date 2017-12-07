@@ -1,36 +1,28 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:ads="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:weightSum="10">
+    android:background="@drawable/background">
 
+    <ImageView
+        android:id="@+id/iv_gear"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/gear"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="ContentDescription"/>
 
-    <RelativeLayout
-        android:layout_width="fill_parent"
-        android:layout_height="0dip"
-        android:layout_weight="9"
-        android:background="@mipmap/bg_last1">
-
-        <ImageView
-            android:id="@+id/ivTrigger"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:src="@mipmap/geer6" />
-    </RelativeLayout>
-
-    <RelativeLayout xmlns:ads="http://schemas.android.com/apk/res-auto"
-        android:layout_width="fill_parent"
-        android:layout_height="0dip"
-        android:layout_weight="1">
-
-        <com.google.android.gms.ads.AdView
-            android:id="@+id/adViewMain"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            ads:adSize="SMART_BANNER"
-            ads:adUnitId="@string/banner_ad_unit_id_main" />
-    </RelativeLayout>
-
-
-</LinearLayout>
+    <com.google.android.gms.ads.AdView
+        android:id="@+id/ad_main"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        ads:adSize="SMART_BANNER"
+        ads:adUnitId="@string/banner_ad_unit_id_main"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+</android.support.constraint.ConstraintLayout>

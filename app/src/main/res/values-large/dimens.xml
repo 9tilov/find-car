@@ -1,9 +1,0 @@
-<resources>
-
-    <!-- Default screen margins, per the Android Design guidelines. -->
-    <dimen name="text_size_title_screen">55sp</dimen>
-    <dimen name="text_size">30sp</dimen>
-    <dimen name="text_version">50sp</dimen>
-    <dimen name="text_info">40sp</dimen>
-
-</resources>
