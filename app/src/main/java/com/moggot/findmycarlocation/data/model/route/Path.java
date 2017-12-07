@@ -8,7 +8,7 @@ import java.util.List;
 public class Path {
 
     @SerializedName("routes")
-    private List<Route> routes = new ArrayList<>();
+    private final List<Route> routes = new ArrayList<>();
 
     public List<Route> getRoutes() {
         return routes;

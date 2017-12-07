@@ -15,7 +15,7 @@ import io.reactivex.schedulers.Schedulers;
 public class MainInteractor {
 
     @NonNull
-    private LocalRepo repository;
+    private final LocalRepo repository;
 
     @Inject
     public MainInteractor(@NonNull LocalRepo localRepo) {

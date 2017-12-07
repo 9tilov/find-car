@@ -4,8 +4,8 @@ import com.google.android.gms.maps.model.LatLng;
 
 public class LocationParams {
 
-    private LatLng origin;
-    private LatLng destination;
+    private final LatLng origin;
+    private final LatLng destination;
 
     public LocationParams(LatLng origin, LatLng destination) {
         this.origin = origin;

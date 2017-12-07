@@ -9,15 +9,17 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 
 class FirebaseAnalysis {
 
-    private final static String FIREBASE_ITEM_ID = "id";
-    private final static String FIREBASE_ITEM_NAME = "name";
-    private final static String FIREBASE_CONTENT_TYPE = "image";
+    private static final String FIREBASE_ITEM_ID = "id";
+    private static final String FIREBASE_ITEM_NAME = "name";
+    private static final String FIREBASE_CONTENT_TYPE = "image";
 
     private FirebaseAnalytics mFirebaseAnalytics;
 
     public FirebaseAnalysis(Context ctx) {
-        if (ActivityCompat.checkSelfPermission(ctx, android.Manifest.permission.WAKE_LOCK) == PackageManager.PERMISSION_GRANTED)
+        if (ActivityCompat.checkSelfPermission(ctx, android.Manifest.permission.WAKE_LOCK)
+                == PackageManager.PERMISSION_GRANTED) {
             mFirebaseAnalytics = FirebaseAnalytics.getInstance(ctx);
+        }
     }
 
     public void init() {

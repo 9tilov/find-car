@@ -6,7 +6,7 @@ import android.content.pm.PackageManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 
-public class Utils {
+public final class Utils {
 
     public static final int LOCATION_PERMISSION = 0;
 

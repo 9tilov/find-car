@@ -16,9 +16,9 @@ import io.reactivex.schedulers.Schedulers;
 public class LocationInteractor {
 
     @NonNull
-    private RxLocation rxLocation;
+    private final RxLocation rxLocation;
     @NonNull
-    private LocationRequest locationRequest;
+    private final LocationRequest locationRequest;
 
     @Inject
     public LocationInteractor(@NonNull RxLocation rxLocation,

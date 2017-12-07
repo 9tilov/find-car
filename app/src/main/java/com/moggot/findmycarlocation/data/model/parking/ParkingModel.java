@@ -4,9 +4,9 @@ import com.google.android.gms.maps.model.LatLng;
 
 public class ParkingModel {
 
-    private LatLng location;
-    private long time;
-    private boolean isParking;
+    private final LatLng location;
+    private final long time;
+    private final boolean isParking;
 
     public ParkingModel(LatLng location, long time, boolean isParking) {
         this.location = location;

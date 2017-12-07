@@ -8,7 +8,7 @@ import java.util.List;
 public class Route {
 
     @SerializedName("legs")
-    private List<Leg> legs = new ArrayList<>();
+    private final List<Leg> legs = new ArrayList<>();
 
     @SerializedName("overview_polyline")
     private OverviewPolyline overviewPolyline;

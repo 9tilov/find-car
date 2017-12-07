@@ -5,7 +5,7 @@ import android.support.annotation.NonNull;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 
-public abstract class BasePresenter<T extends BaseView> {
+public class BasePresenter<T extends BaseView> {
 
     private final CompositeDisposable disposable = new CompositeDisposable();
     private T view;

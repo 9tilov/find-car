@@ -12,6 +12,7 @@ import com.moggot.findmycarlocation.di.module.AppModule;
 import com.squareup.leakcanary.LeakCanary;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import io.fabric.sdk.android.Fabric;
 import timber.log.Timber;
@@ -20,7 +21,7 @@ public class App extends Application {
 
     private static final String PROPERTY_ID = "UA-66799500-6";
     private static App instance;
-    private HashMap<TrackerName, Tracker> mTrackers = new HashMap<>();
+    private final Map<TrackerName, Tracker> mTrackers = new HashMap<>();
     private AppComponent appComponent;
 
     public static App getInstance() {
@@ -55,18 +56,20 @@ public class App extends Application {
         return appComponent;
     }
 
-    public synchronized Tracker getTracker(TrackerName trackerId) {
-        if (!mTrackers.containsKey(trackerId)) {
+    public Tracker getTracker(TrackerName trackerId) {
+        synchronized (this) {
+            if (!mTrackers.containsKey(trackerId)) {
 
-            GoogleAnalytics analytics = GoogleAnalytics.getInstance(this);
-            Tracker t = (trackerId == TrackerName.APP_TRACKER) ? analytics
-                    .newTracker(R.xml.app_tracker) : analytics
-                    .newTracker(PROPERTY_ID);
-            t.enableAdvertisingIdCollection(true);
-            mTrackers.put(trackerId, t);
+                GoogleAnalytics analytics = GoogleAnalytics.getInstance(this);
+                Tracker t = (trackerId == TrackerName.APP_TRACKER) ? analytics
+                        .newTracker(R.xml.app_tracker) : analytics
+                        .newTracker(PROPERTY_ID);
+                t.enableAdvertisingIdCollection(true);
+                mTrackers.put(trackerId, t);
 
+            }
+            return mTrackers.get(trackerId);
         }
-        return mTrackers.get(trackerId);
     }
 
     public enum TrackerName {

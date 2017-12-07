@@ -16,11 +16,11 @@ import javax.inject.Inject;
 public class MapPresenter extends BasePresenter<MapView> {
 
     @NonNull
-    private MapInteractor mapInteractor;
+    private final MapInteractor mapInteractor;
     @NonNull
-    private LocationInteractor locationInteractor;
+    private final LocationInteractor locationInteractor;
     @NonNull
-    private MainInteractor mainInteractor;
+    private final MainInteractor mainInteractor;
 
     @Inject
     public MapPresenter(@NonNull MapInteractor mapInteractor,

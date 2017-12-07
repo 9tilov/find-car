@@ -30,8 +30,8 @@ public class NetworkRepo {
     @WorkerThread
     public Single<Path> getRoute(LatLng origin) {
         LocationParams locationParams = new LocationParams(origin, preferences.loadLocation());
-        String originStr = String.valueOf(locationParams.getOrigin().latitude) + "," + String.valueOf(locationParams.getOrigin().longitude);
-        String destinationStr = String.valueOf(locationParams.getDestination().latitude) + "," + String.valueOf(locationParams.getDestination().longitude);
+        String originStr = locationParams.getOrigin().latitude + "," + locationParams.getOrigin().longitude;
+        String destinationStr = locationParams.getDestination().latitude + "," + locationParams.getDestination().longitude;
         Timber.d("origin = " + originStr + "  dest = " + destinationStr);
         return locationApi.getLocation(originStr, destinationStr)
                 .timeout(NETWORK_TIMEOUT, TimeUnit.SECONDS);

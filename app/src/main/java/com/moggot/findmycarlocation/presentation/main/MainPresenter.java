@@ -1,5 +1,7 @@
 package com.moggot.findmycarlocation.presentation.main;
 
+import android.support.annotation.NonNull;
+
 import com.google.android.gms.maps.model.LatLng;
 import com.moggot.findmycarlocation.data.model.parking.ParkingModel;
 import com.moggot.findmycarlocation.domain.LocationInteractor;
@@ -12,11 +14,13 @@ import javax.inject.Inject;
 
 public class MainPresenter extends BasePresenter<MainView> {
 
-    private MainInteractor mainInteractor;
-    private LocationInteractor locationInteractor;
+    @NonNull
+    private final MainInteractor mainInteractor;
+    @NonNull
+    private final LocationInteractor locationInteractor;
 
     @Inject
-    public MainPresenter(MainInteractor mainInteractor, LocationInteractor locationInteractor) {
+    public MainPresenter(@NonNull MainInteractor mainInteractor, @NonNull LocationInteractor locationInteractor) {
         this.mainInteractor = mainInteractor;
         this.locationInteractor = locationInteractor;
     }

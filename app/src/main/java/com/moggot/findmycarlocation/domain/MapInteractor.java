@@ -15,7 +15,7 @@ import io.reactivex.schedulers.Schedulers;
 public class MapInteractor {
 
     @NonNull
-    private NetworkRepo networkRepo;
+    private final NetworkRepo networkRepo;
 
     @Inject
     public MapInteractor(@NonNull NetworkRepo networkRepo) {
@@ -28,6 +28,4 @@ public class MapInteractor {
                 .observeOn(AndroidSchedulers.mainThread());
 
     }
-
-
 }
