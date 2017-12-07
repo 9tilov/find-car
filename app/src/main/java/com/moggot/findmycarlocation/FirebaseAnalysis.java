@@ -7,11 +7,7 @@ import android.support.v4.app.ActivityCompat;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
 
-/**
- * Created by dmitry on 25.11.16.
- */
-
-public class FirebaseAnalysis {
+class FirebaseAnalysis {
 
     private final static String FIREBASE_ITEM_ID = "id";
     private final static String FIREBASE_ITEM_NAME = "name";

@@ -11,8 +11,4 @@ public class OverviewPolyline {
         return points;
     }
 
-    public void setPoints(String points) {
-        this.points = points;
-    }
-
 }

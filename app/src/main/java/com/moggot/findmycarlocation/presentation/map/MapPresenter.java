@@ -58,7 +58,7 @@ public class MapPresenter extends BasePresenter<MapView> {
     public void drawCircle() {
         if (getView() != null) {
             unSubscribeOnDetach(mainInteractor.loadParkingData()
-                    .subscribe(parkingModel -> getView().drawCircle(parkingModel.getLocation())));
+                    .subscribe(parkingModel -> getView().decoratePoint(parkingModel.getLocation())));
         }
     }
 }

@@ -20,7 +20,7 @@ public class App extends Application {
 
     private static final String PROPERTY_ID = "UA-66799500-6";
     private static App instance;
-    HashMap<TrackerName, Tracker> mTrackers = new HashMap<TrackerName, Tracker>();
+    private HashMap<TrackerName, Tracker> mTrackers = new HashMap<>();
     private AppComponent appComponent;
 
     public static App getInstance() {

@@ -10,7 +10,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.android.gms.ads.AdRequest;
@@ -28,21 +27,20 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import timber.log.Timber;
 
 import static com.moggot.findmycarlocation.Utils.LOCATION_PERMISSION;
 
 public class MainActivity extends AppCompatActivity implements MainView, View.OnTouchListener {
 
     @BindView(R.id.iv_gear)
-    ImageView ivGear;
+    View ivGear;
     @BindView(R.id.ad_main)
     AdView adView;
 
     @Inject
     MainPresenter presenter;
     private boolean isAnimated;
-    private float yStart, yEnd;
+    private float yStart;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +68,13 @@ public class MainActivity extends AppCompatActivity implements MainView, View.On
     public void onResume() {
         super.onResume();
         checkPlayServicesAvailable();
+        adView.resume();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        adView.pause();
     }
 
     private void checkPlayServicesAvailable() {
@@ -133,11 +138,10 @@ public class MainActivity extends AppCompatActivity implements MainView, View.On
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(R.string.dialog_you_not_find_car)
                 .setMessage(R.string.dialog_title_save_car)
-                .setPositiveButton(R.string.dialog_yes, (dialog, id) -> {
-                    presenter.reParkCar();
-                }).setNegativeButton(R.string.dialog_no, (dialog, id) -> {
-            dialog.dismiss();
-        });
+                .setPositiveButton(R.string.dialog_yes,
+                        (dialog, id) -> presenter.reParkCar())
+                .setNegativeButton(R.string.dialog_no,
+                        (dialog, id) -> dialog.dismiss());
 
         AlertDialog dialog = builder.create();
         dialog.show();
@@ -176,6 +180,7 @@ public class MainActivity extends AppCompatActivity implements MainView, View.On
 
     @Override
     public boolean onTouch(View v, MotionEvent event) {
+        v.performClick();
         int action = event.getAction();
         if (isAnimated) {
             return false;
@@ -186,15 +191,13 @@ public class MainActivity extends AppCompatActivity implements MainView, View.On
                 return true;
 
             case MotionEvent.ACTION_UP:
-                yEnd = event.getY();
+                float yEnd = event.getY();
                 if (yStart > yEnd) {
-                    Timber.d("upda");
                     Utils.checkLocationPermissions(this);
                     presenter.parkCar();
                     break;
                 } else {
                     presenter.showMap();
-                    Timber.d("down");
                     break;
                 }
         }
@@ -210,9 +213,7 @@ public class MainActivity extends AppCompatActivity implements MainView, View.On
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     presenter.parkCar();
-                } else {
                 }
-                return;
             }
         }
     }
@@ -221,6 +222,7 @@ public class MainActivity extends AppCompatActivity implements MainView, View.On
     protected void onDestroy() {
         super.onDestroy();
         presenter.onDetach();
+        adView.destroy();
     }
 
     @Override

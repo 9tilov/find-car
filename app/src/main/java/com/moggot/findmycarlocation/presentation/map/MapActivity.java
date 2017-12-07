@@ -69,15 +69,22 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
                 != PackageManager.PERMISSION_GRANTED) {
             return;
         }
-        map.setMyLocationEnabled(true);
-        map.getUiSettings().setZoomControlsEnabled(true);
-        map.getUiSettings().setCompassEnabled(true);
-        presenter.buildRoute();
-        presenter.drawCircle();
+        if (map != null) {
+            map.setMyLocationEnabled(true);
+            map.getUiSettings().setZoomControlsEnabled(true);
+            map.getUiSettings().setCompassEnabled(true);
+            presenter.buildRoute();
+            presenter.drawCircle();
+        }
     }
 
     @Override
-    public void drawCircle(LatLng point) {
+    public void decoratePoint(LatLng point) {
+        drawCircle(point);
+        addMarker(point);
+    }
+
+    private void drawCircle(LatLng point) {
         CircleOptions circleOptions = new CircleOptions();
         circleOptions.center(point);
         circleOptions.radius(10);
@@ -89,13 +96,22 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         }
     }
 
+    private void addMarker(LatLng carPosition) {
+        MarkerOptions endMarkerOptions = new MarkerOptions()
+                .position(carPosition)
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.car));
+        if (map != null) {
+            map.addMarker(endMarkerOptions);
+        }
+    }
+
     @Override
     public void showAd() {
         showInterstitial();
     }
 
     public void showInterstitial() {
-        final InterstitialAd interstitialAd = new InterstitialAd(this);
+        InterstitialAd interstitialAd = new InterstitialAd(getApplicationContext());
         interstitialAd.setAdUnitId(getString(R.string.banner_ad_unit_id_map_interstitial));
         AdRequest adRequest = new AdRequest.Builder().build();
         interstitialAd.loadAd(adRequest);
@@ -132,17 +148,6 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         line.width(4f).color(R.color.line);
         LatLngBounds.Builder latLngBuilder = new LatLngBounds.Builder();
         for (int i = 0; i < points.size(); i++) {
-            if (i == 0) {
-                MarkerOptions startMarkerOptions = new MarkerOptions()
-                        .position(points.get(i))
-                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.man));
-                map.addMarker(startMarkerOptions);
-            } else if (i == points.size() - 1) {
-                MarkerOptions endMarkerOptions = new MarkerOptions()
-                        .position(points.get(i))
-                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.car));
-                map.addMarker(endMarkerOptions);
-            }
             line.add(points.get(i));
             latLngBuilder.include(points.get(i));
         }
@@ -150,7 +155,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         int size = getResources().getDisplayMetrics().widthPixels;
         LatLngBounds latLngBounds = latLngBuilder.build();
         CameraUpdate track = CameraUpdateFactory.newLatLngBounds(latLngBounds, size, size, 25);
-        map.moveCamera(track);
+        map.animateCamera(track);
     }
 
     @Override
@@ -162,9 +167,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     presenter.buildRoute();
-                } else {
                 }
-                return;
             }
         }
     }

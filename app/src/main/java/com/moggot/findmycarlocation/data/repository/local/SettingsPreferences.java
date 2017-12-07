@@ -10,7 +10,7 @@ import timber.log.Timber;
 
 public class SettingsPreferences {
 
-    public static final String PARKING_STATE = "parking_state";
+    private static final String PARKING_STATE = "parking_state";
     private static final String LATITUDE = "latitude";
     private static final String LONGITUDE = "longitude";
     private static final String TIME = "time";

@@ -23,7 +23,7 @@ public abstract class BasePresenter<T extends BaseView> {
         this.view = null;
     }
 
-    public T getView() {
+    protected T getView() {
         return view;
     }
 }

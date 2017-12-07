@@ -13,7 +13,7 @@ public interface MapView extends BaseView {
 
     void showDuration(String duration);
 
-    void drawCircle(LatLng location);
+    void decoratePoint(LatLng location);
 
     void showAd();
 }
