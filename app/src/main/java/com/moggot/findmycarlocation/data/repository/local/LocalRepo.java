@@ -20,7 +20,7 @@ public class LocalRepo {
     public Completable saveParking(ParkingModel parkingModel) {
         if (settingsPreferences.loadParkingState()) {
             return Completable.error(() -> {
-                throw new Exception("Can't save parking");
+                throw new IllegalStateException("Can't save parking");
             });
         }
         settingsPreferences.saveTime(parkingModel.getTime());

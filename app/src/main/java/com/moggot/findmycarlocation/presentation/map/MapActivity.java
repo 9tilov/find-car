@@ -3,7 +3,6 @@ package com.moggot.findmycarlocation.presentation.map;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
@@ -26,7 +25,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.moggot.findmycarlocation.App;
 import com.moggot.findmycarlocation.R;
-import com.moggot.findmycarlocation.Utils;
 
 import java.util.List;
 
@@ -34,8 +32,6 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-
-import static com.moggot.findmycarlocation.Utils.LOCATION_PERMISSION;
 
 public class MapActivity extends FragmentActivity implements OnMapReadyCallback, MapView {
 
@@ -64,7 +60,6 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
     @Override
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
-        Utils.checkLocationPermissions(this);
         if (ContextCompat.checkSelfPermission(this,
                 android.Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -157,15 +152,6 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         LatLngBounds latLngBounds = latLngBuilder.build();
         CameraUpdate track = CameraUpdateFactory.newLatLngBounds(latLngBounds, size, size, 25);
         map.animateCamera(track);
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (requestCode == LOCATION_PERMISSION
-                && grantResults.length > 0
-                && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            presenter.buildRoute();
-        }
     }
 
     @Override

@@ -1,26 +1,21 @@
 package com.moggot.findmycarlocation;
 
-import android.Manifest;
-import android.app.Activity;
-import android.content.pm.PackageManager;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 
 public final class Utils {
-
-    public static final int LOCATION_PERMISSION = 0;
 
     private Utils() {
         throw new IllegalStateException("This is Utility class");
     }
 
-    public static void checkLocationPermissions(Activity activity) {
-        if (ContextCompat.checkSelfPermission(activity,
-                Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(activity,
-                    new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
-                    LOCATION_PERMISSION);
+    public static boolean isOnline(Context context) {
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (cm == null) {
+            return false;
         }
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        return netInfo.isConnected();
     }
 }

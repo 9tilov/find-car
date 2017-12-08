@@ -2,9 +2,7 @@ package com.moggot.findmycarlocation.presentation.main;
 
 import android.app.AlertDialog;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MotionEvent;
@@ -28,8 +26,6 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-
-import static com.moggot.findmycarlocation.Utils.LOCATION_PERMISSION;
 
 public class MainActivity extends AppCompatActivity implements MainView, View.OnTouchListener {
 
@@ -156,6 +152,10 @@ public class MainActivity extends AppCompatActivity implements MainView, View.On
 
     @Override
     public void openMap() {
+        if (!Utils.isOnline(this)) {
+            noInternet();
+            return;
+        }
         Animation animationDown = AnimationUtils.loadAnimation(this, R.anim.middle_down);
         animationDown.setAnimationListener(new Animation.AnimationListener() {
             @Override
@@ -179,6 +179,10 @@ public class MainActivity extends AppCompatActivity implements MainView, View.On
 
     }
 
+    public void noInternet() {
+        Toast.makeText(this, getString(R.string.no_internet), Toast.LENGTH_SHORT).show();
+    }
+
     @Override
     public boolean onTouch(View v, MotionEvent event) {
         v.performClick();
@@ -194,7 +198,6 @@ public class MainActivity extends AppCompatActivity implements MainView, View.On
             case MotionEvent.ACTION_UP:
                 float yEnd = event.getY();
                 if (yStart > yEnd) {
-                    Utils.checkLocationPermissions(this);
                     presenter.parkCar();
                 } else {
                     presenter.showMap();
@@ -204,15 +207,6 @@ public class MainActivity extends AppCompatActivity implements MainView, View.On
                 break;
         }
         return false;
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (requestCode == LOCATION_PERMISSION
-                && grantResults.length > 0
-                && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            presenter.parkCar();
-        }
     }
 
     @Override

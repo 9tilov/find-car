@@ -42,7 +42,9 @@ public class MainPresenter extends BasePresenter<MainView> {
                     mainInteractor.saveParkingData(parkingModel)
                             .subscribe(
                                     () -> getView().showCarIsParking(),
-                                    throwable -> getView().showCantSaveParking());
+                                    throwable -> {
+                                        getView().showCantSaveParking();
+                                    });
 
                 }, throwable -> getView().showError()));
     }
