@@ -9,8 +9,6 @@ import javax.inject.Inject;
 
 import io.reactivex.Completable;
 import io.reactivex.Single;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.schedulers.Schedulers;
 
 public class MainInteractor {
 
@@ -27,9 +25,7 @@ public class MainInteractor {
     }
 
     public Single<ParkingModel> loadParkingData() {
-        return repository.loadParking()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
+        return repository.loadParking();
     }
 
     public void markCarIsFound() {

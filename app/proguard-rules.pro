@@ -19,6 +19,8 @@
 #crashlytics
 -keep class com.crashlytics.** { *; }
 -dontwarn com.crashlytics.**
+-renamesourcefileattribute SourceFile
+-keepattributes SourceFile,LineNumberTable
 
 #leakcanary
 -dontwarn com.squareup.haha.perflib.**

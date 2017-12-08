@@ -7,6 +7,7 @@
 
     <string name="app_name">Find My Car Location</string>
     <string name="save_car_location_success">Car location has been saved</string>
+    <string name="no_internet">Internet is not available</string>
     <string name="no_location">GPS is turning on&#8230;Wait&#8230;</string>
     <string name="no_path">Couldn\'t build the route</string>
     <string name="you_should_save_car_location">You should park your car</string>
