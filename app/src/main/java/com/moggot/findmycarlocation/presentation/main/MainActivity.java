@@ -156,7 +156,7 @@ public class MainActivity extends AppCompatActivity implements MainView, View.On
             noInternet();
             return;
         }
-        Animation animationDown = AnimationUtils.loadAnimation(this, R.anim.middle_down);
+        Animation animationDown = AnimationUtils.loadAnimation(this, R.anim.middle_down_middle);
         animationDown.setAnimationListener(new Animation.AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {
@@ -174,7 +174,6 @@ public class MainActivity extends AppCompatActivity implements MainView, View.On
 
             }
         });
-        animationDown.setFillAfter(true);
         ivGear.startAnimation(animationDown);
 
     }

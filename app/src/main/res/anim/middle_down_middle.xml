@@ -4,8 +4,14 @@
 
     <translate
         android:duration="@integer/animation_duration"
-        android:fillAfter="true"
         android:fromYDelta="0%"
         android:toYDelta="15%"/>
+
+    <translate
+        android:duration="@integer/animation_duration"
+        android:fillAfter="true"
+        android:fromYDelta="0%"
+        android:startOffset="@integer/animation_duration"
+        android:toYDelta="-15%"/>
 
 </set>
