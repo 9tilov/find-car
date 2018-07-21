@@ -4,7 +4,6 @@ import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -25,6 +24,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.moggot.findmycarlocation.App;
 import com.moggot.findmycarlocation.R;
+import com.moggot.findmycarlocation.presentation.common.LocationActivity;
 
 import java.util.List;
 
@@ -33,7 +33,7 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class MapActivity extends FragmentActivity implements OnMapReadyCallback, MapView {
+public class MapActivity extends LocationActivity implements OnMapReadyCallback, MapView {
 
     @BindView(R.id.tv_distance_value)
     TextView tvDistance;
@@ -45,7 +45,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
     private GoogleMap map;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
         ButterKnife.bind(this);
@@ -131,11 +131,12 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
 
             @Override
             public void onAdOpened() {
+                //do nothing
             }
 
             @Override
             public void onAdFailedToLoad(int errorCode) {
-
+                //do nothing
             }
         });
     }

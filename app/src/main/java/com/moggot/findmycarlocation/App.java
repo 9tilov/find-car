@@ -23,7 +23,7 @@ public class App extends Application {
 
     private static final String PROPERTY_ID = "UA-66799500-6";
     private static App instance;
-    private final Map<TrackerName, Tracker> mTrackers = new HashMap<>();
+    private final Map<TrackerName, Tracker> trackers = new HashMap<>();
     private AppComponent appComponent;
 
     public static App getInstance() {
@@ -68,17 +68,17 @@ public class App extends Application {
 
     public Tracker getTracker(TrackerName trackerId) {
         synchronized (this) {
-            if (!mTrackers.containsKey(trackerId)) {
+            if (!trackers.containsKey(trackerId)) {
 
                 GoogleAnalytics analytics = GoogleAnalytics.getInstance(this);
                 Tracker t = (trackerId == TrackerName.APP_TRACKER) ? analytics
                         .newTracker(R.xml.app_tracker) : analytics
                         .newTracker(PROPERTY_ID);
                 t.enableAdvertisingIdCollection(true);
-                mTrackers.put(trackerId, t);
+                trackers.put(trackerId, t);
 
             }
-            return mTrackers.get(trackerId);
+            return trackers.get(trackerId);
         }
     }
 

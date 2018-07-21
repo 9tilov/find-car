@@ -16,6 +16,6 @@ public final class Utils {
             return false;
         }
         NetworkInfo netInfo = cm.getActiveNetworkInfo();
-        return (netInfo != null && netInfo.isConnected());
+        return netInfo != null && netInfo.isConnected();
     }
 }

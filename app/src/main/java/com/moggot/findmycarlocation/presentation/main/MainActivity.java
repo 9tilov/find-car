@@ -4,7 +4,6 @@ import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
@@ -20,6 +19,7 @@ import com.google.android.gms.common.GoogleApiAvailability;
 import com.moggot.findmycarlocation.App;
 import com.moggot.findmycarlocation.R;
 import com.moggot.findmycarlocation.Utils;
+import com.moggot.findmycarlocation.presentation.common.LocationActivity;
 import com.moggot.findmycarlocation.presentation.map.MapActivity;
 
 import javax.inject.Inject;
@@ -27,7 +27,7 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class MainActivity extends AppCompatActivity implements MainView, View.OnTouchListener {
+public class MainActivity extends LocationActivity implements MainView, View.OnTouchListener {
 
     @BindView(R.id.iv_gear)
     View ivGear;
@@ -37,10 +37,10 @@ public class MainActivity extends AppCompatActivity implements MainView, View.On
     @Inject
     MainPresenter presenter;
     private boolean isAnimated;
-    private float yStart;
+    private float startY;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -121,7 +121,7 @@ public class MainActivity extends AppCompatActivity implements MainView, View.On
 
             @Override
             public void onAnimationRepeat(Animation animation) {
-
+                //do nothing
             }
         });
         ivGear.startAnimation(animationUp);
@@ -177,7 +177,7 @@ public class MainActivity extends AppCompatActivity implements MainView, View.On
 
             @Override
             public void onAnimationRepeat(Animation animation) {
-
+                //do nothing
             }
         });
         ivGear.startAnimation(animationDown);
@@ -195,14 +195,15 @@ public class MainActivity extends AppCompatActivity implements MainView, View.On
         if (isAnimated) {
             return false;
         }
+
         switch (action) {
             case MotionEvent.ACTION_DOWN:
-                yStart = event.getY();
+                startY = event.getY();
                 return true;
 
             case MotionEvent.ACTION_UP:
-                float yEnd = event.getY();
-                if (yStart > yEnd) {
+                float endY = event.getY();
+                if (startY > endY) {
                     presenter.parkCar();
                 } else {
                     presenter.showMap();

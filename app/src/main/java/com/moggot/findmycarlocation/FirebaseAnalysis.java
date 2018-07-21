@@ -13,12 +13,12 @@ class FirebaseAnalysis {
     private static final String FIREBASE_ITEM_NAME = "name";
     private static final String FIREBASE_CONTENT_TYPE = "image";
 
-    private FirebaseAnalytics mFirebaseAnalytics;
+    private FirebaseAnalytics firebaseAnalytics;
 
     public FirebaseAnalysis(Context ctx) {
         if (ActivityCompat.checkSelfPermission(ctx, android.Manifest.permission.WAKE_LOCK)
                 == PackageManager.PERMISSION_GRANTED) {
-            mFirebaseAnalytics = FirebaseAnalytics.getInstance(ctx);
+            firebaseAnalytics = FirebaseAnalytics.getInstance(ctx);
         }
     }
 
@@ -27,6 +27,6 @@ class FirebaseAnalysis {
         bundle.putString(FirebaseAnalytics.Param.ITEM_ID, FIREBASE_ITEM_ID);
         bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, FIREBASE_ITEM_NAME);
         bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, FIREBASE_CONTENT_TYPE);
-        mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
+        firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
     }
 }

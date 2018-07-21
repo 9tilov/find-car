@@ -30,7 +30,7 @@ android {
     defaultConfig {
         applicationId "com.moggot.findmycarlocation"
         minSdkVersion 15
-        targetSdkVersion 22
+        targetSdkVersion 27
         versionCode 1000 * (1000 * versionMajor + 100 * versionMinor + versionPatch) + versionBuild
         versionName "${versionMajor}.${versionMinor}.${versionPatch}"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
