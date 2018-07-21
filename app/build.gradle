@@ -1,6 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'com.getkeepsafe.dexcount'
 apply plugin: 'io.fabric'
+
 apply from: "$project.rootDir/tools/findbugs.gradle"
 apply from: "$project.rootDir/tools/checkstyle.gradle"
 apply from: "$project.rootDir/tools/pmd.gradle"
@@ -19,10 +20,10 @@ android {
         }
     }
 
-    def versionMajor = versions.major as int
-    def versionMinor = versions.minor as int
-    def versionPatch = versions.patch as int
-    def versionBuild = versions.build as int
+    def versionMajor = 1
+    def versionMinor = 9
+    def versionPatch = 3
+    def versionBuild = 27
 
     compileSdkVersion 27
     buildToolsVersion "27.0.3"
