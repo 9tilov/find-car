@@ -47,7 +47,6 @@ public class MainActivity extends AppCompatActivity implements MainView, View.On
         ButterKnife.bind(this);
 
         App.getInstance().getAppComponent().inject(this);
-        presenter.onAttach(this);
 
         AdRequest adRequest = new AdRequest.Builder().build();
         adView.loadAd(adRequest);
@@ -59,6 +58,12 @@ public class MainActivity extends AppCompatActivity implements MainView, View.On
         presenter.initAd();
         isAnimated = false;
         ivGear.setOnTouchListener(this);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        presenter.onAttach(this);
     }
 
     @Override
@@ -91,6 +96,7 @@ public class MainActivity extends AppCompatActivity implements MainView, View.On
     public void onStop() {
         // Stop the analytics tracking
         GoogleAnalytics.getInstance(this).reportActivityStop(this);
+        presenter.onDetach();
         super.onStop();
     }
 
@@ -211,7 +217,6 @@ public class MainActivity extends AppCompatActivity implements MainView, View.On
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        presenter.onDetach();
         adView.destroy();
     }
 

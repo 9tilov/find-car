@@ -5,23 +5,17 @@ apply from: "$project.rootDir/tools/findbugs.gradle"
 apply from: "$project.rootDir/tools/checkstyle.gradle"
 apply from: "$project.rootDir/tools/pmd.gradle"
 
+def keystorePropertiesFile = rootProject.file("keystore.properties")
+def keystoreProperties = new Properties()
+keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+
 android {
     signingConfigs {
-        release
-    }
-
-    Properties props = new Properties()
-    def propFile = file('../keystore.properties')
-    if (propFile.canRead()) {
-        props.load(new FileInputStream(propFile))
-
-        if (props != null && props.containsKey('STORE_FILE') && props.containsKey('STORE_PASSWORD') &&
-                props.containsKey('KEY_ALIAS') && props.containsKey('KEY_PASSWORD')) {
-
-            signingConfigs.release.storeFile = file(props['STORE_FILE'])
-            signingConfigs.release.storePassword = props['STORE_PASSWORD']
-            signingConfigs.release.keyAlias = props['KEY_ALIAS']
-            signingConfigs.release.keyPassword = props['KEY_PASSWORD']
+        release {
+            keyAlias keystoreProperties["keyAlias"]
+            keyPassword keystoreProperties["keyPassword"]
+            storeFile file(keystoreProperties["storeFile"])
+            storePassword keystoreProperties["storePassword"]
         }
     }
 
@@ -30,26 +24,28 @@ android {
     def versionPatch = versions.patch as int
     def versionBuild = versions.build as int
 
-    compileSdkVersion versions.compileSdk
+    compileSdkVersion 27
+    buildToolsVersion "27.0.3"
     defaultConfig {
         applicationId "com.moggot.findmycarlocation"
-        minSdkVersion versions.minSdk
-        targetSdkVersion versions.targetSdk
+        minSdkVersion 15
+        targetSdkVersion 22
         versionCode 1000 * (1000 * versionMajor + 100 * versionMinor + versionPatch) + versionBuild
         versionName "${versionMajor}.${versionMinor}.${versionPatch}"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
         release {
-            versionNameSuffix "-release"
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            multiDexEnabled false
             signingConfig signingConfigs.release
         }
         debug {
             versionNameSuffix "-debug"
             minifyEnabled false
+            multiDexEnabled true
         }
     }
 
@@ -62,40 +58,43 @@ android {
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
 
-    implementation libraries.supportAppCompat
-    implementation libraries.supportDesign
-    implementation libraries.constraintLayout
+    implementation 'com.android.support:multidex:1.0.3'
 
-    implementation libraries.googlePlayMap
-    implementation libraries.googlePlayAnalytics
-    implementation libraries.googlePlayLocation
+    implementation 'com.android.support:appcompat-v7:27.1.1'
+    implementation 'com.android.support:customtabs:27.1.1'
+    implementation 'com.android.support:design:27.1.1'
+    implementation 'com.android.support.constraint:constraint-layout:1.1.2'
 
-    implementation libraries.firebaseCore
-    implementation libraries.firebaseAds
+    implementation 'com.google.android.gms:play-services-maps:15.0.1'
+    implementation 'com.google.android.gms:play-services-analytics:16.0.1'
+    implementation 'com.google.android.gms:play-services-location:15.0.1'
 
-    implementation libraries.rxJava
-    implementation libraries.rxAndroid
-    implementation libraries.rxLocation
+    implementation 'com.google.firebase:firebase-core:16.0.1'
+    implementation 'com.google.firebase:firebase-ads:15.0.1'
 
-    implementation libraries.timber
+    implementation 'io.reactivex.rxjava2:rxjava:2.1.14'
+    implementation 'io.reactivex.rxjava2:rxandroid:2.0.2'
+    implementation 'com.patloew.rxlocation:rxlocation:1.0.5'
 
-    implementation libraries.retrofit
-    implementation libraries.retrofitConverter
-    implementation libraries.retrofitAdapter
-    implementation libraries.okhttpInterceptor
+    implementation 'com.jakewharton.timber:timber:4.7.0'
 
-    implementation libraries.mapUtils
+    implementation 'com.squareup.retrofit2:retrofit:2.4.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.3.0'
+    implementation 'com.squareup.retrofit2:adapter-rxjava2:2.3.0'
+    implementation 'com.squareup.okhttp3:logging-interceptor:3.10.0'
 
-    implementation libraries.butterKnife
-    annotationProcessor libraries.butterKnifeCompiler
+    implementation 'com.google.maps.android:android-maps-utils:0.4'
 
-    implementation libraries.dagger
-    annotationProcessor libraries.daggerCompiler
+    implementation 'com.jakewharton:butterknife:8.8.1'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
 
-    debugImplementation libraries.leakCanaryDebug
-    releaseImplementation libraries.leakCanaryRelease
+    implementation 'com.google.dagger:dagger:2.15'
+    annotationProcessor 'com.google.dagger:dagger-compiler:2.15'
 
-    implementation(libraries.crashlytics) {
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.5.4'
+    releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.4'
+
+    implementation('com.crashlytics.sdk.android:crashlytics:2.7.1@aar') {
         transitive = true
     }
 }

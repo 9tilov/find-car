@@ -13,6 +13,8 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import timber.log.Timber;
+
 public class MapPresenter extends BasePresenter<MapView> {
 
     @NonNull
@@ -36,10 +38,11 @@ public class MapPresenter extends BasePresenter<MapView> {
             return;
         }
         unSubscribeOnDetach(locationInteractor.getLocation()
-                .doOnSuccess(location -> {
+                .subscribe(location -> {
                     LatLng originLocation = new LatLng(location.getLatitude(), location.getLongitude());
                     mapInteractor.getRoute(originLocation)
                             .doOnSuccess(path -> getView().showAd())
+                            .filter(path -> !path.getRoutes().isEmpty())
                             .subscribe(
                                     route -> {
                                         String pointsStr = route.getRoutes().get(0).getOverviewPolyline().getPoints();
@@ -50,9 +53,11 @@ public class MapPresenter extends BasePresenter<MapView> {
                                         getView().showDistance(distance);
                                         getView().showDuration(duration);
                                     },
-                                    throwable -> getView().showError());
-                })
-                .subscribe());
+                                    throwable -> {
+                                        getView().showError();
+                                        Timber.d("moggot = " + throwable.getMessage());
+                                    });
+                }));
     }
 
     public void drawCircle() {

@@ -53,9 +53,13 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
         App.getInstance().getAppComponent().inject(this);
-        presenter.onAttach(this);
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        presenter.onAttach(this);
+    }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
@@ -99,6 +103,12 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         if (map != null) {
             map.addMarker(endMarkerOptions);
         }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        presenter.onDetach();
     }
 
     @Override
@@ -162,11 +172,5 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
     @Override
     public void showDuration(String duration) {
         tvDuration.setText(duration);
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        presenter.onDetach();
     }
 }

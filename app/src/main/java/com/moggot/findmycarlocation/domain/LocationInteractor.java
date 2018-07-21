@@ -42,8 +42,8 @@ public class LocationInteractor {
                     .observeOn(AndroidSchedulers.mainThread());
 
         } else {
-            return rxLocation.location().lastLocation().doOnSuccess(location -> {
-            }).toObservable();
+            return rxLocation.location().lastLocation()
+                    .toObservable();
         }
     }
 }
