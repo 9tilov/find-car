@@ -5,9 +5,6 @@ import android.support.annotation.NonNull;
 import com.google.android.gms.maps.model.LatLng;
 import com.moggot.findmycarlocation.data.model.parking.ParkingModel;
 
-import io.reactivex.Completable;
-import io.reactivex.Single;
-
 public class LocalRepo {
 
     @NonNull
@@ -17,24 +14,21 @@ public class LocalRepo {
         this.settingsPreferences = settingsPreferences;
     }
 
-    public Completable saveParking(ParkingModel parkingModel) {
+    public boolean saveParking(ParkingModel parkingModel) {
         if (settingsPreferences.loadParkingState()) {
-            return Completable.error(() -> {
-                throw new IllegalStateException("Can't save parking");
-            });
+            return false;
         }
         settingsPreferences.saveTime(parkingModel.getTime());
         settingsPreferences.saveLocation(parkingModel.getLocation());
         settingsPreferences.saveParkingState(true);
-        return Completable.complete();
+        return true;
     }
 
-    public Single<ParkingModel> loadParking() {
+    public ParkingModel loadParking() {
         LatLng location = settingsPreferences.loadLocation();
         long time = settingsPreferences.loadTimeInMillis();
         boolean isParking = settingsPreferences.loadParkingState();
-        ParkingModel parkingModel = new ParkingModel(location, time, isParking);
-        return Single.fromCallable(() -> parkingModel);
+        return new ParkingModel(location, time, isParking);
     }
 
     public void changeParkingState(boolean state) {

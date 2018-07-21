@@ -184,6 +184,11 @@ public class MainActivity extends LocationActivity implements MainView, View.OnT
 
     }
 
+    @Override
+    public void enableGear(boolean block) {
+        ivGear.setEnabled(block);
+    }
+
     public void noInternet() {
         Toast.makeText(this, getString(R.string.no_internet), Toast.LENGTH_SHORT).show();
     }

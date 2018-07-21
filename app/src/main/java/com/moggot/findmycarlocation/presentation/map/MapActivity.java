@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
+import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -173,5 +174,10 @@ public class MapActivity extends LocationActivity implements OnMapReadyCallback,
     @Override
     public void showDuration(String duration) {
         tvDuration.setText(duration);
+    }
+
+    public void onClickFound(View view) {
+        presenter.foundCar();
+        finish();
     }
 }

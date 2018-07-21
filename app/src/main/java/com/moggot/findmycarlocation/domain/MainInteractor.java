@@ -20,11 +20,11 @@ public class MainInteractor {
         this.repository = localRepo;
     }
 
-    public Completable saveParkingData(ParkingModel parkingModel) {
+    public boolean saveParkingData(ParkingModel parkingModel) {
         return repository.saveParking(parkingModel);
     }
 
-    public Single<ParkingModel> loadParkingData() {
+    public ParkingModel loadParkingData() {
         return repository.loadParking();
     }
 

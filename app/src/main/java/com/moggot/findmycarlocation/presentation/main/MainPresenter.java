@@ -35,18 +35,19 @@ public class MainPresenter extends BasePresenter<MainView> {
             return;
         }
         unSubscribeOnDetach(locationInteractor.getLocation()
+                .doOnSubscribe(disposable -> getView().enableGear(false))
+                .doFinally(() -> getView().enableGear(true))
+                .doOnError(throwable -> getView().showError())
                 .subscribe(location -> {
                     LatLng coords = new LatLng(location.getLatitude(), location.getLongitude());
                     long time = Calendar.getInstance().get(Calendar.MILLISECOND);
                     ParkingModel parkingModel = new ParkingModel(coords, time, true);
-                    mainInteractor.saveParkingData(parkingModel)
-                            .subscribe(
-                                    () -> getView().showCarIsParking(),
-                                    throwable -> {
-                                        getView().showCantSaveParking();
-                                    });
-
-                }, throwable -> getView().showError()));
+                    if (mainInteractor.saveParkingData(parkingModel)) {
+                        getView().showCarIsParking();
+                    } else {
+                        getView().showCantSaveParking();
+                    }
+                }));
     }
 
     public void initAd() {
@@ -57,14 +58,12 @@ public class MainPresenter extends BasePresenter<MainView> {
 
     public void showMap() {
         if (getView() != null) {
-            unSubscribeOnDetach(mainInteractor.loadParkingData()
-                    .subscribe((parkingModel, throwable) -> {
-                        if (parkingModel.isParking()) {
-                            getView().openMap();
-                        } else {
-                            getView().showCarIsNotParking();
-                        }
-                    }));
+            ParkingModel parkingModel = mainInteractor.loadParkingData();
+            if (parkingModel.isParking()) {
+                getView().openMap();
+            } else {
+                getView().showCarIsNotParking();
+            }
         }
     }
 }

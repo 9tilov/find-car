@@ -14,4 +14,5 @@ public interface MainView extends BaseView {
 
     void openMap();
 
+    void enableGear(boolean block);
 }

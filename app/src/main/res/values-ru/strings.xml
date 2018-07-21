@@ -14,5 +14,10 @@
     <string name="dialog_yes">Да</string>
     <string name="dialog_no">Нет</string>
     <string name="dialog_you_not_find_car">Вы еще не нашли свою машину</string>
+    <string name="found_car">Я нашел машину!</string>
+
+    <string name="permission_rationale">Требуется разрешение для определения местоположения</string>
+    <string name="permission_denied_explanation">Нет прав для доступа к определению местоположения</string>
+    <string name="settings">Настройки</string>
 
 </resources>
