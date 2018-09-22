@@ -15,9 +15,16 @@
     <string name="dialog_no">नहीं</string>
     <string name="dialog_you_not_find_car">आपको अभी तक अपनी कार नहीं मिली है</string>
     <string name="found_car">मुझे कार मिली!</string>
+    <string name="retry">पुन: प्रयास करें</string>
+    <string name="version">संस्करण %1$s</string>
 
     <string name="permission_rationale">स्थान निर्धारित करने के लिए अनुमति आवश्यक है</string>
     <string name="permission_denied_explanation">स्थान निर्धारित करने के लिए पहुंचने का कोई अधिकार नहीं है</string>
     <string name="settings">सेटिंग्स</string>
+
+    <string name="title_home">होम</string>
+    <string name="title_dashboard">नक्शा</string>
+    <string name="title_notifications">ऐप के बारे में</string>
+    <string name="privacy_policy">गोपनीयता नीति</string>
 
 </resources>

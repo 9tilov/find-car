@@ -51,7 +51,7 @@ public class SettingsPreferences {
         editor.apply();
     }
 
-    public boolean loadParkingState() {
+    public boolean isAlreadyParked() {
         return sharedPreferences.getBoolean(PARKING_STATE, false);
     }
 }

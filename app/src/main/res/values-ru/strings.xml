@@ -15,9 +15,16 @@
     <string name="dialog_no">Нет</string>
     <string name="dialog_you_not_find_car">Вы еще не нашли свою машину</string>
     <string name="found_car">Я нашел машину!</string>
+    <string name="retry">Повторить</string>
+    <string name="version">Версия %1$s</string>
 
     <string name="permission_rationale">Требуется разрешение для определения местоположения</string>
     <string name="permission_denied_explanation">Нет прав для доступа к определению местоположения</string>
     <string name="settings">Настройки</string>
+
+    <string name="title_home">Домой</string>
+    <string name="title_dashboard">Карта</string>
+    <string name="title_notifications">О приложении</string>
+    <string name="privacy_policy">Политика конфиденциальности</string>
 
 </resources>

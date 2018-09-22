@@ -58,12 +58,12 @@ public class MainPresenter extends BasePresenter<MainView> {
 
     public void showMap() {
         if (getView() != null) {
-            ParkingModel parkingModel = mainInteractor.loadParkingData();
-            if (parkingModel.isParking()) {
-                getView().openMap();
-            } else {
-                getView().showCarIsNotParking();
-            }
+//            ParkingModel parkingModel = mainInteractor.needShowMap();
+//            if (parkingModel.isParking()) {
+//                getView().openMap();
+//            } else {
+//                getView().showCarIsNotParking();
+//            }
         }
     }
 }

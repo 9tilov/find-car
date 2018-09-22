@@ -7,9 +7,6 @@ import com.moggot.findmycarlocation.data.repository.local.LocalRepo;
 
 import javax.inject.Inject;
 
-import io.reactivex.Completable;
-import io.reactivex.Single;
-
 public class MainInteractor {
 
     @NonNull
@@ -21,11 +18,11 @@ public class MainInteractor {
     }
 
     public boolean saveParkingData(ParkingModel parkingModel) {
-        return repository.saveParking(parkingModel);
+        return repository.parkCarIfNeed(parkingModel);
     }
 
     public ParkingModel loadParkingData() {
-        return repository.loadParking();
+        return repository.loadParkingData();
     }
 
     public void markCarIsFound() {

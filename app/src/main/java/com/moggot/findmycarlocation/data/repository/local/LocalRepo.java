@@ -14,8 +14,8 @@ public class LocalRepo {
         this.settingsPreferences = settingsPreferences;
     }
 
-    public boolean saveParking(ParkingModel parkingModel) {
-        if (settingsPreferences.loadParkingState()) {
+    public boolean parkCarIfNeed(ParkingModel parkingModel) {
+        if (settingsPreferences.isAlreadyParked()) {
             return false;
         }
         settingsPreferences.saveTime(parkingModel.getTime());
@@ -24,10 +24,10 @@ public class LocalRepo {
         return true;
     }
 
-    public ParkingModel loadParking() {
+    public ParkingModel loadParkingData() {
         LatLng location = settingsPreferences.loadLocation();
         long time = settingsPreferences.loadTimeInMillis();
-        boolean isParking = settingsPreferences.loadParkingState();
+        boolean isParking = settingsPreferences.isAlreadyParked();
         return new ParkingModel(location, time, isParking);
     }
 

@@ -3,11 +3,12 @@ package com.moggot.findmycarlocation.presentation.map;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
@@ -15,57 +16,132 @@ import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
-import com.moggot.findmycarlocation.App;
+import com.google.maps.android.PolyUtil;
+import com.moggot.findmycarlocation.ErrorStatus;
+import com.moggot.findmycarlocation.MapViewModel;
 import com.moggot.findmycarlocation.R;
-import com.moggot.findmycarlocation.presentation.common.LocationActivity;
+import com.moggot.findmycarlocation.presentation.common.BaseFragment;
 
 import java.util.List;
 
-import javax.inject.Inject;
-
 import butterknife.BindView;
-import butterknife.ButterKnife;
 
-public class MapActivity extends LocationActivity implements OnMapReadyCallback, MapView {
+public class GoogleMapFragment extends BaseFragment<MapViewModel> implements OnMapReadyCallback {
 
     @BindView(R.id.tv_distance_value)
     TextView tvDistance;
     @BindView(R.id.tv_duration_value)
     TextView tvDuration;
-    @Inject
-    MapPresenter presenter;
+    @BindView(R.id.map)
+    MapView googleMapView;
+
     @Nullable
     private GoogleMap map;
+    private MapViewModel viewModel;
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_map);
-        ButterKnife.bind(this);
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
-        App.getInstance().getAppComponent().inject(this);
+    private static final String TAG = "GoogleMapFragment";
+
+    public static GoogleMapFragment newInstance() {
+        return new GoogleMapFragment();
     }
 
     @Override
-    protected void onStart() {
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        googleMapView.onCreate(savedInstanceState);
+        googleMapView.getMapAsync(this);
+        viewModel.getRouteData().observe(this, path -> {
+            showInterstitial();
+            if (path == null) {
+                return;
+            }
+            showDistance(path.getRoutes().get(0).getLegs().get(0).getDistance().getText());
+            showDuration(path.getRoutes().get(0).getLegs().get(0).getDuration().getText());
+            String pointsStr = path.getRoutes().get(0).getOverviewPolyline().getPoints();
+            List<LatLng> points = PolyUtil.decode(pointsStr);
+            showRoute(points);
+        });
+        viewModel.getErrorStatus().observe(this, errorStatus -> {
+            switch (errorStatus.getStatus()) {
+                case ErrorStatus.BUILD_PATH_ERROR:
+                    Snackbar.make(view, getString(R.string.no_path), Snackbar.LENGTH_INDEFINITE)
+                            .setAction(getString(R.string.retry), action -> viewModel.retryCall())
+                            .show();
+                    break;
+                default:
+                    throw new IllegalArgumentException("Unknown parking state = " + errorStatus.getStatus());
+            }
+        });
+    }
+
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState, MapViewModel viewModel) {
+        this.viewModel = viewModel;
+    }
+
+    @Override
+    protected Class<MapViewModel> getViewModel() {
+        return MapViewModel.class;
+    }
+
+    @Override
+    public String getFragmentTag() {
+        return TAG;
+    }
+
+    @Override
+    protected int getLayoutResId() {
+        return R.layout.fragment_map;
+    }
+
+    @Override
+    public void onStart() {
         super.onStart();
-        presenter.onAttach(this);
+        googleMapView.onStart();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        googleMapView.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        googleMapView.onPause();
+        super.onPause();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        googleMapView.onStop();
+    }
+
+    @Override
+    public void onDestroy() {
+        googleMapView.onDestroy();
+        super.onDestroy();
+    }
+
+    @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+        googleMapView.onLowMemory();
     }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
-        if (ContextCompat.checkSelfPermission(this,
+        if (ContextCompat.checkSelfPermission(getContext(),
                 android.Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
             return;
@@ -74,13 +150,12 @@ public class MapActivity extends LocationActivity implements OnMapReadyCallback,
             map.setMyLocationEnabled(true);
             map.getUiSettings().setZoomControlsEnabled(true);
             map.getUiSettings().setCompassEnabled(true);
-            presenter.buildRoute();
-            presenter.drawCircle();
+            viewModel.buildRoute();
+            decoratePoint(viewModel.drawCircle());
         }
     }
 
-    @Override
-    public void decoratePoint(LatLng point) {
+    private void decoratePoint(LatLng point) {
         drawCircle(point);
         addMarker(point);
     }
@@ -106,19 +181,8 @@ public class MapActivity extends LocationActivity implements OnMapReadyCallback,
         }
     }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-        presenter.onDetach();
-    }
-
-    @Override
-    public void showAd() {
-        showInterstitial();
-    }
-
-    public void showInterstitial() {
-        InterstitialAd interstitialAd = new InterstitialAd(getApplicationContext());
+    private void showInterstitial() {
+        InterstitialAd interstitialAd = new InterstitialAd(getContext());
         interstitialAd.setAdUnitId(getString(R.string.banner_ad_unit_id_map_interstitial));
         AdRequest adRequest = new AdRequest.Builder().build();
         interstitialAd.loadAd(adRequest);
@@ -142,13 +206,7 @@ public class MapActivity extends LocationActivity implements OnMapReadyCallback,
         });
     }
 
-    @Override
-    public void showError() {
-        Toast.makeText(this, getString(R.string.no_path), Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void showRoute(List<LatLng> points) {
+    private void showRoute(List<LatLng> points) {
         if (map == null) {
             return;
         }
@@ -166,18 +224,15 @@ public class MapActivity extends LocationActivity implements OnMapReadyCallback,
         map.animateCamera(track);
     }
 
-    @Override
-    public void showDistance(String distance) {
+    private void showDistance(String distance) {
         tvDistance.setText(distance);
     }
 
-    @Override
-    public void showDuration(String duration) {
+    private void showDuration(String duration) {
         tvDuration.setText(duration);
     }
 
     public void onClickFound(View view) {
-        presenter.foundCar();
-        finish();
+        viewModel.foundCar();
     }
 }

@@ -5,7 +5,7 @@ import com.moggot.findmycarlocation.presentation.common.BaseView;
 
 import java.util.List;
 
-public interface MapView extends BaseView {
+public interface GoogleMapView extends BaseView {
 
     void showRoute(List<LatLng> points);
 

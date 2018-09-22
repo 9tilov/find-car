@@ -4,7 +4,6 @@ import android.support.annotation.NonNull;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.maps.android.PolyUtil;
-import com.moggot.findmycarlocation.data.model.parking.ParkingModel;
 import com.moggot.findmycarlocation.domain.LocationInteractor;
 import com.moggot.findmycarlocation.domain.MainInteractor;
 import com.moggot.findmycarlocation.domain.MapInteractor;
@@ -14,7 +13,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-public class MapPresenter extends BasePresenter<MapView> {
+public class MapPresenter extends BasePresenter<GoogleMapView> {
 
     @NonNull
     private final MapInteractor mapInteractor;
@@ -55,11 +54,8 @@ public class MapPresenter extends BasePresenter<MapView> {
                 .subscribe());
     }
 
-    public void drawCircle() {
-        if (getView() != null) {
-            ParkingModel parkingModel = mainInteractor.loadParkingData();
-            getView().decoratePoint(parkingModel.getLocation());
-        }
+    public LatLng drawCircle() {
+        return mainInteractor.loadParkingData().getLocation();
     }
 
     public void foundCar() {

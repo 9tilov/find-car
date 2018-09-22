@@ -4,6 +4,7 @@ import android.location.Location;
 import android.support.annotation.NonNull;
 
 import com.google.android.gms.location.LocationRequest;
+import com.moggot.findmycarlocation.data.repository.local.LocalRepo;
 import com.patloew.rxlocation.RxLocation;
 
 import javax.inject.Inject;
