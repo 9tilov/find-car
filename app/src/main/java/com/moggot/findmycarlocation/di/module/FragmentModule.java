@@ -1,8 +1,8 @@
 package com.moggot.findmycarlocation.di.module;
 
-import com.moggot.findmycarlocation.AboutFragment;
-import com.moggot.findmycarlocation.presentation.main.HomeFragment;
-import com.moggot.findmycarlocation.presentation.map.GoogleMapFragment;
+import com.moggot.findmycarlocation.about.AboutFragment;
+import com.moggot.findmycarlocation.home.HomeFragment;
+import com.moggot.findmycarlocation.map.GoogleMapFragment;
 
 import dagger.Module;
 import dagger.android.ContributesAndroidInjector;

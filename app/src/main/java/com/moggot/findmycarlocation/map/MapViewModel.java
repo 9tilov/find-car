@@ -1,14 +1,15 @@
-package com.moggot.findmycarlocation;
+package com.moggot.findmycarlocation.map;
 
 import android.arch.lifecycle.MutableLiveData;
 import android.location.Location;
 import android.support.annotation.NonNull;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.moggot.findmycarlocation.common.BaseViewModel;
+import com.moggot.findmycarlocation.common.ErrorStatus;
 import com.moggot.findmycarlocation.data.model.route.Path;
-import com.moggot.findmycarlocation.domain.LocationInteractor;
-import com.moggot.findmycarlocation.domain.MainInteractor;
-import com.moggot.findmycarlocation.domain.MapInteractor;
+import com.moggot.findmycarlocation.home.LocationInteractor;
+import com.moggot.findmycarlocation.home.MainInteractor;
 import com.moggot.findmycarlocation.retry.RetryManager;
 
 import javax.inject.Inject;
@@ -36,6 +37,8 @@ public class MapViewModel extends BaseViewModel {
         this.locationInteractor = locationInteractor;
         this.mainInteractor = mainInteractor;
         this.retryManager = retryManager;
+        addObserver(routeData);
+        addObserver(locationData);
     }
 
     public void buildRoute() {

@@ -1,27 +1,28 @@
-package com.moggot.findmycarlocation;
+package com.moggot.findmycarlocation.home;
 
 import android.arch.lifecycle.MutableLiveData;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.moggot.findmycarlocation.common.BaseViewModel;
+import com.moggot.findmycarlocation.common.ErrorStatus;
 import com.moggot.findmycarlocation.data.model.parking.ParkingModel;
-import com.moggot.findmycarlocation.domain.LocationInteractor;
-import com.moggot.findmycarlocation.domain.MainInteractor;
 
 import java.util.Calendar;
 
 import javax.inject.Inject;
 
-public class CarViewModel extends BaseViewModel {
+public class HomeViewModel extends BaseViewModel {
 
-    private MainInteractor mainInteractor;
-    private LocationInteractor locationInteractor;
+    private final MainInteractor mainInteractor;
+    private final LocationInteractor locationInteractor;
 
-    private MutableLiveData<Boolean> parkDataIfNeed = new MutableLiveData<>();
+    private final MutableLiveData<Boolean> parkDataIfNeed = new MutableLiveData<>();
 
     @Inject
-    public CarViewModel(MainInteractor mainInteractor, LocationInteractor locationInteractor) {
+    public HomeViewModel(MainInteractor mainInteractor, LocationInteractor locationInteractor) {
         this.mainInteractor = mainInteractor;
         this.locationInteractor = locationInteractor;
+        addObserver(parkDataIfNeed);
     }
 
     public void reParkCar() {

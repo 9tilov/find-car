@@ -10,7 +10,7 @@ public class NetworkRetryManager implements RetryManager {
     private final PublishSubject<RetryEvent> retrySubject = PublishSubject.create();
 
     public NetworkRetryManager() {
-
+        //do nothing
     }
 
     @Override

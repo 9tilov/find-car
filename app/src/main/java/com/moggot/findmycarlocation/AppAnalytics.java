@@ -14,8 +14,8 @@ public class AppAnalytics {
 
     private static final String PROPERTY_ID = "UA-66799500-6";
     private final Map<TrackerName, Tracker> trackers = new HashMap<>();
-    private FirebaseAnalytics firebaseAnalytics;
-    private Activity activity;
+    private final FirebaseAnalytics firebaseAnalytics;
+    private final Activity activity;
 
     public AppAnalytics(Activity activity) {
         this.activity = activity;

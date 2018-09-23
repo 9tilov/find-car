@@ -32,9 +32,6 @@ public class LocalRepo {
     }
 
     public void changeParkingState(boolean state) {
-        LatLng location = settingsPreferences.loadLocation();
-        long time = settingsPreferences.loadTimeInMillis();
-        boolean isParking = settingsPreferences.isAlreadyParked();
         settingsPreferences.saveParkingState(state);
     }
 }

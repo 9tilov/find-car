@@ -1,4 +1,4 @@
-package com.moggot.findmycarlocation.domain;
+package com.moggot.findmycarlocation.map;
 
 import android.support.annotation.NonNull;
 

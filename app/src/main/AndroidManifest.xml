@@ -40,7 +40,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".PrivacyPolicyActivity"
+            android:name=".about.PrivacyPolicyActivity"
             android:screenOrientation="portrait" />
 
         <meta-data
