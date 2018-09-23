@@ -51,7 +51,9 @@ public class MapViewModel extends BaseViewModel {
                     return mapInteractor.getRoute(originLocation)
                             .filter(path -> !path.getRoutes().isEmpty())
                             .doOnSuccess(routeData::postValue);
-                }).doOnError(throwable -> errorStatus.setValue(new ErrorStatus(ErrorStatus.LOCATION_ERROR)))
+                }).doOnError(throwable -> {
+                    errorStatus.setValue(new ErrorStatus(ErrorStatus.BUILD_PATH_ERROR, throwable));
+                })
                 .toObservable()
                 .retryWhen(retryHandler -> retryHandler.flatMap(retryManager::observeRetries))
                 .subscribe());
