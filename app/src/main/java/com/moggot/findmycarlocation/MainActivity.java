@@ -6,10 +6,11 @@ import android.support.annotation.IdRes;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 
-import com.moggot.findmycarlocation.presentation.common.BaseFragment;
-import com.moggot.findmycarlocation.presentation.common.LocationActivity;
-import com.moggot.findmycarlocation.presentation.main.HomeFragment;
-import com.moggot.findmycarlocation.presentation.map.GoogleMapFragment;
+import com.moggot.findmycarlocation.about.AboutFragment;
+import com.moggot.findmycarlocation.common.BaseFragment;
+import com.moggot.findmycarlocation.common.LocationActivity;
+import com.moggot.findmycarlocation.home.HomeFragment;
+import com.moggot.findmycarlocation.map.GoogleMapFragment;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

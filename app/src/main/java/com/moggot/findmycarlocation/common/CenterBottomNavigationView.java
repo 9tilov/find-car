@@ -1,4 +1,4 @@
-package com.moggot.findmycarlocation;
+package com.moggot.findmycarlocation.common;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -10,6 +10,8 @@ import android.util.AttributeSet;
 import android.view.Gravity;
 
 import java.lang.reflect.Field;
+
+import timber.log.Timber;
 
 public class CenterBottomNavigationView extends BottomNavigationView {
 
@@ -39,7 +41,7 @@ public class CenterBottomNavigationView extends BottomNavigationView {
             field.setAccessible(true);
             menuView = field.get(this);
         } catch (Exception e) {
-            e.printStackTrace();
+            Timber.d("getBottomMenuView exception = %s", e.getMessage());
         }
         return (BottomNavigationMenuView) menuView;
     }

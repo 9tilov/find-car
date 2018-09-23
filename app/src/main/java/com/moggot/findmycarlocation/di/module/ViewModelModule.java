@@ -3,10 +3,10 @@ package com.moggot.findmycarlocation.di.module;
 import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProvider;
 
-import com.moggot.findmycarlocation.AboutViewModel;
-import com.moggot.findmycarlocation.CarViewModel;
-import com.moggot.findmycarlocation.FactoryViewModel;
-import com.moggot.findmycarlocation.MapViewModel;
+import com.moggot.findmycarlocation.about.AboutViewModel;
+import com.moggot.findmycarlocation.home.HomeViewModel;
+import com.moggot.findmycarlocation.common.FactoryViewModel;
+import com.moggot.findmycarlocation.map.MapViewModel;
 import com.moggot.findmycarlocation.di.scope.ViewModelKey;
 
 import dagger.Binds;
@@ -18,8 +18,8 @@ public abstract class ViewModelModule {
 
     @Binds
     @IntoMap
-    @ViewModelKey(CarViewModel.class)
-    abstract ViewModel bindCarViewModel(CarViewModel viewModel);
+    @ViewModelKey(HomeViewModel.class)
+    abstract ViewModel bindCarViewModel(HomeViewModel viewModel);
 
     @Binds
     @IntoMap

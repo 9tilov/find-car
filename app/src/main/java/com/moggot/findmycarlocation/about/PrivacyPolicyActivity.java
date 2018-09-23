@@ -1,4 +1,4 @@
-package com.moggot.findmycarlocation;
+package com.moggot.findmycarlocation.about;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
@@ -6,6 +6,9 @@ import android.support.annotation.Nullable;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+
+import com.moggot.findmycarlocation.R;
+import com.moggot.findmycarlocation.common.BaseActivity;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

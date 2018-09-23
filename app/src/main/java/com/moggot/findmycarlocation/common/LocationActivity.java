@@ -1,4 +1,4 @@
-package com.moggot.findmycarlocation.presentation.common;
+package com.moggot.findmycarlocation.common;
 
 import android.Manifest;
 import android.content.Intent;
@@ -12,7 +12,6 @@ import android.view.View;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
-import com.moggot.findmycarlocation.BaseActivity;
 import com.moggot.findmycarlocation.BuildConfig;
 import com.moggot.findmycarlocation.R;
 

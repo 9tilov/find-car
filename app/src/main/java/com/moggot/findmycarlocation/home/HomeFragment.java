@@ -1,4 +1,4 @@
-package com.moggot.findmycarlocation.presentation.main;
+package com.moggot.findmycarlocation.home;
 
 import android.app.AlertDialog;
 import android.os.Bundle;
@@ -12,16 +12,15 @@ import android.widget.Toast;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
-import com.moggot.findmycarlocation.CarViewModel;
-import com.moggot.findmycarlocation.ErrorStatus;
 import com.moggot.findmycarlocation.MainActivity;
 import com.moggot.findmycarlocation.R;
 import com.moggot.findmycarlocation.Utils;
-import com.moggot.findmycarlocation.presentation.common.BaseFragment;
+import com.moggot.findmycarlocation.common.BaseFragment;
+import com.moggot.findmycarlocation.common.ErrorStatus;
 
 import butterknife.BindView;
 
-public class HomeFragment extends BaseFragment<CarViewModel> implements View.OnTouchListener {
+public class HomeFragment extends BaseFragment<HomeViewModel> implements View.OnTouchListener {
 
     private static final String TAG = "HomeFragment";
 
@@ -33,7 +32,7 @@ public class HomeFragment extends BaseFragment<CarViewModel> implements View.OnT
     private boolean isAnimated;
     private float startY;
     private AdRequest adRequest;
-    private CarViewModel carViewModel;
+    private HomeViewModel homeViewModel;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -44,14 +43,14 @@ public class HomeFragment extends BaseFragment<CarViewModel> implements View.OnT
     }
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState, CarViewModel viewModel) {
-        this.carViewModel = viewModel;
+    protected void onCreate(@Nullable Bundle savedInstanceState, HomeViewModel viewModel) {
+        this.homeViewModel = viewModel;
         adRequest = new AdRequest.Builder().build();
     }
 
     @Override
-    protected Class<CarViewModel> getViewModel() {
-        return CarViewModel.class;
+    protected Class<HomeViewModel> getViewModel() {
+        return HomeViewModel.class;
     }
 
     @Override
@@ -60,16 +59,12 @@ public class HomeFragment extends BaseFragment<CarViewModel> implements View.OnT
         adView.loadAd(adRequest);
         isAnimated = false;
         ivGear.setOnTouchListener(this);
-        carViewModel.getErrorStatus().observe(this, errorStatus -> {
-            switch (errorStatus.getStatus()) {
-                case ErrorStatus.LOCATION_ERROR:
-                    Toast.makeText(getContext(), getString(R.string.no_location), Toast.LENGTH_SHORT).show();
-                    break;
-                default:
-                    throw new IllegalArgumentException("Unknown parking state = " + errorStatus.getStatus());
+        homeViewModel.getErrorStatus().observe(this, errorStatus -> {
+            if (errorStatus.getStatus() == ErrorStatus.LOCATION_ERROR) {
+                Toast.makeText(getContext(), getString(R.string.no_location), Toast.LENGTH_SHORT).show();
             }
         });
-        carViewModel.parkDataIfNeed().observe(this, needPark -> {
+        homeViewModel.parkDataIfNeed().observe(this, needPark -> {
             ivGear.setEnabled(true);
             if (needPark) {
                 animateParking();
@@ -128,7 +123,7 @@ public class HomeFragment extends BaseFragment<CarViewModel> implements View.OnT
         builder.setTitle(R.string.dialog_you_not_find_car)
                 .setMessage(R.string.dialog_title_save_car)
                 .setPositiveButton(R.string.dialog_yes,
-                        (dialog, id) -> carViewModel.reParkCar())
+                        (dialog, id) -> homeViewModel.reParkCar())
                 .setNegativeButton(R.string.dialog_no,
                         (dialog, id) -> dialog.dismiss());
 
@@ -152,10 +147,10 @@ public class HomeFragment extends BaseFragment<CarViewModel> implements View.OnT
             case MotionEvent.ACTION_UP:
                 float endY = event.getY();
                 if (startY > endY) {
-                    carViewModel.parkCar();
+                    homeViewModel.parkCar();
                     ivGear.setEnabled(false);
                 } else {
-                    boolean isShowMap = carViewModel.tryToShowMap();
+                    boolean isShowMap = homeViewModel.tryToShowMap();
                     if (isShowMap) {
                         openMap();
                     } else {

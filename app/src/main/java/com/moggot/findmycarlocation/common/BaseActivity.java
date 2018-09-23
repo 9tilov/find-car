@@ -1,4 +1,4 @@
-package com.moggot.findmycarlocation;
+package com.moggot.findmycarlocation.common;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;

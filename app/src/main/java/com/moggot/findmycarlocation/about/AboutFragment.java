@@ -1,4 +1,4 @@
-package com.moggot.findmycarlocation;
+package com.moggot.findmycarlocation.about;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -8,7 +8,9 @@ import android.support.constraint.ConstraintLayout;
 import android.view.View;
 import android.widget.TextView;
 
-import com.moggot.findmycarlocation.presentation.common.BaseFragment;
+import com.moggot.findmycarlocation.BuildConfig;
+import com.moggot.findmycarlocation.R;
+import com.moggot.findmycarlocation.common.BaseFragment;
 
 import java.util.Calendar;
 
@@ -31,7 +33,7 @@ public class AboutFragment extends BaseFragment<AboutViewModel> {
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState, AboutViewModel viewModel) {
-
+        //do nothing
     }
 
     @Override

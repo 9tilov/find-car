@@ -1,4 +1,4 @@
-package com.moggot.findmycarlocation.presentation.map;
+package com.moggot.findmycarlocation.map;
 
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -29,15 +29,13 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.maps.android.PolyUtil;
-import com.moggot.findmycarlocation.ErrorStatus;
-import com.moggot.findmycarlocation.MapViewModel;
 import com.moggot.findmycarlocation.R;
-import com.moggot.findmycarlocation.presentation.common.BaseFragment;
+import com.moggot.findmycarlocation.common.BaseFragment;
+import com.moggot.findmycarlocation.common.ErrorStatus;
 
 import java.util.List;
 
 import butterknife.BindView;
-import timber.log.Timber;
 
 public class GoogleMapFragment extends BaseFragment<MapViewModel> implements OnMapReadyCallback {
 
@@ -62,10 +60,9 @@ public class GoogleMapFragment extends BaseFragment<MapViewModel> implements OnM
     @Nullable
     private GoogleMap map;
     private MapViewModel viewModel;
-    private Runnable runnableCode = new Runnable() {
+    private final Runnable runnableCode = new Runnable() {
         @Override
         public void run() {
-            Timber.d("moggot get");
             viewModel.getCurrentLocation();
             handler.postDelayed(this, 1000);
         }
@@ -93,14 +90,10 @@ public class GoogleMapFragment extends BaseFragment<MapViewModel> implements OnM
             showRoute(points);
         });
         viewModel.getErrorStatus().observe(this, errorStatus -> {
-            switch (errorStatus.getStatus()) {
-                case ErrorStatus.BUILD_PATH_ERROR:
-                    Snackbar.make(view, getString(R.string.no_path), Snackbar.LENGTH_INDEFINITE)
-                            .setAction(getString(R.string.retry), action -> viewModel.retryCall())
-                            .show();
-                    break;
-                default:
-                    throw new IllegalArgumentException("Unknown parking state = " + errorStatus.getStatus());
+            if (errorStatus.getStatus() == ErrorStatus.BUILD_PATH_ERROR) {
+                Snackbar.make(view, getString(R.string.no_path), Snackbar.LENGTH_INDEFINITE)
+                        .setAction(getString(R.string.retry), action -> viewModel.retryCall())
+                        .show();
             }
         });
         viewModel.getLocationData().observe(this, location -> {

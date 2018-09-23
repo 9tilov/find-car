@@ -1,4 +1,4 @@
-package com.moggot.findmycarlocation.presentation.common;
+package com.moggot.findmycarlocation.common;
 
 import android.arch.lifecycle.ViewModelProvider;
 import android.arch.lifecycle.ViewModelProviders;
@@ -13,7 +13,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.moggot.findmycarlocation.AppAnalytics;
-import com.moggot.findmycarlocation.BaseViewModel;
 
 import javax.inject.Inject;
 
@@ -43,6 +42,8 @@ public abstract class BaseFragment<M extends BaseViewModel> extends Fragment {
         onCreate(savedInstanceState, viewModel);
     }
 
+    protected abstract void onCreate(@Nullable Bundle savedInstanceState, M viewModel);
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -51,8 +52,6 @@ public abstract class BaseFragment<M extends BaseViewModel> extends Fragment {
         analytics.setCurrentScreen(getFragmentTag());
         return view;
     }
-
-    protected abstract void onCreate(@Nullable Bundle savedInstanceState, M viewModel);
 
     @Override
     public void onDestroyView() {

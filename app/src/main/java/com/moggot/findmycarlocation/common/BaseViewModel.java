@@ -1,4 +1,4 @@
-package com.moggot.findmycarlocation;
+package com.moggot.findmycarlocation.common;
 
 import android.arch.lifecycle.LifecycleOwner;
 import android.arch.lifecycle.MutableLiveData;
@@ -13,13 +13,13 @@ public class BaseViewModel extends ViewModel {
 
     protected final CompositeDisposable compositeDisposable = new CompositeDisposable();
     protected final MutableLiveData<ErrorStatus> errorStatus = new MutableLiveData<>();
-    private List<MutableLiveData> observers = new ArrayList<>();
+    private final List<MutableLiveData> observers = new ArrayList<>();
 
     public BaseViewModel() {
         addObserver(errorStatus);
     }
 
-    public <T> void addObserver(MutableLiveData<T> observer) {
+    protected final <T> void addObserver(MutableLiveData<T> observer) {
         observers.add(observer);
     }
 

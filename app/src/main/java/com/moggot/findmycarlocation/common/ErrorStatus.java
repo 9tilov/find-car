@@ -1,4 +1,4 @@
-package com.moggot.findmycarlocation;
+package com.moggot.findmycarlocation.common;
 
 import android.support.annotation.IntDef;
 import android.support.annotation.Nullable;
@@ -14,6 +14,7 @@ public class ErrorStatus {
     public static final int INTERNET_ERROR = 2;
     private int status;
     private Throwable throwable;
+
     public ErrorStatus(@ParkingType int status) {
         this(status, null);
     }
