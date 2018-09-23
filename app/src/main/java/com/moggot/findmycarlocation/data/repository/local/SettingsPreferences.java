@@ -48,6 +48,9 @@ public class SettingsPreferences {
     public void saveParkingState(boolean isParking) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putBoolean(PARKING_STATE, isParking);
+        if (!isParking) {
+            editor.clear();
+        }
         editor.apply();
     }
 

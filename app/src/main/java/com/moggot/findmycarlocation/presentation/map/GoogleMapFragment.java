@@ -3,11 +3,15 @@ package com.moggot.findmycarlocation.presentation.map;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.AppCompatImageView;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 
 import com.google.android.gms.ads.AdListener;
@@ -33,6 +37,7 @@ import com.moggot.findmycarlocation.presentation.common.BaseFragment;
 import java.util.List;
 
 import butterknife.BindView;
+import timber.log.Timber;
 
 public class GoogleMapFragment extends BaseFragment<MapViewModel> implements OnMapReadyCallback {
 
@@ -40,6 +45,16 @@ public class GoogleMapFragment extends BaseFragment<MapViewModel> implements OnM
     TextView tvDistance;
     @BindView(R.id.tv_duration_value)
     TextView tvDuration;
+    @BindView(R.id.map_tv_lat)
+    TextView tvLat;
+    @BindView(R.id.map_tv_lng)
+    TextView tvLng;
+    @BindView(R.id.map_btn_found)
+    TextView btnFound;
+    @BindView(R.id.map_iv_location)
+    AppCompatImageView ivLocation;
+    @BindView(R.id.map_status_dot)
+    View viewDot;
     @BindView(R.id.map)
     MapView googleMapView;
 
@@ -53,6 +68,16 @@ public class GoogleMapFragment extends BaseFragment<MapViewModel> implements OnM
         return new GoogleMapFragment();
     }
 
+    Handler handler = new Handler();
+    private Runnable runnableCode = new Runnable() {
+        @Override
+        public void run() {
+            Timber.d("moggot get");
+            viewModel.getCurrentLocation();
+            handler.postDelayed(this, 1000);
+        }
+    };
+
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -63,6 +88,7 @@ public class GoogleMapFragment extends BaseFragment<MapViewModel> implements OnM
             if (path == null) {
                 return;
             }
+            enableSearchMode(true);
             showDistance(path.getRoutes().get(0).getLegs().get(0).getDistance().getText());
             showDuration(path.getRoutes().get(0).getLegs().get(0).getDuration().getText());
             String pointsStr = path.getRoutes().get(0).getOverviewPolyline().getPoints();
@@ -78,6 +104,16 @@ public class GoogleMapFragment extends BaseFragment<MapViewModel> implements OnM
                     break;
                 default:
                     throw new IllegalArgumentException("Unknown parking state = " + errorStatus.getStatus());
+            }
+        });
+        viewModel.getLocationData().observe(this, location -> {
+            tvLat.setText(String.valueOf(location.getLatitude()));
+            tvLng.setText(String.valueOf(location.getLongitude()));
+        });
+        btnFound.setOnClickListener(v -> {
+            viewModel.foundCar();
+            if (getActivity() != null) {
+                enableSearchMode(false);
             }
         });
     }
@@ -102,6 +138,22 @@ public class GoogleMapFragment extends BaseFragment<MapViewModel> implements OnM
         return R.layout.fragment_map;
     }
 
+    private void enableSearchMode(boolean enable) {
+        viewDot.setBackgroundResource(enable ? R.drawable.status_green_dot : R.drawable.status_red_dot);
+        tvDistance.setVisibility(enable ? View.VISIBLE : View.GONE);
+        tvDuration.setVisibility(enable ? View.VISIBLE : View.GONE);
+        if (enable) {
+            Animation pulse = AnimationUtils.loadAnimation(getContext(), R.anim.pulse_scale);
+            ivLocation.startAnimation(pulse);
+            decoratePoint(viewModel.drawCircle());
+        } else {
+            ivLocation.clearAnimation();
+            if (map != null) {
+                map.clear();
+            }
+        }
+    }
+
     @Override
     public void onStart() {
         super.onStart();
@@ -112,6 +164,7 @@ public class GoogleMapFragment extends BaseFragment<MapViewModel> implements OnM
     public void onResume() {
         super.onResume();
         googleMapView.onResume();
+        handler.post(runnableCode);
     }
 
     @Override
@@ -127,9 +180,16 @@ public class GoogleMapFragment extends BaseFragment<MapViewModel> implements OnM
     }
 
     @Override
-    public void onDestroy() {
+    public void onDestroyView() {
         googleMapView.onDestroy();
+        ivLocation.clearAnimation();
+        super.onDestroyView();
+    }
+
+    @Override
+    public void onDestroy() {
         super.onDestroy();
+        handler.removeCallbacks(runnableCode);
     }
 
     @Override
@@ -151,7 +211,6 @@ public class GoogleMapFragment extends BaseFragment<MapViewModel> implements OnM
             map.getUiSettings().setZoomControlsEnabled(true);
             map.getUiSettings().setCompassEnabled(true);
             viewModel.buildRoute();
-            decoratePoint(viewModel.drawCircle());
         }
     }
 
@@ -225,14 +284,10 @@ public class GoogleMapFragment extends BaseFragment<MapViewModel> implements OnM
     }
 
     private void showDistance(String distance) {
-        tvDistance.setText(distance);
+        tvDistance.setText(getString(R.string.distance, distance));
     }
 
     private void showDuration(String duration) {
-        tvDuration.setText(duration);
-    }
-
-    public void onClickFound(View view) {
-        viewModel.foundCar();
+        tvDuration.setText(getString(R.string.duration, duration));
     }
 }

@@ -10,6 +10,7 @@ import android.support.v4.app.Fragment;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.moggot.findmycarlocation.presentation.common.BaseFragment;
+import com.moggot.findmycarlocation.presentation.common.LocationActivity;
 import com.moggot.findmycarlocation.presentation.main.HomeFragment;
 import com.moggot.findmycarlocation.presentation.map.GoogleMapFragment;
 
@@ -17,7 +18,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import dagger.android.AndroidInjection;
 
-public class MainActivity extends BaseActivity {
+public class MainActivity extends LocationActivity {
 
     @BindView(R.id.bottom_navigation)
     BottomNavigationView bottomNavigationView;
@@ -41,7 +42,7 @@ public class MainActivity extends BaseActivity {
     }
 
     @Override
-    protected void configureDagger() {
+    public void configureDagger() {
         AndroidInjection.inject(this);
     }
 
@@ -72,23 +73,17 @@ public class MainActivity extends BaseActivity {
     }
 
     @Override
-    protected void onResume() {
+    public void onResume() {
         super.onResume();
-        checkPlayServicesAvailable();
         bottomNavigationView.setSelectedItemId(navigationId);
     }
 
-    private void checkPlayServicesAvailable() {
-        final GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
-        final int status = apiAvailability.isGooglePlayServicesAvailable(this);
+    public void switchToMap() {
+        bottomNavigationView.setSelectedItemId(R.id.navigation_map);
+    }
 
-        if (status != ConnectionResult.SUCCESS) {
-            if (apiAvailability.isUserResolvableError(status)) {
-                apiAvailability.getErrorDialog(this, status, 1).show();
-            } else {
-                Snackbar.make(bottomNavigationView, "Google Play Services unavailable. This app will not work", Snackbar.LENGTH_INDEFINITE).show();
-            }
-        }
+    public void switchToHome() {
+        bottomNavigationView.setSelectedItemId(R.id.navigation_home);
     }
 
     @Override

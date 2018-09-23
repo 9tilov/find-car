@@ -2,13 +2,20 @@
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
-
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="buttonStyle">@style/bg_buttons</item>
         <item name="android:windowBackground">@color/background</item>
         <item name="android:textColorPrimary">@color/text</item>
         <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="bg_buttons" parent="@style/Widget.AppCompat.Button.Borderless">
+        <item name="android:background">@drawable/sel_btn</item>
+        <item name="android:textColor">@color/button_round_text_color</item>
+        <item name="android:paddingLeft">16dp</item>
+        <item name="android:paddingRight">16dp</item>
     </style>
 
     <style name="TextMedium" parent="TextAppearance.AppCompat">

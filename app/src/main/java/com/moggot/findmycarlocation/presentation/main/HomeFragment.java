@@ -14,6 +14,7 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.moggot.findmycarlocation.CarViewModel;
 import com.moggot.findmycarlocation.ErrorStatus;
+import com.moggot.findmycarlocation.MainActivity;
 import com.moggot.findmycarlocation.R;
 import com.moggot.findmycarlocation.Utils;
 import com.moggot.findmycarlocation.presentation.common.BaseFragment;
@@ -69,6 +70,7 @@ public class HomeFragment extends BaseFragment<CarViewModel> implements View.OnT
             }
         });
         carViewModel.parkDataIfNeed().observe(this, needPark -> {
+            ivGear.setEnabled(true);
             if (needPark) {
                 animateParking();
                 Toast.makeText(getContext(), getString(R.string.save_car_location_success), Toast.LENGTH_SHORT).show();
@@ -122,7 +124,7 @@ public class HomeFragment extends BaseFragment<CarViewModel> implements View.OnT
     }
 
     private void createDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle(R.string.dialog_you_not_find_car)
                 .setMessage(R.string.dialog_title_save_car)
                 .setPositiveButton(R.string.dialog_yes,
@@ -151,6 +153,7 @@ public class HomeFragment extends BaseFragment<CarViewModel> implements View.OnT
                 float endY = event.getY();
                 if (startY > endY) {
                     carViewModel.parkCar();
+                    ivGear.setEnabled(false);
                 } else {
                     boolean isShowMap = carViewModel.tryToShowMap();
                     if (isShowMap) {
@@ -181,6 +184,9 @@ public class HomeFragment extends BaseFragment<CarViewModel> implements View.OnT
             @Override
             public void onAnimationEnd(Animation animation) {
                 isAnimated = false;
+                if (getActivity() != null) {
+                    ((MainActivity) getActivity()).switchToMap();
+                }
             }
 
             @Override

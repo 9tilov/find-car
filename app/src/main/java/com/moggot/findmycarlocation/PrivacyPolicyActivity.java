@@ -31,7 +31,7 @@ public class PrivacyPolicyActivity extends BaseActivity {
     }
 
     @Override
-    protected void configureDagger() {
+    public void configureDagger() {
         AndroidInjection.inject(this);
     }
 }

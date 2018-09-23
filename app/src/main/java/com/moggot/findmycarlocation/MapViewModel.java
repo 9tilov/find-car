@@ -1,6 +1,7 @@
 package com.moggot.findmycarlocation;
 
 import android.arch.lifecycle.MutableLiveData;
+import android.location.Location;
 import android.support.annotation.NonNull;
 
 import com.google.android.gms.maps.model.LatLng;
@@ -15,6 +16,7 @@ import javax.inject.Inject;
 public class MapViewModel extends BaseViewModel {
 
     private final MutableLiveData<Path> routeData = new MutableLiveData<>();
+    private final MutableLiveData<Location> locationData = new MutableLiveData<>();
 
     @NonNull
     private final MapInteractor mapInteractor;
@@ -37,6 +39,9 @@ public class MapViewModel extends BaseViewModel {
     }
 
     public void buildRoute() {
+        if (!mainInteractor.loadParkingData().isParking()) {
+            return;
+        }
         compositeDisposable.add(locationInteractor.getLocation()
                 .flatMap(location -> {
                     LatLng originLocation = new LatLng(location.getLatitude(), location.getLongitude());
@@ -47,6 +52,12 @@ public class MapViewModel extends BaseViewModel {
                 .toObservable()
                 .retryWhen(retryHandler -> retryHandler.flatMap(retryManager::observeRetries))
                 .subscribe());
+    }
+
+    public void getCurrentLocation() {
+        compositeDisposable.add(locationInteractor.getLocation()
+                .doOnError(throwable -> errorStatus.setValue(new ErrorStatus(ErrorStatus.LOCATION_ERROR)))
+                .subscribe(locationData::postValue));
     }
 
     public LatLng drawCircle() {
@@ -63,5 +74,9 @@ public class MapViewModel extends BaseViewModel {
 
     public MutableLiveData<Path> getRouteData() {
         return routeData;
+    }
+
+    public MutableLiveData<Location> getLocationData() {
+        return locationData;
     }
 }

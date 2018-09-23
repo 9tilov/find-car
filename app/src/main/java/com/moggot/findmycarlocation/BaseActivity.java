@@ -29,5 +29,5 @@ public abstract class BaseActivity extends AppCompatActivity implements
         return dispatchingAndroidInjector;
     }
 
-    protected abstract void configureDagger();
+    public abstract void configureDagger();
 }
