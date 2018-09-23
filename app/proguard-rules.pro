@@ -45,6 +45,10 @@
     @retrofit2.http.* <methods>;
 }
 
+#dagger
+-keep class com.google.errorprone.annotations.** { *; }
+-dontwarn com.google.errorprone.annotations.**
+
 #okhttp
 -dontwarn okhttp3.**
 -dontwarn okio.**
