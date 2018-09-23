@@ -1,4 +1,4 @@
-package com.moggot.findmycarlocation.presentation.common;
+package com.moggot.findmycarlocation.common;
 
 import android.Manifest;
 import android.content.Intent;
@@ -8,13 +8,14 @@ import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.moggot.findmycarlocation.BuildConfig;
 import com.moggot.findmycarlocation.R;
 
-public abstract class LocationActivity extends AppCompatActivity {
+public abstract class LocationActivity extends BaseActivity {
 
     private static final int REQUEST_PERMISSIONS_REQUEST_CODE = 34;
 
@@ -23,8 +24,22 @@ public abstract class LocationActivity extends AppCompatActivity {
         super.onResume();
         // Within {@code onPause()}, we remove location updates. Here, we resume receiving
         // location updates if the user has requested them.
+        checkPlayServicesAvailable();
         if (!checkPermissions()) {
             requestPermissions();
+        }
+    }
+
+    private void checkPlayServicesAvailable() {
+        final GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
+        final int status = apiAvailability.isGooglePlayServicesAvailable(this);
+
+        if (status != ConnectionResult.SUCCESS) {
+            if (apiAvailability.isUserResolvableError(status)) {
+                apiAvailability.getErrorDialog(this, status, 1).show();
+            } else {
+                Snackbar.make(getWindow().getDecorView().getRootView(), getString(R.string.google_play_servicies_error), Snackbar.LENGTH_INDEFINITE).show();
+            }
         }
     }
 

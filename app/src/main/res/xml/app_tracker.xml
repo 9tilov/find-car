@@ -2,7 +2,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="TypographyDashes">
 
-    <!-- The apps Analytics Tracking Id -->
+    <!-- The apps AppAnalytics Tracking Id -->
     <string name="ga_trackingId">UA-66799500-6</string>
 
     <!-- Percentage of events to include in reports -->
@@ -18,10 +18,10 @@
     <integer name="ga_sessionTimeout">-1</integer>
 
 
-    <screenName name="com.moggot.findmycarlocation.presentation.common.main.MainActivity">
+    <screenName name="com.moggot.findmycarlocation.common.main.MainActivity">
         MainActivity
     </screenName>
-    <screenName name="com.moggot.findmycarlocation.presentation.map.MapActivity">MapActivity
+    <screenName name="com.moggot.findmycarlocation.presentation.map.GoogleMapActivity">MapActivity
     </screenName>
 
 </resources>

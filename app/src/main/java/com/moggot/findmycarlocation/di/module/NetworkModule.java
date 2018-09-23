@@ -5,6 +5,8 @@ import android.support.annotation.NonNull;
 import com.moggot.findmycarlocation.data.api.LocationApi;
 import com.moggot.findmycarlocation.data.repository.local.SettingsPreferences;
 import com.moggot.findmycarlocation.data.repository.network.NetworkRepo;
+import com.moggot.findmycarlocation.retry.NetworkRetryManager;
+import com.moggot.findmycarlocation.retry.RetryManager;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -68,5 +70,11 @@ public class NetworkModule {
     @Singleton
     Executor provideExecutor() {
         return Executors.newFixedThreadPool(2);
+    }
+
+    @Provides
+    @Singleton
+    RetryManager provideRetryManager() {
+        return new NetworkRetryManager();
     }
 }

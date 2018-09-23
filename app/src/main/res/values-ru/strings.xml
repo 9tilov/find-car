@@ -7,17 +7,24 @@
     <string name="no_path">Не удалось построить маршрут</string>
     <string name="no_location">GPS включается&#8230;Подождите&#8230;</string>
     <string name="you_should_save_car_location">Сначала вы должны припарковаться</string>
-    <string name="distance">Расстояние: </string>
-    <string name="duration">Время в пути: </string>
+    <string name="distance">Расстояние: %1$s</string>
+    <string name="duration">Время в пути: %1$s</string>
     <string name="screen_map">Карта</string>
     <string name="dialog_title_save_car">Припарковаться?</string>
     <string name="dialog_yes">Да</string>
     <string name="dialog_no">Нет</string>
     <string name="dialog_you_not_find_car">Вы еще не нашли свою машину</string>
-    <string name="found_car">Я нашел машину!</string>
+    <string name="found_car">Я нашел машину</string>
+    <string name="retry">Повторить</string>
+    <string name="version">Версия %1$s</string>
 
     <string name="permission_rationale">Требуется разрешение для определения местоположения</string>
     <string name="permission_denied_explanation">Нет прав для доступа к определению местоположения</string>
     <string name="settings">Настройки</string>
+
+    <string name="title_home">Домой</string>
+    <string name="title_dashboard">Карта</string>
+    <string name="title_notifications">О приложении</string>
+    <string name="privacy_policy">Политика конфиденциальности</string>
 
 </resources>

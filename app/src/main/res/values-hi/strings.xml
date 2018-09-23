@@ -7,17 +7,24 @@
     <string name="no_path">मार्ग नहीं बना सके</string>
     <string name="no_location">GPS चालू हो रहा है … कृपया, प्रतीक्षा करें…</string>
     <string name="you_should_save_car_location">सबसे पहले, आपको पार्क करना है</string>
-    <string name="distance">दूरी :</string>
-    <string name="duration">यात्रा का समय: </string>
+    <string name="distance">दूरी: %1$s</string>
+    <string name="duration">यात्रा का समय: %1$s</string>
     <string name="screen_map">नक्शा</string>
     <string name="dialog_title_save_car">क्या आप पार्क करना चाहते हैं?</string>
     <string name="dialog_yes">हां </string>
     <string name="dialog_no">नहीं</string>
     <string name="dialog_you_not_find_car">आपको अभी तक अपनी कार नहीं मिली है</string>
     <string name="found_car">मुझे कार मिली!</string>
+    <string name="retry">पुन: प्रयास करें</string>
+    <string name="version">संस्करण %1$s</string>
 
     <string name="permission_rationale">स्थान निर्धारित करने के लिए अनुमति आवश्यक है</string>
     <string name="permission_denied_explanation">स्थान निर्धारित करने के लिए पहुंचने का कोई अधिकार नहीं है</string>
     <string name="settings">सेटिंग्स</string>
+
+    <string name="title_home">होम</string>
+    <string name="title_dashboard">नक्शा</string>
+    <string name="title_notifications">ऐप के बारे में</string>
+    <string name="privacy_policy">गोपनीयता नीति</string>
 
 </resources>
