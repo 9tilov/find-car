@@ -74,7 +74,7 @@ public class NetworkModule {
 
     @Provides
     @Singleton
-    RetryManager provideRetryManager () {
+    RetryManager provideRetryManager() {
         return new NetworkRetryManager();
     }
 }

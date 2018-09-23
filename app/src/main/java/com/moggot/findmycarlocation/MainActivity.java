@@ -4,11 +4,8 @@ import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.support.annotation.IdRes;
 import android.support.design.widget.BottomNavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GoogleApiAvailability;
 import com.moggot.findmycarlocation.presentation.common.BaseFragment;
 import com.moggot.findmycarlocation.presentation.common.LocationActivity;
 import com.moggot.findmycarlocation.presentation.main.HomeFragment;

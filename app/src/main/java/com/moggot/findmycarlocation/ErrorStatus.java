@@ -9,18 +9,11 @@ import static java.lang.annotation.RetentionPolicy.SOURCE;
 
 public class ErrorStatus {
 
-    @IntDef({LOCATION_ERROR, BUILD_PATH_ERROR, INTERNET_ERROR})
-    @Retention(SOURCE)
-    public @interface ParkingType {
-    }
-
     public static final int LOCATION_ERROR = 0;
     public static final int BUILD_PATH_ERROR = 1;
     public static final int INTERNET_ERROR = 2;
-
     private int status;
     private Throwable throwable;
-
     public ErrorStatus(@ParkingType int status) {
         this(status, null);
     }
@@ -35,12 +28,17 @@ public class ErrorStatus {
         return throwable;
     }
 
+    @ParkingType
+    public int getStatus() {
+        return status;
+    }
+
     public void setStatus(int type) {
         this.status = type;
     }
 
-    @ParkingType
-    public int getStatus() {
-        return status;
+    @IntDef({LOCATION_ERROR, BUILD_PATH_ERROR, INTERNET_ERROR})
+    @Retention(SOURCE)
+    public @interface ParkingType {
     }
 }

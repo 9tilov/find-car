@@ -13,9 +13,8 @@ import java.util.Map;
 public class AppAnalytics {
 
     private static final String PROPERTY_ID = "UA-66799500-6";
-
-    private FirebaseAnalytics firebaseAnalytics;
     private final Map<TrackerName, Tracker> trackers = new HashMap<>();
+    private FirebaseAnalytics firebaseAnalytics;
     private Activity activity;
 
     public AppAnalytics(Activity activity) {

@@ -41,6 +41,7 @@ import timber.log.Timber;
 
 public class GoogleMapFragment extends BaseFragment<MapViewModel> implements OnMapReadyCallback {
 
+    private static final String TAG = "GoogleMapFragment";
     @BindView(R.id.tv_distance_value)
     TextView tvDistance;
     @BindView(R.id.tv_duration_value)
@@ -57,18 +58,10 @@ public class GoogleMapFragment extends BaseFragment<MapViewModel> implements OnM
     View viewDot;
     @BindView(R.id.map)
     MapView googleMapView;
-
+    Handler handler = new Handler();
     @Nullable
     private GoogleMap map;
     private MapViewModel viewModel;
-
-    private static final String TAG = "GoogleMapFragment";
-
-    public static GoogleMapFragment newInstance() {
-        return new GoogleMapFragment();
-    }
-
-    Handler handler = new Handler();
     private Runnable runnableCode = new Runnable() {
         @Override
         public void run() {
@@ -77,6 +70,10 @@ public class GoogleMapFragment extends BaseFragment<MapViewModel> implements OnM
             handler.postDelayed(this, 1000);
         }
     };
+
+    public static GoogleMapFragment newInstance() {
+        return new GoogleMapFragment();
+    }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {

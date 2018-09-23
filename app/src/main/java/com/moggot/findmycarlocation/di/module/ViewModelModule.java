@@ -3,7 +3,6 @@ package com.moggot.findmycarlocation.di.module;
 import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProvider;
 
-import com.moggot.findmycarlocation.AboutFragment;
 import com.moggot.findmycarlocation.AboutViewModel;
 import com.moggot.findmycarlocation.CarViewModel;
 import com.moggot.findmycarlocation.FactoryViewModel;

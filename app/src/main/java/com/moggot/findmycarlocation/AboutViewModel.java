@@ -5,5 +5,6 @@ import javax.inject.Inject;
 public class AboutViewModel extends BaseViewModel {
 
     @Inject
-    AboutViewModel() {}
+    AboutViewModel() {
+    }
 }

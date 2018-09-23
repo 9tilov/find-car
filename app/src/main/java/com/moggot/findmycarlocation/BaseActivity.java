@@ -7,7 +7,6 @@ import android.support.v7.app.AppCompatActivity;
 
 import javax.inject.Inject;
 
-import butterknife.ButterKnife;
 import dagger.android.AndroidInjector;
 import dagger.android.DispatchingAndroidInjector;
 import dagger.android.support.HasSupportFragmentInjector;
