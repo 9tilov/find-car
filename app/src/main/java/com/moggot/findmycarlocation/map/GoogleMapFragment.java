@@ -97,6 +97,10 @@ public class GoogleMapFragment extends BaseFragment<MapViewModel> implements OnM
             }
         });
         viewModel.getLocationData().observe(this, location -> {
+            if (location == null) {
+                return;
+            }
+            handler.post(runnableCode);
             tvLat.setText(String.valueOf(location.getLatitude()));
             tvLng.setText(String.valueOf(location.getLongitude()));
         });
@@ -154,7 +158,6 @@ public class GoogleMapFragment extends BaseFragment<MapViewModel> implements OnM
     public void onResume() {
         super.onResume();
         googleMapView.onResume();
-        handler.post(runnableCode);
     }
 
     @Override
