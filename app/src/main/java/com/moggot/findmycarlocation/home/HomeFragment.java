@@ -15,13 +15,13 @@ import com.google.android.gms.ads.AdView;
 import com.moggot.findmycarlocation.MainActivity;
 import com.moggot.findmycarlocation.R;
 import com.moggot.findmycarlocation.Utils;
-import com.moggot.findmycarlocation.billing.AdsEventListener;
 import com.moggot.findmycarlocation.common.BaseFragment;
 import com.moggot.findmycarlocation.common.ErrorStatus;
 
 import butterknife.BindView;
 
-public class HomeFragment extends BaseFragment<HomeViewModel> implements View.OnTouchListener {
+public class HomeFragment extends BaseFragment<HomeViewModel> implements
+        View.OnTouchListener, MainActivity.AdsCallback {
 
     private static final String TAG = "HomeFragment";
 
@@ -46,7 +46,6 @@ public class HomeFragment extends BaseFragment<HomeViewModel> implements View.On
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState, HomeViewModel viewModel) {
         this.homeViewModel = viewModel;
-        homeViewModel.checkBilling(new BottomAdsListener());
         adRequest = new AdRequest.Builder().build();
     }
 
@@ -58,9 +57,7 @@ public class HomeFragment extends BaseFragment<HomeViewModel> implements View.On
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        if (homeViewModel.canShowAds()) {
-            adView.loadAd(adRequest);
-        }
+        adView.loadAd(adRequest);
         isAnimated = false;
         ivGear.setOnTouchListener(this);
         homeViewModel.getErrorStatus().observe(this, errorStatus -> {
@@ -80,6 +77,12 @@ public class HomeFragment extends BaseFragment<HomeViewModel> implements View.On
     }
 
     @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        ((MainActivity) getActivity()).setCallback(this);
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
         adView.resume();
@@ -89,14 +92,6 @@ public class HomeFragment extends BaseFragment<HomeViewModel> implements View.On
     public void onPause() {
         super.onPause();
         adView.pause();
-    }
-
-    private class BottomAdsListener implements AdsEventListener {
-
-        @Override
-        public void hideAds() {
-            adView.setVisibility(View.GONE);
-        }
     }
 
     @Override
@@ -212,5 +207,10 @@ public class HomeFragment extends BaseFragment<HomeViewModel> implements View.On
     public void onDestroyView() {
         adView.destroy();
         super.onDestroyView();
+    }
+
+    @Override
+    public void showAds(boolean show) {
+        adView.setVisibility(show ? View.VISIBLE : View.GONE);
     }
 }

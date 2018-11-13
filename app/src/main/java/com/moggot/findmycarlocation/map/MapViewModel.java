@@ -5,7 +5,6 @@ import android.location.Location;
 import android.support.annotation.NonNull;
 
 import com.google.android.gms.maps.model.LatLng;
-import com.moggot.findmycarlocation.billing.BillingManager;
 import com.moggot.findmycarlocation.common.BaseViewModel;
 import com.moggot.findmycarlocation.common.ErrorStatus;
 import com.moggot.findmycarlocation.data.model.route.Path;
@@ -21,7 +20,6 @@ public class MapViewModel extends BaseViewModel {
 
     private final MutableLiveData<Path> routeData = new MutableLiveData<>();
     private final MutableLiveData<Location> locationData = new MutableLiveData<>();
-    private final MutableLiveData<BillingManager> billing = new MutableLiveData<>();
 
     @NonNull
     private final MapInteractor mapInteractor;
@@ -31,26 +29,18 @@ public class MapViewModel extends BaseViewModel {
     private final MainInteractor mainInteractor;
     @NonNull
     private final RetryManager retryManager;
-    private final BillingManager mBillingManager;
 
     @Inject
     public MapViewModel(@NonNull MapInteractor mapInteractor,
                         @NonNull LocationInteractor locationInteractor,
                         @NonNull MainInteractor mainInteractor,
-                        @NonNull RetryManager retryManager,
-                        BillingManager billingManager) {
+                        @NonNull RetryManager retryManager) {
         this.mapInteractor = mapInteractor;
         this.locationInteractor = locationInteractor;
         this.mainInteractor = mainInteractor;
         this.retryManager = retryManager;
-        mBillingManager = billingManager;
-        billing.setValue(billingManager);
         addObserver(routeData);
         addObserver(locationData);
-    }
-
-    public boolean canShowAds() {
-        return mBillingManager.isPremium();
     }
 
     public void buildRoute() {
@@ -95,13 +85,4 @@ public class MapViewModel extends BaseViewModel {
         return locationData;
     }
 
-    public MutableLiveData<BillingManager> getBilling() {
-        return billing;
-    }
-
-    @Override
-    public void onCleared() {
-        super.onCleared();
-        mBillingManager.destroy();
-    }
 }

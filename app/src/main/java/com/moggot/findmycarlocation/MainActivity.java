@@ -7,6 +7,8 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 
 import com.moggot.findmycarlocation.about.AboutFragment;
+import com.moggot.findmycarlocation.billing.BillingManager;
+import com.moggot.findmycarlocation.billing.BillingReadyListener;
 import com.moggot.findmycarlocation.common.BaseFragment;
 import com.moggot.findmycarlocation.common.LocationActivity;
 import com.moggot.findmycarlocation.home.HomeFragment;
@@ -16,19 +18,28 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import dagger.android.AndroidInjection;
 
+import static com.moggot.findmycarlocation.billing.BillingManager.BILLING_MANAGER_NOT_INITIALIZED;
+
 public class MainActivity extends LocationActivity {
 
     @BindView(R.id.bottom_navigation)
     BottomNavigationView bottomNavigationView;
 
+    private BillingManager mBillingManager;
+
     private int navigationId;
+    private AdsCallback mAdsCallback;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-        bottomNavigationView.setOnNavigationItemSelectedListener(item -> showFragment(item.getItemId()));
+        mBillingManager = new BillingManager(this);
+        mBillingManager.setAdsShowListener(new PurchaseEnableListener());
+        mBillingManager.startConnection();
+
+        bottomNavigationView.setOnNavigationItemSelectedListener(item -> MainActivity.this.showFragment(item.getItemId()));
 
         if (savedInstanceState != null) {
             bottomNavigationView.setSelectedItemId(navigationId);
@@ -70,10 +81,22 @@ public class MainActivity extends LocationActivity {
         }
     }
 
+    public BillingManager getBillingManager() {
+        return mBillingManager;
+    }
+
+    public boolean isPremiumPurchased() {
+        return mBillingManager.isPremium();
+    }
+
     @Override
     public void onResume() {
         super.onResume();
         bottomNavigationView.setSelectedItemId(navigationId);
+    }
+
+    public void setCallback(AdsCallback adsCallback) {
+        mAdsCallback = adsCallback;
     }
 
     public void switchToMap() {
@@ -88,5 +111,26 @@ public class MainActivity extends LocationActivity {
     public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
         super.onSaveInstanceState(outState, outPersistentState);
         navigationId = bottomNavigationView.getSelectedItemId();
+    }
+
+    @Override
+    protected void onDestroy() {
+        mBillingManager.destroy();
+        super.onDestroy();
+    }
+
+    public interface AdsCallback {
+        void showAds(boolean show);
+    }
+
+    private class PurchaseEnableListener implements BillingReadyListener {
+
+        @Override
+        public void billingReady() {
+            if (mBillingManager != null
+                    && mBillingManager.getBillingClientResponseCode() > BILLING_MANAGER_NOT_INITIALIZED) {
+                mAdsCallback.showAds(!mBillingManager.isPremium());
+            }
+        }
     }
 }

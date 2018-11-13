@@ -29,6 +29,7 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.maps.android.PolyUtil;
+import com.moggot.findmycarlocation.MainActivity;
 import com.moggot.findmycarlocation.R;
 import com.moggot.findmycarlocation.common.BaseFragment;
 import com.moggot.findmycarlocation.common.ErrorStatus;
@@ -82,14 +83,14 @@ public class GoogleMapFragment extends BaseFragment<MapViewModel> implements OnM
         googleMapView.onCreate(savedInstanceState);
         googleMapView.getMapAsync(this);
         viewModel.getRouteData().observe(this, path -> {
-            viewModel.getBilling().observe(this, billingManager -> {
-                if (billingManager != null) {
-                    if (Calendar.getInstance().get(Calendar.DAY_OF_MONTH) % SUGGEST_PURCHASE_FREQUENCY == 0) {
-                        billingManager.requestSubscription(getActivity());
-                    }
-                }
-            });
-            if (viewModel.canShowAds()) {
+            MainActivity activity = ((MainActivity) getActivity());
+            if (activity == null) {
+                return;
+            }
+            if (Calendar.getInstance().get(Calendar.DAY_OF_MONTH) % SUGGEST_PURCHASE_FREQUENCY == 0) {
+                activity.getBillingManager().requestSubscription();
+            }
+            if (!activity.isPremiumPurchased()) {
                 showInterstitial();
             }
             if (path == null) {

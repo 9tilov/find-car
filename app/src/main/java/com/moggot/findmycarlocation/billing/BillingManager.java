@@ -1,9 +1,7 @@
 package com.moggot.findmycarlocation.billing;
 
 import android.app.Activity;
-import android.content.Context;
 import android.support.annotation.Nullable;
-import android.widget.Toast;
 
 import com.android.billingclient.api.BillingClient;
 import com.android.billingclient.api.BillingClientStateListener;
@@ -23,19 +21,20 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 @Singleton
-public class BillingManager{
+public class BillingManager {
 
+    public static final int BILLING_MANAGER_NOT_INITIALIZED = -1;
+    private final Activity mActivity;
     private BillingClient mBillingClient;
     @Nullable
-    private AdsEventListener mAdsEventListener;
-
+    private BillingReadyListener mBillingReadyListener;
+    private int mBillingClientResponseCode = BILLING_MANAGER_NOT_INITIALIZED;
     private boolean showAds = true;
-    private final Context mContext;
 
     @Inject
-    public BillingManager(Context context) {
-        mContext = context;
-        mBillingClient = BillingClient.newBuilder(context)
+    public BillingManager(Activity activity) {
+        mActivity = activity;
+        mBillingClient = BillingClient.newBuilder(activity)
                 .setListener(new PurchasesUpdatedListener() {
                     @Override
                     public void onPurchasesUpdated(int responseCode, @Nullable List<Purchase> purchases) {
@@ -47,6 +46,10 @@ public class BillingManager{
                         }
                     }
                 }).build();
+    }
+
+    public int getBillingClientResponseCode() {
+        return mBillingClientResponseCode;
     }
 
     public void startConnection() {
@@ -63,9 +66,13 @@ public class BillingManager{
                                     mBillingClient.consumeAsync(purchase.getPurchaseToken(), new AdsPolicyUpdateListener());
                                 }
                             }
+                            if (mBillingReadyListener != null) {
+                                mBillingReadyListener.billingReady();
+                            }
                         }
                     });
                 }
+                mBillingClientResponseCode = responseCode;
             }
 
             @Override
@@ -77,14 +84,14 @@ public class BillingManager{
     }
 
     public boolean isPremium() {
-        return showAds;
+        return !showAds;
     }
 
-    public void setAdsShowListener(AdsEventListener adsEventListener) {
-        mAdsEventListener = adsEventListener;
+    public void setAdsShowListener(BillingReadyListener billingReadyListener) {
+        mBillingReadyListener = billingReadyListener;
     }
 
-    public void requestSubscription(Activity activity) {
+    public void requestSubscription() {
         if (!showAds) {
             return;
         }
@@ -106,7 +113,7 @@ public class BillingManager{
                                 .setSkuDetails(skuDetails);
                         if (mBillingClient.isFeatureSupported(BillingClient.FeatureType.SUBSCRIPTIONS)
                                 == BillingClient.BillingResponse.OK) {
-                            mBillingClient.launchBillingFlow(activity, builder.build());
+                            mBillingClient.launchBillingFlow(mActivity, builder.build());
                         }
                     }
                 } else {
@@ -116,23 +123,20 @@ public class BillingManager{
         });
     }
 
+    public void destroy() {
+        if (mBillingClient != null && mBillingClient.isReady()) {
+            mBillingClient.endConnection();
+        }
+    }
+
     private class AdsPolicyUpdateListener implements ConsumeResponseListener {
 
         @Override
         public void onConsumeResponse(int responseCode, String purchaseToken) {
-            if (mAdsEventListener != null) {
-                if (responseCode == BillingClient.BillingResponse.OK) {
-                    return;
-                }
-                mAdsEventListener.hideAds();
-                showAds = false;
+            if (responseCode == BillingClient.BillingResponse.OK) {
+                return;
             }
-        }
-    }
-
-    public void destroy() {
-        if (mBillingClient != null && mBillingClient.isReady()) {
-            mBillingClient.endConnection();
+            showAds = false;
         }
     }
 }
