@@ -5,6 +5,7 @@
     <uses-permission android:name="package.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE " />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="com.android.vending.BILLING" />
 
     <!-- for samsung -->
     <!-- <uses-permission android:name="com.samsung.android.providers.context.permission.WRITE_USE_APP_FEATURE_SURVEY"/> -->
@@ -46,6 +47,10 @@
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="623c25e275154d77c79e34c25f30e8fd4f7685da" />
+
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-1475613019168586~2120488559"/>
 
     </application>
 </manifest>
