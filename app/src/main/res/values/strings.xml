@@ -32,6 +32,7 @@
     <string name="title_dashboard">Map</string>
     <string name="title_notifications">About</string>
     <string name="privacy_policy">Privacy policy</string>
+    <string name="remove_ads">Remove ads</string>
     <string name="google_play_servicies_error">Google Play Services unavailable. This app will not work</string>
 
 </resources>

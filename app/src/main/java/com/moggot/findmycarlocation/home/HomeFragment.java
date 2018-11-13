@@ -15,6 +15,7 @@ import com.google.android.gms.ads.AdView;
 import com.moggot.findmycarlocation.MainActivity;
 import com.moggot.findmycarlocation.R;
 import com.moggot.findmycarlocation.Utils;
+import com.moggot.findmycarlocation.billing.AdsEventListener;
 import com.moggot.findmycarlocation.common.BaseFragment;
 import com.moggot.findmycarlocation.common.ErrorStatus;
 
@@ -45,6 +46,7 @@ public class HomeFragment extends BaseFragment<HomeViewModel> implements View.On
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState, HomeViewModel viewModel) {
         this.homeViewModel = viewModel;
+        homeViewModel.checkBilling(new BottomAdsListener());
         adRequest = new AdRequest.Builder().build();
     }
 
@@ -56,7 +58,9 @@ public class HomeFragment extends BaseFragment<HomeViewModel> implements View.On
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        adView.loadAd(adRequest);
+        if (homeViewModel.canShowAds()) {
+            adView.loadAd(adRequest);
+        }
         isAnimated = false;
         ivGear.setOnTouchListener(this);
         homeViewModel.getErrorStatus().observe(this, errorStatus -> {
@@ -85,6 +89,14 @@ public class HomeFragment extends BaseFragment<HomeViewModel> implements View.On
     public void onPause() {
         super.onPause();
         adView.pause();
+    }
+
+    private class BottomAdsListener implements AdsEventListener {
+
+        @Override
+        public void hideAds() {
+            adView.setVisibility(View.GONE);
+        }
     }
 
     @Override

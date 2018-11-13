@@ -89,5 +89,4 @@ public class MainActivity extends LocationActivity {
         super.onSaveInstanceState(outState, outPersistentState);
         navigationId = bottomNavigationView.getSelectedItemId();
     }
-
 }

@@ -33,11 +33,15 @@ import com.moggot.findmycarlocation.R;
 import com.moggot.findmycarlocation.common.BaseFragment;
 import com.moggot.findmycarlocation.common.ErrorStatus;
 
+import java.util.Calendar;
 import java.util.List;
 
 import butterknife.BindView;
 
 public class GoogleMapFragment extends BaseFragment<MapViewModel> implements OnMapReadyCallback {
+
+    private static final int LOCATION_UPDATE_PERIOD = 10000;
+    private static final int SUGGEST_PURCHASE_FREQUENCY = 3;
 
     private static final String TAG = "GoogleMapFragment";
     @BindView(R.id.tv_distance_value)
@@ -64,7 +68,7 @@ public class GoogleMapFragment extends BaseFragment<MapViewModel> implements OnM
         @Override
         public void run() {
             viewModel.getCurrentLocation();
-            handler.postDelayed(this, 1000);
+            handler.postDelayed(this, LOCATION_UPDATE_PERIOD);
         }
     };
 
@@ -78,7 +82,16 @@ public class GoogleMapFragment extends BaseFragment<MapViewModel> implements OnM
         googleMapView.onCreate(savedInstanceState);
         googleMapView.getMapAsync(this);
         viewModel.getRouteData().observe(this, path -> {
-            showInterstitial();
+            viewModel.getBilling().observe(this, billingManager -> {
+                if (billingManager != null) {
+                    if (Calendar.getInstance().get(Calendar.DAY_OF_MONTH) % SUGGEST_PURCHASE_FREQUENCY == 0) {
+                        billingManager.requestSubscription(getActivity());
+                    }
+                }
+            });
+            if (viewModel.canShowAds()) {
+                showInterstitial();
+            }
             if (path == null) {
                 return;
             }

@@ -4,10 +4,10 @@ import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProvider;
 
 import com.moggot.findmycarlocation.about.AboutViewModel;
-import com.moggot.findmycarlocation.home.HomeViewModel;
 import com.moggot.findmycarlocation.common.FactoryViewModel;
-import com.moggot.findmycarlocation.map.MapViewModel;
 import com.moggot.findmycarlocation.di.scope.ViewModelKey;
+import com.moggot.findmycarlocation.home.HomeViewModel;
+import com.moggot.findmycarlocation.map.MapViewModel;
 
 import dagger.Binds;
 import dagger.Module;

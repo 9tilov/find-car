@@ -26,5 +26,6 @@
     <string name="title_dashboard">Карта</string>
     <string name="title_notifications">О приложении</string>
     <string name="privacy_policy">Политика конфиденциальности</string>
+    <string name="remove_ads">Убрать рекламу</string>
 
 </resources>
