@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
@@ -82,13 +83,11 @@ public class GoogleMapFragment extends BaseFragment<MapViewModel> implements OnM
         super.onViewCreated(view, savedInstanceState);
         googleMapView.onCreate(savedInstanceState);
         googleMapView.getMapAsync(this);
+        enableSearchMode(false);
         viewModel.getRouteData().observe(this, path -> {
             MainActivity activity = ((MainActivity) getActivity());
             if (activity == null) {
                 return;
-            }
-            if (Calendar.getInstance().get(Calendar.DAY_OF_MONTH) % SUGGEST_PURCHASE_FREQUENCY == 0) {
-                activity.getBillingManager().requestSubscription();
             }
             if (!activity.isPremiumPurchased()) {
                 showInterstitial();
@@ -122,6 +121,7 @@ public class GoogleMapFragment extends BaseFragment<MapViewModel> implements OnM
             viewModel.foundCar();
             if (getActivity() != null) {
                 enableSearchMode(false);
+                Toast.makeText(getContext(), getString(R.string.car_is_found), Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -147,6 +147,8 @@ public class GoogleMapFragment extends BaseFragment<MapViewModel> implements OnM
     }
 
     private void enableSearchMode(boolean enable) {
+        btnFound.setVisibility(enable ? View.VISIBLE : View.INVISIBLE);
+        btnFound.setEnabled(enable);
         viewDot.setBackgroundResource(enable ? R.drawable.status_green_dot : R.drawable.status_red_dot);
         tvDistance.setVisibility(enable ? View.VISIBLE : View.GONE);
         tvDuration.setVisibility(enable ? View.VISIBLE : View.GONE);
@@ -196,6 +198,7 @@ public class GoogleMapFragment extends BaseFragment<MapViewModel> implements OnM
     @Override
     public void onDestroy() {
         super.onDestroy();
+        viewModel.getRouteData().removeObservers(this);
         handler.removeCallbacks(runnableCode);
     }
 

@@ -7,6 +7,7 @@
     <string name="no_path">Не удалось построить маршрут</string>
     <string name="no_location">GPS включается&#8230;Подождите&#8230;</string>
     <string name="you_should_save_car_location">Сначала вы должны припарковаться</string>
+    <string name="car_is_found">Ваша машина найдена</string>
     <string name="distance">Расстояние: %1$s</string>
     <string name="duration">Время в пути: %1$s</string>
     <string name="screen_map">Карта</string>

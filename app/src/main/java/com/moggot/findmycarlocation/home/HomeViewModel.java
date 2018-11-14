@@ -10,9 +10,7 @@ import com.moggot.findmycarlocation.data.model.parking.ParkingModel;
 import java.util.Calendar;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 
-@Singleton
 public class HomeViewModel extends BaseViewModel {
 
     private final MainInteractor mainInteractor;

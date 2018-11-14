@@ -57,7 +57,13 @@ public class HomeFragment extends BaseFragment<HomeViewModel> implements
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        adView.loadAd(adRequest);
+        MainActivity activity = ((MainActivity) getActivity());
+        if (activity == null) {
+            return;
+        }
+        if (!activity.isPremiumPurchased()) {
+            adView.loadAd(adRequest);
+        }
         isAnimated = false;
         ivGear.setOnTouchListener(this);
         homeViewModel.getErrorStatus().observe(this, errorStatus -> {
@@ -211,6 +217,9 @@ public class HomeFragment extends BaseFragment<HomeViewModel> implements
 
     @Override
     public void showAds(boolean show) {
+        if (adView == null) {
+            return;
+        }
         adView.setVisibility(show ? View.VISIBLE : View.GONE);
     }
 }

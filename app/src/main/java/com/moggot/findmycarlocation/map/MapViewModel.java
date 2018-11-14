@@ -13,9 +13,7 @@ import com.moggot.findmycarlocation.home.MainInteractor;
 import com.moggot.findmycarlocation.retry.RetryManager;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 
-@Singleton
 public class MapViewModel extends BaseViewModel {
 
     private final MutableLiveData<Path> routeData = new MutableLiveData<>();
