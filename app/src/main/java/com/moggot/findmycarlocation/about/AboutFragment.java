@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.moggot.findmycarlocation.BuildConfig;
+import com.moggot.findmycarlocation.MainActivity;
 import com.moggot.findmycarlocation.R;
 import com.moggot.findmycarlocation.common.BaseFragment;
 
@@ -26,15 +27,15 @@ public class AboutFragment extends BaseFragment<AboutViewModel> {
     TextView tvCopyright;
     @BindView(R.id.about_cl_privacy_policy)
     ConstraintLayout clPrivacyPolicy;
+    @BindView(R.id.about_cl_purchase_premium)
+    ConstraintLayout clRemoveAds;
 
     public static AboutFragment newInstance() {
         return new AboutFragment();
     }
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState, AboutViewModel viewModel) {
-        //do nothing
-    }
+    protected void onCreate(@Nullable Bundle savedInstanceState, AboutViewModel viewModel) {/* do nothing */}
 
     @Override
     protected Class<AboutViewModel> getViewModel() {
@@ -56,8 +57,16 @@ public class AboutFragment extends BaseFragment<AboutViewModel> {
         super.onViewCreated(view, savedInstanceState);
         tvVersion.setText(getString(R.string.version, BuildConfig.VERSION_NAME));
         tvCopyright.setText(getString(R.string.copyright, Calendar.getInstance().get(Calendar.YEAR)));
+        MainActivity activity = ((MainActivity) getActivity());
+        if (activity == null) {
+            return;
+        }
+        if (activity.isPremiumPurchased()) {
+            clRemoveAds.setVisibility(View.GONE);
+        }
         clPrivacyPolicy.setOnClickListener(v -> {
             startActivity(new Intent(getContext(), PrivacyPolicyActivity.class));
         });
+        clRemoveAds.setOnClickListener(v -> activity.getBillingManager().requestSubscription());
     }
 }

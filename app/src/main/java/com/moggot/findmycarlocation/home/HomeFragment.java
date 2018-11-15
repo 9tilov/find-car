@@ -20,7 +20,8 @@ import com.moggot.findmycarlocation.common.ErrorStatus;
 
 import butterknife.BindView;
 
-public class HomeFragment extends BaseFragment<HomeViewModel> implements View.OnTouchListener {
+public class HomeFragment extends BaseFragment<HomeViewModel> implements
+        View.OnTouchListener, MainActivity.AdsCallback {
 
     private static final String TAG = "HomeFragment";
 
@@ -56,7 +57,13 @@ public class HomeFragment extends BaseFragment<HomeViewModel> implements View.On
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        adView.loadAd(adRequest);
+        MainActivity activity = ((MainActivity) getActivity());
+        if (activity == null) {
+            return;
+        }
+        if (!activity.isPremiumPurchased()) {
+            adView.loadAd(adRequest);
+        }
         isAnimated = false;
         ivGear.setOnTouchListener(this);
         homeViewModel.getErrorStatus().observe(this, errorStatus -> {
@@ -73,6 +80,12 @@ public class HomeFragment extends BaseFragment<HomeViewModel> implements View.On
                 createDialog();
             }
         });
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        ((MainActivity) getActivity()).setCallback(this);
     }
 
     @Override
@@ -200,5 +213,13 @@ public class HomeFragment extends BaseFragment<HomeViewModel> implements View.On
     public void onDestroyView() {
         adView.destroy();
         super.onDestroyView();
+    }
+
+    @Override
+    public void showAds(boolean show) {
+        if (adView == null) {
+            return;
+        }
+        adView.setVisibility(show ? View.VISIBLE : View.GONE);
     }
 }

@@ -55,9 +55,9 @@ public abstract class BaseFragment<M extends BaseViewModel> extends Fragment {
 
     @Override
     public void onDestroyView() {
-        super.onDestroyView();
         unbinder.unbind();
         this.viewModel.unsubscribeFromDestroy(this);
+        super.onDestroyView();
     }
 
     private void configureDagger() {

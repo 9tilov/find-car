@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
@@ -29,15 +30,20 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.maps.android.PolyUtil;
+import com.moggot.findmycarlocation.MainActivity;
 import com.moggot.findmycarlocation.R;
 import com.moggot.findmycarlocation.common.BaseFragment;
 import com.moggot.findmycarlocation.common.ErrorStatus;
 
+import java.util.Calendar;
 import java.util.List;
 
 import butterknife.BindView;
 
 public class GoogleMapFragment extends BaseFragment<MapViewModel> implements OnMapReadyCallback {
+
+    private static final int LOCATION_UPDATE_PERIOD = 10000;
+    private static final int SUGGEST_PURCHASE_FREQUENCY = 3;
 
     private static final String TAG = "GoogleMapFragment";
     @BindView(R.id.tv_distance_value)
@@ -64,7 +70,7 @@ public class GoogleMapFragment extends BaseFragment<MapViewModel> implements OnM
         @Override
         public void run() {
             viewModel.getCurrentLocation();
-            handler.postDelayed(this, 1000);
+            handler.postDelayed(this, LOCATION_UPDATE_PERIOD);
         }
     };
 
@@ -77,8 +83,15 @@ public class GoogleMapFragment extends BaseFragment<MapViewModel> implements OnM
         super.onViewCreated(view, savedInstanceState);
         googleMapView.onCreate(savedInstanceState);
         googleMapView.getMapAsync(this);
+        enableSearchMode(false);
         viewModel.getRouteData().observe(this, path -> {
-            showInterstitial();
+            MainActivity activity = ((MainActivity) getActivity());
+            if (activity == null) {
+                return;
+            }
+            if (!activity.isPremiumPurchased()) {
+                showInterstitial();
+            }
             if (path == null) {
                 return;
             }
@@ -108,6 +121,7 @@ public class GoogleMapFragment extends BaseFragment<MapViewModel> implements OnM
             viewModel.foundCar();
             if (getActivity() != null) {
                 enableSearchMode(false);
+                Toast.makeText(getContext(), getString(R.string.car_is_found), Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -133,6 +147,8 @@ public class GoogleMapFragment extends BaseFragment<MapViewModel> implements OnM
     }
 
     private void enableSearchMode(boolean enable) {
+        btnFound.setVisibility(enable ? View.VISIBLE : View.INVISIBLE);
+        btnFound.setEnabled(enable);
         viewDot.setBackgroundResource(enable ? R.drawable.status_green_dot : R.drawable.status_red_dot);
         tvDistance.setVisibility(enable ? View.VISIBLE : View.GONE);
         tvDuration.setVisibility(enable ? View.VISIBLE : View.GONE);
@@ -182,6 +198,7 @@ public class GoogleMapFragment extends BaseFragment<MapViewModel> implements OnM
     @Override
     public void onDestroy() {
         super.onDestroy();
+        viewModel.getRouteData().removeObservers(this);
         handler.removeCallbacks(runnableCode);
     }
 

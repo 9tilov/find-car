@@ -8,6 +8,5 @@ public class AboutViewModel extends BaseViewModel {
 
     @Inject
     AboutViewModel() {
-        //do nothing
     }
 }

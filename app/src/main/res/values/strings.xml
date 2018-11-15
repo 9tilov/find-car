@@ -11,6 +11,7 @@
     <string name="no_internet">Internet is not available</string>
     <string name="no_location">GPS is turning on&#8230;Wait&#8230;</string>
     <string name="no_path">Couldn\'t build the route</string>
+    <string name="car_is_found">Your car is found</string>
     <string name="you_should_save_car_location">You should park your car</string>
     <string name="distance">Distance: %1$s</string>
     <string name="duration">Duration: %1$s</string>
@@ -32,6 +33,7 @@
     <string name="title_dashboard">Map</string>
     <string name="title_notifications">About</string>
     <string name="privacy_policy">Privacy policy</string>
+    <string name="remove_ads">Remove ads</string>
     <string name="google_play_servicies_error">Google Play Services unavailable. This app will not work</string>
 
 </resources>
