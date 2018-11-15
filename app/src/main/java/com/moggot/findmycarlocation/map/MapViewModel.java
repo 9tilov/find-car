@@ -82,4 +82,5 @@ public class MapViewModel extends BaseViewModel {
     public MutableLiveData<Location> getLocationData() {
         return locationData;
     }
+
 }

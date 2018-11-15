@@ -14,6 +14,7 @@ public class SettingsPreferences {
     private static final String LATITUDE = "latitude";
     private static final String LONGITUDE = "longitude";
     private static final String TIME = "time";
+    private static final String SUGGEST_PREMIUM = "suggest_premium";
     private final SharedPreferences sharedPreferences;
 
     public SettingsPreferences(SharedPreferences sharedPreferences) {

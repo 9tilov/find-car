@@ -19,7 +19,8 @@ public class HomeViewModel extends BaseViewModel {
     private final MutableLiveData<Boolean> parkDataIfNeed = new MutableLiveData<>();
 
     @Inject
-    public HomeViewModel(MainInteractor mainInteractor, LocationInteractor locationInteractor) {
+    public HomeViewModel(MainInteractor mainInteractor,
+                         LocationInteractor locationInteractor) {
         this.mainInteractor = mainInteractor;
         this.locationInteractor = locationInteractor;
         addObserver(parkDataIfNeed);
