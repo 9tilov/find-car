@@ -39,7 +39,7 @@ public class MainActivity extends LocationActivity {
         mBillingManager.setAdsShowListener(new PurchaseEnableListener());
         mBillingManager.startConnection();
 
-        bottomNavigationView.setOnNavigationItemSelectedListener(item -> MainActivity.this.showFragment(item.getItemId()));
+        bottomNavigationView.setOnNavigationItemSelectedListener(item -> showFragment(item.getItemId()));
 
         if (savedInstanceState != null) {
             bottomNavigationView.setSelectedItemId(navigationId);
