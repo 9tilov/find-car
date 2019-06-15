@@ -23,8 +23,8 @@ android {
 
     def versionMajor = 1
     def versionMinor = 12
-    def versionPatch = 3
-    def versionBuild = 34
+    def versionPatch = 4
+    def versionBuild = 35
 
     compileSdkVersion 28
     buildToolsVersion '28.0.3'
@@ -75,9 +75,10 @@ dependencies {
     implementation 'com.google.android.gms:play-services-maps:16.1.0'
     implementation 'com.google.android.gms:play-services-analytics:16.0.8'
     implementation 'com.google.android.gms:play-services-location:16.0.0'
+    implementation 'com.google.android.gms:play-services-ads:17.2.1'
 
     implementation 'com.google.firebase:firebase-core:16.0.9'
-    implementation 'com.google.firebase:firebase-ads:17.2.0'
+    implementation 'com.google.firebase:firebase-ads:17.2.1'
     implementation 'com.google.firebase:firebase-messaging:18.0.0'
 
     implementation 'io.reactivex.rxjava2:rxjava:2.2.0'

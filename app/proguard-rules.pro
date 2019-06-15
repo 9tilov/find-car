@@ -16,6 +16,8 @@
 #   public *;
 #}
 
+-keep class com.moggot.findmycarlocation.** { *; }
+
 #crashlytics
 -keep class com.crashlytics.** { *; }
 -dontwarn com.crashlytics.**
