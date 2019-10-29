@@ -1,17 +1,16 @@
 package com.moggot.findmycarlocation.di.module;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.moggot.findmycarlocation.data.api.LocationApi;
 import com.moggot.findmycarlocation.data.repository.local.SettingsPreferences;
 import com.moggot.findmycarlocation.data.repository.network.NetworkRepo;
+import com.moggot.findmycarlocation.di.scope.MainScope;
 import com.moggot.findmycarlocation.retry.NetworkRetryManager;
 import com.moggot.findmycarlocation.retry.RetryManager;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
-
-import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
@@ -26,7 +25,7 @@ import timber.log.Timber;
 public class NetworkModule {
 
     @Provides
-    @Singleton
+    @MainScope
     HttpLoggingInterceptor provideHttpLoggingInterceptor() {
         HttpLoggingInterceptor httpLoggingInterceptor =
                 new HttpLoggingInterceptor(message -> Timber.d(message));
@@ -35,7 +34,7 @@ public class NetworkModule {
     }
 
     @Provides
-    @Singleton
+    @MainScope
     OkHttpClient provideOkHttpClient(HttpLoggingInterceptor loggingInterceptor) {
         return new OkHttpClient.Builder()
                 .addInterceptor(loggingInterceptor)
@@ -43,7 +42,7 @@ public class NetworkModule {
     }
 
     @Provides
-    @Singleton
+    @MainScope
     Retrofit.Builder provideRetrofitBuilder(OkHttpClient client) {
         return new Retrofit.Builder()
                 .client(client)
@@ -52,7 +51,7 @@ public class NetworkModule {
     }
 
     @Provides
-    @Singleton
+    @MainScope
     LocationApi provideLocationApi(Retrofit.Builder builder) {
         return builder
                 .baseUrl(LocationApi.BASE_LOCATION_URL)
@@ -61,19 +60,19 @@ public class NetworkModule {
     }
 
     @Provides
-    @Singleton
+    @MainScope
     NetworkRepo provideNetworkService(@NonNull LocationApi locationApi, @NonNull SettingsPreferences preferences) {
         return new NetworkRepo(locationApi, preferences);
     }
 
     @Provides
-    @Singleton
+    @MainScope
     Executor provideExecutor() {
         return Executors.newFixedThreadPool(2);
     }
 
     @Provides
-    @Singleton
+    @MainScope
     RetryManager provideRetryManager() {
         return new NetworkRetryManager();
     }

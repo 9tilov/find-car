@@ -2,28 +2,24 @@ package com.moggot.findmycarlocation;
 
 import android.os.Bundle;
 import android.os.PersistableBundle;
-import android.support.annotation.IdRes;
-import android.support.design.widget.BottomNavigationView;
-import android.support.v4.app.Fragment;
 
+import androidx.annotation.IdRes;
+import androidx.fragment.app.Fragment;
+
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.moggot.findmycarlocation.about.AboutFragment;
+import com.moggot.findmycarlocation.base.BaseFragment;
 import com.moggot.findmycarlocation.billing.BillingManager;
 import com.moggot.findmycarlocation.billing.BillingReadyListener;
-import com.moggot.findmycarlocation.common.BaseFragment;
 import com.moggot.findmycarlocation.common.LocationActivity;
 import com.moggot.findmycarlocation.home.HomeFragment;
 import com.moggot.findmycarlocation.map.GoogleMapFragment;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import dagger.android.AndroidInjection;
 
 import static com.moggot.findmycarlocation.billing.BillingManager.BILLING_MANAGER_NOT_INITIALIZED;
 
 public class MainActivity extends LocationActivity {
 
-    @BindView(R.id.bottom_navigation)
-    BottomNavigationView bottomNavigationView;
+    private BottomNavigationView bottomNavigationView;
 
     private BillingManager mBillingManager;
 
@@ -34,7 +30,7 @@ public class MainActivity extends LocationActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        ButterKnife.bind(this);
+        bottomNavigationView = findViewById(R.id.bottom_navigation);
         mBillingManager = new BillingManager(this);
         mBillingManager.setAdsShowListener(new PurchaseEnableListener());
         mBillingManager.startConnection();
@@ -50,24 +46,16 @@ public class MainActivity extends LocationActivity {
                 item -> showFragment(item.getItemId()));
     }
 
-    @Override
-    public void configureDagger() {
-        AndroidInjection.inject(this);
-    }
-
     private boolean showFragment(@IdRes int itemId) {
         switch (itemId) {
-            case R.id.navigation_home:
-                loadFragment(HomeFragment.newInstance());
-                return true;
             case R.id.navigation_map:
-                loadFragment(GoogleMapFragment.newInstance());
+                loadFragment(GoogleMapFragment.Companion.newInstance());
                 return true;
             case R.id.navigation_about:
                 loadFragment(AboutFragment.newInstance());
                 return true;
             default:
-                loadFragment(HomeFragment.newInstance());
+                loadFragment(HomeFragment.Companion.newInstance());
                 return true;
         }
     }
@@ -117,6 +105,11 @@ public class MainActivity extends LocationActivity {
     protected void onDestroy() {
         mBillingManager.destroy();
         super.onDestroy();
+    }
+
+    @Override
+    public int getFragmentContainerId() {
+        return R.id.frame_container;
     }
 
     public interface AdsCallback {

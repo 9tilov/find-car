@@ -1,6 +1,6 @@
 package com.moggot.findmycarlocation.data.api;
 
-import android.support.annotation.WorkerThread;
+import androidx.annotation.WorkerThread;
 
 import com.moggot.findmycarlocation.data.model.route.Path;
 

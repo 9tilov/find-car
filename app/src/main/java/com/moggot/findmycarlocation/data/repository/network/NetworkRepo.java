@@ -1,7 +1,7 @@
 package com.moggot.findmycarlocation.data.repository.network;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.WorkerThread;
+import androidx.annotation.NonNull;
+import androidx.annotation.WorkerThread;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.moggot.findmycarlocation.data.api.LocationApi;

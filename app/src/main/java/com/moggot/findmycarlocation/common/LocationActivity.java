@@ -5,19 +5,24 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.provider.Settings;
-import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
 import android.view.View;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.material.snackbar.Snackbar;
 import com.moggot.findmycarlocation.BuildConfig;
 import com.moggot.findmycarlocation.R;
+import com.moggot.findmycarlocation.base.BaseActivity;
 
 public abstract class LocationActivity extends BaseActivity {
 
     private static final int REQUEST_PERMISSIONS_REQUEST_CODE = 34;
+    @Nullable
+    private Snackbar snackbar;
 
     @Override
     public void onResume() {
@@ -79,11 +84,14 @@ public abstract class LocationActivity extends BaseActivity {
 
     private void showSnackbar(final int mainTextStringId, final int actionStringId,
                               View.OnClickListener listener) {
-        Snackbar.make(
+        if (snackbar != null && snackbar.isShown()) {
+            return;
+        }
+        snackbar = Snackbar.make(
                 findViewById(android.R.id.content),
                 getString(mainTextStringId),
-                Snackbar.LENGTH_INDEFINITE)
-                .setAction(getString(actionStringId), listener).show();
+                Snackbar.LENGTH_INDEFINITE);
+        snackbar.setAction(getString(actionStringId), listener).show();
     }
 
     /**

@@ -1,9 +1,11 @@
 package com.moggot.findmycarlocation.data.repository.local;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.moggot.findmycarlocation.data.model.parking.ParkingModel;
+
+import javax.inject.Inject;
 
 public class LocalRepo {
 
@@ -14,14 +16,14 @@ public class LocalRepo {
         this.settingsPreferences = settingsPreferences;
     }
 
-    public boolean parkCarIfNeed(ParkingModel parkingModel) {
-        if (settingsPreferences.isAlreadyParked()) {
-            return false;
-        }
+    public boolean carIsParked() {
+        return settingsPreferences.isAlreadyParked();
+    }
+
+    public void parkCar(ParkingModel parkingModel) {
         settingsPreferences.saveTime(parkingModel.getTime());
         settingsPreferences.saveLocation(parkingModel.getLocation());
         settingsPreferences.saveParkingState(true);
-        return true;
     }
 
     public ParkingModel loadParkingData() {

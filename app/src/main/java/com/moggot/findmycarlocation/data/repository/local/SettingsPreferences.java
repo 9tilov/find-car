@@ -6,6 +6,8 @@ import com.google.android.gms.maps.model.LatLng;
 
 import java.util.Calendar;
 
+import javax.inject.Inject;
+
 import timber.log.Timber;
 
 public class SettingsPreferences {

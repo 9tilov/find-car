@@ -1,6 +1,6 @@
 package com.moggot.findmycarlocation.map;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.moggot.findmycarlocation.data.model.route.Path;

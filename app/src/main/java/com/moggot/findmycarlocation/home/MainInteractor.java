@@ -1,6 +1,6 @@
 package com.moggot.findmycarlocation.home;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.moggot.findmycarlocation.data.model.parking.ParkingModel;
 import com.moggot.findmycarlocation.data.repository.local.LocalRepo;
@@ -17,8 +17,12 @@ public class MainInteractor {
         this.repository = localRepo;
     }
 
-    public boolean saveParkingData(ParkingModel parkingModel) {
-        return repository.parkCarIfNeed(parkingModel);
+    public void saveParkingData(ParkingModel parkingModel) {
+        repository.parkCar(parkingModel);
+    }
+
+    public boolean carIsParked() {
+        return repository.carIsParked();
     }
 
     public ParkingModel loadParkingData() {

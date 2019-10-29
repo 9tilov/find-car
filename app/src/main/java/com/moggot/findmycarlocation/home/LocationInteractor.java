@@ -1,7 +1,8 @@
 package com.moggot.findmycarlocation.home;
 
 import android.location.Location;
-import android.support.annotation.NonNull;
+
+import androidx.annotation.NonNull;
 
 import com.google.android.gms.location.LocationRequest;
 import com.patloew.rxlocation.RxLocation;
@@ -21,8 +22,8 @@ public class LocationInteractor {
     private final LocationRequest locationRequest;
 
     @Inject
-    public LocationInteractor(@NonNull RxLocation rxLocation,
-                              @NonNull LocationRequest locationRequest) {
+    LocationInteractor(@NonNull RxLocation rxLocation,
+                       @NonNull LocationRequest locationRequest) {
         this.rxLocation = rxLocation;
         this.locationRequest = locationRequest;
     }

@@ -2,21 +2,17 @@ package com.moggot.findmycarlocation.about;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-import com.moggot.findmycarlocation.R;
-import com.moggot.findmycarlocation.common.BaseActivity;
+import androidx.annotation.Nullable;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import dagger.android.AndroidInjection;
+import com.moggot.findmycarlocation.R;
+import com.moggot.findmycarlocation.base.BaseActivity;
 
 public class PrivacyPolicyActivity extends BaseActivity {
 
-    @BindView(R.id.privacy_policy_webview)
     WebView webView;
 
     @SuppressLint("SetJavaScriptEnabled")
@@ -24,7 +20,7 @@ public class PrivacyPolicyActivity extends BaseActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_privacy_policy);
-        ButterKnife.bind(this);
+        webView = findViewById(R.id.privacy_policy_webview);
 
         String url = getString(R.string.privacy_policy_link);
         webView.setWebViewClient(new WebViewClient());
@@ -34,7 +30,7 @@ public class PrivacyPolicyActivity extends BaseActivity {
     }
 
     @Override
-    public void configureDagger() {
-        AndroidInjection.inject(this);
+    public int getFragmentContainerId() {
+        return 0;
     }
 }
