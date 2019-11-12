@@ -99,6 +99,7 @@ class HomeFragment : BaseFragment(), HomeView, View.OnTouchListener, MainActivit
     }
 
     override fun showConfirmDialog() {
+        ivGear.isEnabled = true
         val builder = AlertDialog.Builder(activity)
         builder.setTitle(R.string.dialog_you_not_find_car)
                 .setMessage(R.string.dialog_title_save_car)
@@ -127,8 +128,8 @@ class HomeFragment : BaseFragment(), HomeView, View.OnTouchListener, MainActivit
             MotionEvent.ACTION_UP -> {
                 val endY = event.y
                 if (startY > endY) {
-                    homePresenter.parkCarIfNeeded()
                     ivGear.isEnabled = false
+                    homePresenter.parkCarIfNeeded()
                 } else {
                     val isShowMap = homePresenter.tryToShowMap()
                     if (isShowMap) {
