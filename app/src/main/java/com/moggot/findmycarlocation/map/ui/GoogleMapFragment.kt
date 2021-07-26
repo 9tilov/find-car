@@ -129,7 +129,6 @@ class GoogleMapFragment : LocationFragment(R.layout.fragment_map), OnMapReadyCal
         ) {
             return
         }
-        Log.d("moggot123", "onMapReady: " + map)
         map?.run {
             isMyLocationEnabled = true
             uiSettings.isZoomControlsEnabled = true
@@ -178,7 +177,6 @@ class GoogleMapFragment : LocationFragment(R.layout.fragment_map), OnMapReadyCal
     }
 
     private fun showRoute(points: List<LatLng>) {
-        Log.d("moggot123", "showRoute: " + points)
         val line = PolylineOptions()
         line.width(4f).color(R.color.line)
         val latLngBuilder = LatLngBounds.Builder()

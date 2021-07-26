@@ -21,11 +21,7 @@ class NetworkModule {
     @Singleton
     fun provideHttpLoggingInterceptor(): HttpLoggingInterceptor {
         val httpLoggingInterceptor =
-            HttpLoggingInterceptor(object : HttpLoggingInterceptor.Logger {
-                override fun log(message: String) {
-                    Timber.tag(App.TAG).d("HTTP REQUEST: $message")
-                }
-            })
+            HttpLoggingInterceptor { message -> Timber.tag(App.TAG).d("HTTP REQUEST: $message") }
         httpLoggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BASIC)
         return httpLoggingInterceptor
     }
