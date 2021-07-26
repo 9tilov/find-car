@@ -1,104 +1,37 @@
 {
   "project_info": {
-    "project_number": "79745386976",
-    "firebase_url": "https://androidapps-150409.firebaseio.com",
-    "project_id": "androidapps-150409",
-    "storage_bucket": "androidapps-150409.appspot.com"
+    "project_number": "750096529354",
+    "firebase_url": "https://find-my-car-location-42dea.firebaseio.com",
+    "project_id": "find-my-car-location-42dea",
+    "storage_bucket": "find-my-car-location-42dea.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:79745386976:android:4122d82995f5859c",
-        "android_client_info": {
-          "package_name": "com.moggot.svet_ku"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "79745386976-gfnkb6ukanmi3at4fv1opvtg876385eu.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.moggot.svet_ku",
-            "certificate_hash": "0170BA1FD575B4ABA62E3C759C75992DFF56D492"
-          }
-        },
-        {
-          "client_id": "79745386976-hdjfpavlf6ef6cn88io9dd72bghm90hf.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyAoYJZLp7IFT4Mmd_Sp6qbsgLo2JJ8mdOY"
-        }
-      ],
-      "services": {
-        "analytics_service": {
-          "status": 1
-        },
-        "appinvite_service": {
-          "status": 2,
-          "other_platform_oauth_client": [
-            {
-              "client_id": "79745386976-hdjfpavlf6ef6cn88io9dd72bghm90hf.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
-        },
-        "ads_service": {
-          "status": 2
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:79745386976:android:d96b1e2c2cdd8827",
+        "mobilesdk_app_id": "1:750096529354:android:cbb072e11736d21e878133",
         "android_client_info": {
           "package_name": "com.moggot.findmycarlocation"
         }
       },
       "oauth_client": [
         {
-          "client_id": "79745386976-ndt49qjtoq2sqfmv4h1hfpnfhl43mrmh.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.moggot.findmycarlocation",
-            "certificate_hash": "0FAE6525F9B9282CD744FD94A417879573A69B92"
-          }
-        },
-        {
-          "client_id": "79745386976-fvcgu3cf2fbqv65aipd564vug9hba8v8.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.moggot.findmycarlocation",
-            "certificate_hash": "3470D5735CA9EB4D7AC7340400023351D8E53BDB"
-          }
-        },
-        {
-          "client_id": "79745386976-hdjfpavlf6ef6cn88io9dd72bghm90hf.apps.googleusercontent.com",
+          "client_id": "750096529354-piod1sm9j82sha74v6gr3106g0jk8odh.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyAoYJZLp7IFT4Mmd_Sp6qbsgLo2JJ8mdOY"
+          "current_key": "AIzaSyBRYe32YPLSv0TlXumFaFcqUDbXM4KoRjI"
         }
       ],
       "services": {
-        "analytics_service": {
-          "status": 1
-        },
         "appinvite_service": {
-          "status": 2,
           "other_platform_oauth_client": [
             {
-              "client_id": "79745386976-hdjfpavlf6ef6cn88io9dd72bghm90hf.apps.googleusercontent.com",
+              "client_id": "750096529354-piod1sm9j82sha74v6gr3106g0jk8odh.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
-        },
-        "ads_service": {
-          "status": 2
         }
       }
     }
