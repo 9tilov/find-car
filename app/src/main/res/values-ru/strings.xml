@@ -3,6 +3,7 @@
 
     <string name="app_name">Find My Car Location</string>
     <string name="save_car_location_success">Координаты машины сохранены</string>
+    <string name="gsp_turning_on">GPS включается…Пожалуйста, подождите</string>
     <string name="no_internet">Интернет недоступен</string>
     <string name="no_path">Не удалось построить маршрут</string>
     <string name="no_location">GPS включается&#8230;Подождите&#8230;</string>
@@ -28,5 +29,6 @@
     <string name="title_notifications">О приложении</string>
     <string name="privacy_policy">Политика конфиденциальности</string>
     <string name="remove_ads">Убрать рекламу</string>
+    <string name="google_play_servicies_error">Устройсво не поддерживает Google Play Services. Приложение не будет работать</string>
 
 </resources>

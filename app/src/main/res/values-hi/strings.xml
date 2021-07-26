@@ -3,6 +3,7 @@
 
     <string name="app_name">मेरी कार के स्थान की खोज करें</string>
     <string name="save_car_location_success">मशीन निर्देशांक सहेजे गए हैं</string>
+    <string name="gsp_turning_on">GPS चालू हो रहा है… कृपया प्रतीक्षा करें</string>
     <string name="no_internet">इंटरनेट सुलभ नहीं है</string>
     <string name="no_path">मार्ग नहीं बना सके</string>
     <string name="no_location">GPS चालू हो रहा है … कृपया, प्रतीक्षा करें…</string>
@@ -28,5 +29,6 @@
     <string name="title_notifications">ऐप के बारे में</string>
     <string name="privacy_policy">गोपनीयता नीति</string>
     <string name="remove_ads">विज्ञापन हटाएँ</string>
+    <string name="google_play_servicies_error">Google Play Services उपलब्ध नहीं हैं। यह ऐप काम नहीं करेगा</string>
 
 </resources>
