@@ -4,7 +4,6 @@ import android.Manifest
 import android.app.Activity.RESULT_OK
 import android.content.Context
 import android.content.pm.PackageManager
-import android.location.Address
 import android.location.Location
 import android.util.Log
 import android.widget.Toast
@@ -17,7 +16,6 @@ import com.google.android.gms.location.LocationRequest
 import com.moggot.findmycarlocation.R
 import com.moggot.findmycarlocation.common.BaseFragment
 import com.moggot.findmycarlocation.extensions.showToast
-import com.patloew.colocation.CoGeocoder
 import com.patloew.colocation.CoLocation
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -33,14 +31,19 @@ abstract class LocationFragment(@LayoutRes layoutId: Int) : BaseFragment(layoutI
     private var curLocation: Location? = null
 
     @ExperimentalCoroutinesApi
-    private val permissionsLauncher =
-        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
-            if (isGranted) {
+    private val locationPermissionRequest = registerForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        when {
+            permissions[Manifest.permission.ACCESS_FINE_LOCATION] ?: false -> {
                 startLocationUpdatesAfterCheck()
-            } else {
-                locationPermissionRejected()
             }
+            permissions[Manifest.permission.ACCESS_COARSE_LOCATION] ?: false -> {
+                startLocationUpdatesAfterCheck()
+            }
+            else -> locationPermissionRejected()
         }
+    }
 
     @ExperimentalCoroutinesApi
     private val locationResult =
@@ -52,7 +55,6 @@ abstract class LocationFragment(@LayoutRes layoutId: Int) : BaseFragment(layoutI
             }
         }
     private lateinit var coLocation: CoLocation
-    private lateinit var coGeocoder: CoGeocoder
     private val locationRequest: LocationRequest = LocationRequest.create()
         .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
         .setInterval(UPDATED_INTERVAL)
@@ -62,7 +64,6 @@ abstract class LocationFragment(@LayoutRes layoutId: Int) : BaseFragment(layoutI
     override fun onAttach(context: Context) {
         super.onAttach(context)
         coLocation = CoLocation.from(context)
-        coGeocoder = CoGeocoder.from(context)
     }
 
     @ExperimentalCoroutinesApi
@@ -70,7 +71,8 @@ abstract class LocationFragment(@LayoutRes layoutId: Int) : BaseFragment(layoutI
         if (ActivityCompat.checkSelfPermission(
                 requireContext(),
                 Manifest.permission.ACCESS_FINE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+            ) == PackageManager.PERMISSION_GRANTED ||
+            ActivityCompat.checkSelfPermission(
                 requireContext(),
                 Manifest.permission.ACCESS_COARSE_LOCATION
             ) == PackageManager.PERMISSION_GRANTED
@@ -96,7 +98,12 @@ abstract class LocationFragment(@LayoutRes layoutId: Int) : BaseFragment(layoutI
                 }
             }
         } else {
-            permissionsLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+            locationPermissionRequest.launch(
+                arrayOf(
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                )
+            )
         }
     }
 
@@ -109,7 +116,8 @@ abstract class LocationFragment(@LayoutRes layoutId: Int) : BaseFragment(layoutI
                 if (ActivityCompat.checkSelfPermission(
                         requireContext(),
                         Manifest.permission.ACCESS_FINE_LOCATION
-                    ) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                    ) == PackageManager.PERMISSION_GRANTED ||
+                    ActivityCompat.checkSelfPermission(
                         requireContext(),
                         Manifest.permission.ACCESS_COARSE_LOCATION
                     ) == PackageManager.PERMISSION_GRANTED

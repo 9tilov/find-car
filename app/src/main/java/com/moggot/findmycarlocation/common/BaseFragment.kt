@@ -14,13 +14,13 @@ abstract class BaseFragment(@LayoutRes layoutId: Int) : Fragment(layoutId) {
 
     private lateinit var locationCallback: LocationCallback
 
-    protected lateinit var analytics: AppAnalytics
+//    protected lateinit var analytics: AppAnalytics
     protected abstract val viewModel: BaseViewModel
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        analytics = AppAnalytics(activity)
-        analytics.setCurrentScreen(fragmentTag)
+//        analytics = AppAnalytics(activity)
+//        analytics.setCurrentScreen(fragmentTag)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
