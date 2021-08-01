@@ -32,6 +32,7 @@ import com.google.android.gms.maps.model.Polyline
 import com.google.android.gms.maps.model.PolylineOptions
 import com.google.android.gms.maps.model.RoundCap
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.maps.android.PolyUtil
 import com.moggot.findmycarlocation.MainActivity
 import com.moggot.findmycarlocation.R
@@ -184,6 +185,9 @@ class GoogleMapFragment : LocationFragment(R.layout.fragment_map), OnMapReadyCal
     }
 
     private fun showRoute(points: List<LatLng>) {
+        analytics.logEvent(FirebaseAnalytics.Event.SELECT_ITEM, Bundle().apply {
+            putString(FirebaseAnalytics.Param.ITEM_NAME, "build_route")
+        })
         val polylineOptions = PolylineOptions()
         polylineOptions.width(4f).color(R.color.line)
         val latLngBuilder = LatLngBounds.Builder()

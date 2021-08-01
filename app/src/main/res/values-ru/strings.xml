@@ -4,7 +4,7 @@
     <string name="app_name">Find My Car Location</string>
     <string name="save_car_location_success">Координаты машины сохранены</string>
     <string name="gsp_turning_on">GPS включается…Пожалуйста, подождите</string>
-    <string name="no_internet">Интернет недоступен</string>
+    <string name="no_internet">Нет подключения к интернету</string>
     <string name="no_path">Не удалось построить маршрут</string>
     <string name="no_location">GPS включается&#8230;Подождите&#8230;</string>
     <string name="you_should_save_car_location">Сначала вы должны припарковаться</string>

@@ -4,7 +4,6 @@ import android.app.AlertDialog
 import android.content.DialogInterface
 import android.location.Location
 import android.os.Bundle
-import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.view.View.OnTouchListener
@@ -13,6 +12,7 @@ import android.view.animation.AnimationUtils
 import android.widget.Toast
 import androidx.fragment.app.viewModels
 import com.google.android.gms.ads.AdRequest
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.moggot.findmycarlocation.MainActivity
 import com.moggot.findmycarlocation.MainActivity.AdsCallback
 import com.moggot.findmycarlocation.R
@@ -42,7 +42,13 @@ class HomeFragment : LocationFragment(R.layout.fragment_home), OnTouchListener, 
         viewBinding.ivGear.isEnabled = true
         if (viewModel.isCarParked()) {
             createDialog()
+            analytics.logEvent(FirebaseAnalytics.Event.SELECT_ITEM, Bundle().apply {
+                putString(FirebaseAnalytics.Param.ITEM_NAME, "show_parking_dialog")
+            })
         } else {
+            analytics.logEvent(FirebaseAnalytics.Event.SELECT_ITEM, Bundle().apply {
+                putString(FirebaseAnalytics.Param.ITEM_NAME, "park_car")
+            })
             viewModel.parkCar(location)
             animateParking()
             showToast(getString(R.string.save_car_location_success), Toast.LENGTH_SHORT)
@@ -164,6 +170,9 @@ class HomeFragment : LocationFragment(R.layout.fragment_home), OnTouchListener, 
                 isAnimated = false
                 if (activity != null) {
                     (activity as MainActivity).switchToMap()
+                    analytics.logEvent(FirebaseAnalytics.Event.SELECT_ITEM, Bundle().apply {
+                        putString(FirebaseAnalytics.Param.ITEM_NAME, "open_map")
+                    })
                 }
             }
 

@@ -26,17 +26,12 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
         //        mBillingManager = new BillingManager(this);
 //        mBillingManager.setAdsShowListener(new PurchaseEnableListener());
 //        mBillingManager.startConnection();
-        viewBinding.bottomNavigation.setOnNavigationItemSelectedListener { item: MenuItem ->
-            showFragment(
-                item.itemId
-            )
-        }
         if (savedInstanceState != null) {
             viewBinding.bottomNavigation.selectedItemId = navigationId
         } else {
             showFragment(viewBinding.bottomNavigation.selectedItemId)
         }
-        viewBinding.bottomNavigation.setOnNavigationItemSelectedListener { item: MenuItem ->
+        viewBinding.bottomNavigation.setOnItemSelectedListener { item: MenuItem ->
             showFragment(
                 item.itemId
             )

@@ -26,8 +26,8 @@ class MapViewModel @Inject constructor(
 ) : BaseViewModel() {
 
     private val routeData = MutableLiveData<Result<Path>>()
-    val parkingData = parkingInteractor.getParkingPlace().flowOn(Dispatchers.IO).asLiveData()
     lateinit var currentLocation: LatLng
+    val parkingData = parkingInteractor.getParkingPlace().flowOn(Dispatchers.IO).asLiveData()
 
     fun buildRoute(latitude: Double, longitude: Double) = viewModelScope.launch(Dispatchers.Main) {
         currentLocation = LatLng(latitude, longitude)
