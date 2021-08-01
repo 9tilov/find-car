@@ -6,6 +6,7 @@ import com.moggot.findmycarlocation.map.data.MapDataRepo
 import com.moggot.findmycarlocation.map.domain.MapInteractor
 import com.moggot.findmycarlocation.map.domain.MapInteractorImpl
 import com.moggot.findmycarlocation.map.domain.MapRepo
+import com.moggot.findmycarlocation.parking.data.local.ParkingSource
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -23,6 +24,6 @@ class MapModule {
 
     @Provides
     @ActivityRetainedScoped
-    fun provideMapRepo(retrofit: Retrofit, appDatabase: AppDatabase): MapRepo =
-        MapDataRepo(retrofit.create(LocationApi::class.java), appDatabase.parkingDao())
+    fun provideMapRepo(retrofit: Retrofit, parkingSource: ParkingSource): MapRepo =
+        MapDataRepo(retrofit.create(LocationApi::class.java), parkingSource)
 }

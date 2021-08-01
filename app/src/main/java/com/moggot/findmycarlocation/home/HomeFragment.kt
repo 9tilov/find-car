@@ -98,7 +98,7 @@ class HomeFragment : LocationFragment(R.layout.fragment_home), OnTouchListener, 
 
     @ExperimentalCoroutinesApi
     private fun createDialog() {
-        val builder = AlertDialog.Builder(getActivity())
+        val builder = AlertDialog.Builder(activity)
         builder.setTitle(R.string.dialog_you_not_find_car)
             .setMessage(R.string.dialog_title_save_car)
             .setPositiveButton(

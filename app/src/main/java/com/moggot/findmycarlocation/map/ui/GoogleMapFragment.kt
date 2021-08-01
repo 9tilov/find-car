@@ -22,10 +22,15 @@ import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CircleOptions
+import com.google.android.gms.maps.model.Dash
+import com.google.android.gms.maps.model.Gap
+import com.google.android.gms.maps.model.JointType
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.Polyline
 import com.google.android.gms.maps.model.PolylineOptions
+import com.google.android.gms.maps.model.RoundCap
 import com.google.android.material.snackbar.Snackbar
 import com.google.maps.android.PolyUtil
 import com.moggot.findmycarlocation.MainActivity
@@ -179,18 +184,33 @@ class GoogleMapFragment : LocationFragment(R.layout.fragment_map), OnMapReadyCal
     }
 
     private fun showRoute(points: List<LatLng>) {
-        val line = PolylineOptions()
-        line.width(4f).color(R.color.line)
+        val polylineOptions = PolylineOptions()
+        polylineOptions.width(4f).color(R.color.line)
         val latLngBuilder = LatLngBounds.Builder()
         for (i in points.indices) {
-            line.add(points[i])
+            polylineOptions.add(points[i])
             latLngBuilder.include(points[i])
         }
-        map?.addPolyline(line)
+        val line: Polyline? = map?.addPolyline(polylineOptions)
+        if (line != null) {
+            stylePolyline(line)
+        }
         val size = resources.displayMetrics.widthPixels
         val latLngBounds = latLngBuilder.build()
         val track = CameraUpdateFactory.newLatLngBounds(latLngBounds, size, size, 25)
         map?.animateCamera(track)
+    }
+
+    private fun stylePolyline(polyline: Polyline) {
+        polyline.startCap = RoundCap()
+        polyline.endCap = RoundCap()
+        polyline.width = POLYLINE_STROKE_WIDTH_PX
+        polyline.color = ContextCompat.getColor(requireContext(), R.color.polyline_color)
+        polyline.jointType = JointType.ROUND
+        val pattern = listOf(
+            Gap(GAP_LENGTH), Dash(DASH_LENGTH), Gap(GAP_LENGTH)
+        )
+        polyline.pattern = pattern
     }
 
     private fun showDistance(distance: String) {
@@ -232,6 +252,10 @@ class GoogleMapFragment : LocationFragment(R.layout.fragment_map), OnMapReadyCal
     }
 
     companion object {
+
+        private const val POLYLINE_STROKE_WIDTH_PX = 8f
+        private const val GAP_LENGTH = 5f
+        private const val DASH_LENGTH = 30f
 
         fun newInstance(): GoogleMapFragment {
             return GoogleMapFragment()

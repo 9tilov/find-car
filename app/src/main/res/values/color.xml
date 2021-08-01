@@ -20,4 +20,6 @@
     <color name="button_round_pressed">#808080</color>
     <color name="button_round_text_color">#000</color>
 
+    <color name="polyline_color">#9B8EBB</color>
+
 </resources>
