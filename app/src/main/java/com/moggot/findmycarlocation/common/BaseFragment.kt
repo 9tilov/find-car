@@ -6,7 +6,6 @@ import android.view.View
 import androidx.annotation.LayoutRes
 import androidx.fragment.app.Fragment
 import com.google.android.gms.location.LocationCallback
-import com.google.android.gms.location.LocationResult
 import com.moggot.findmycarlocation.AppAnalytics
 import com.moggot.findmycarlocation.base.BaseViewModel
 
@@ -24,15 +23,7 @@ abstract class BaseFragment(@LayoutRes layoutId: Int) : Fragment(layoutId) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        locationCallback = object : LocationCallback() {
-            override fun onLocationResult(locationResult: LocationResult?) {
-                locationResult ?: return
-                for (location in locationResult.locations) {
-                    // Update UI with location data
-                    // ...
-                }
-            }
-        }
+        locationCallback = object : LocationCallback() {}
     }
 
     abstract val fragmentTag: String

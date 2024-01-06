@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.Flow
 interface ParkingDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(goal: ParkingDbModel?)
+    suspend fun insert(goal: ParkingDbModel)
 
     @Query("SELECT * FROM parking LIMIT 1")
     fun get(): Flow<ParkingDbModel?>

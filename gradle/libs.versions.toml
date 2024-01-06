@@ -1,0 +1,89 @@
+[versions]
+gradlePlugin = "8.2.1"
+kotlin = "1.9.10"
+ksp = "1.9.21-1.0.16"
+javaPoet = "1.13.0"
+appCompat = "1.6.1"
+material = "1.11.0"
+core = "1.12.0"
+constraintLayout = "2.1.4"
+fragment = "1.6.2"
+retrofit = "2.9.0"
+googlePlayServices = "4.4.0"
+googlePlayServicesMaps = "18.2.0"
+googlePlayServicesAnalytics = "18.0.4"
+googlePlayServicesLocation = "21.0.1"
+googlePlayServicesAds = "22.6.0"
+googleMaps = "2.0.3"
+coLocation = "1.1.0"
+hilt = "2.48.1"
+room = "2.6.1"
+firebaseCrashlytics = "18.6.0"
+firebaseAnalytics = "21.5.0"
+firebaseCrashlyticsPlugin = "2.9.9"
+firebaseCore = "21.1.1"
+firebaseAds = "22.6.0"
+okhttp = "4.12.0"
+lifecycle = "2.6.2"
+lifecycleExtension = "2.2.0"
+timber = "5.0.1"
+autonomousapps = "1.20.0"
+billing = "6.1.0"
+serialization = "1.8.10"
+
+[libraries]
+appCompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appCompat" }
+material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+core = { group = "androidx.core", name = "core-ktx", version.ref = "core" }
+constraintLayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintLayout" }
+fragment = { group = "androidx.fragment", name = "fragment-ktx", version.ref = "fragment" }
+retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
+retrofitMoshi = { group = "com.squareup.retrofit2", name = "converter-moshi", version.ref = "retrofit" }
+retrofitRxJava2 = { group = "com.squareup.retrofit2", name = "adapter-rxjava2", version.ref = "retrofit" }
+room = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
+roomCompiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
+roomRuntime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
+firebaseCore = { group = "com.google.firebase", name = "firebase-core", version.ref = "firebaseCore" }
+firebaseAds = { group = "com.google.firebase", name = "firebase-ads", version.ref = "firebaseAds" }
+firebaseAnalytics = { group = "com.google.firebase", name = "firebase-analytics-ktx", version.ref = "firebaseAnalytics" }
+firebaseCrashlytics = { group = "com.google.firebase", name = "firebase-crashlytics-ktx", version.ref = "firebaseCrashlytics" }
+googlePlayServicesMaps = { group = "com.google.android.gms", name = "play-services-maps", version.ref = "googlePlayServicesMaps" }
+googlePlayServicesAnalytics = { group = "com.google.android.gms", name = "play-services-analytics", version.ref = "googlePlayServicesAnalytics" }
+googlePlayServicesLocation = { group = "com.google.android.gms", name = "play-services-location", version.ref = "googlePlayServicesLocation" }
+googlePlayServicesAds = { group = "com.google.android.gms", name = "play-services-ads", version.ref = "googlePlayServicesAds" }
+googleMaps = { group = "com.google.maps.android", name = "android-maps-utils", version.ref = "googleMaps" }
+coLocation = { group = "com.patloew.colocation", name = "colocation", version.ref = "coLocation" }
+okHttpInterceptor = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttp" }
+lifecycle = { group = "androidx.lifecycle", name = "lifecycle-livedata-ktx", version.ref = "lifecycle" }
+lifecycleRuntime = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycle" }
+lifecycleExtension = { group = "androidx.lifecycle", name = "lifecycle-extensions", version.ref = "lifecycleExtension" }
+lifecycleViewModel = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "lifecycle" }
+lifecycleCommon = { group = "androidx.lifecycle", name = "lifecycle-common-java8", version.ref = "lifecycle" }
+timber = { group = "com.jakewharton.timber", name = "timber", version.ref = "timber" }
+billing = { group = "com.android.billingclient", name = "billing-ktx", version.ref = "billing" }
+hilt = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
+daggerHiltCompiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hilt" }
+#plugins
+googlePlayServicesPlugin = { group = "com.google.gms", name = "google-services", version.ref = "googlePlayServices" }
+hiltPlugin = { group = "com.google.dagger", name = "hilt-android-gradle-plugin", version.ref = "hilt" }
+firebaseCrashlyticsPlgin = { group = "com.google.firebase", name = "firebase-crashlytics-gradle", version.ref = "firebaseCrashlyticsPlugin" }
+kotlinPlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
+
+# Dependencies of the included build-logic
+android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "gradlePlugin" }
+ksp-gradlePlugin = { group = "com.google.devtools.ksp", name = "com.google.devtools.ksp.gradle.plugin", version.ref = "ksp" }
+java-poet = { group = "com.squareup", name = "javapoet", version.ref = "javaPoet" }
+
+[bundles]
+room = ["room"]
+retrofit = ["retrofit", "retrofitMoshi"]
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "gradlePlugin" }
+android-library = { id = "com.android.library", version.ref = "gradlePlugin" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+android = { id = "com.android.tools.build:gradle", version.ref = "gradlePlugin" }
+deps = { id = "com.autonomousapps.dependency-analysis", version.ref = "autonomousapps" }
+serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "serialization" }
