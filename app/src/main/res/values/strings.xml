@@ -3,7 +3,6 @@
     <string name="banner_ad_unit_id_main" translatable="false">ca-app-pub-1475613019168586/8301212155</string>
     <string name="banner_ad_unit_id_map" translatable="false">ca-app-pub-1475613019168586/9777945357</string>
     <string name="banner_ad_unit_id_map_interstitial" translatable="false">ca-app-pub-1475613019168586/4098011751</string>
-    <string name="google_map_api_key" translatable="false">AIzaSyAoYJZLp7IFT4Mmd_Sp6qbsgLo2JJ8mdOY</string>
     <string name="privacy_policy_link" translatable="false">https://findmycarlocation.ucraft.me/</string>
 
     <string name="app_name">Find My Car Location</string>

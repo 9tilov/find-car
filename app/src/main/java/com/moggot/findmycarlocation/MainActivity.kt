@@ -23,8 +23,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        billingManager(new PurchaseEnableListener());
-        billingManager.startConnection();
+        billingManager.startConnection()
         if (savedInstanceState != null) {
             viewBinding.bottomNavigation.selectedItemId = navigationId
         } else {
