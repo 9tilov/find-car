@@ -32,7 +32,7 @@ class AboutFragment : BaseFragment(R.layout.fragment_about) {
         viewBinding.aboutClPrivacyPolicy.setOnClickListener {
             startActivity(Intent(context, PrivacyPolicyActivity::class.java))
         }
-         viewBinding.aboutClPurchasePremium.setOnClickListener { v -> mainActivity.billingManager.requestSubscription() }
+//         viewBinding.aboutClPurchasePremium.setOnClickListener { v -> mainActivity.billingManager.requestSubscription() }
     }
 
     companion object {

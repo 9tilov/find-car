@@ -26,7 +26,7 @@
             android:value="@integer/google_play_services_version" />
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="GOOGLE_MAPS_ANDROID_API_KEY" />
+            android:value="@string/GOOGLE_MAPS_ANDROID_API_KEY" />
 
         <activity
             android:name=".MainActivity"
@@ -42,10 +42,6 @@
             android:name=".about.PrivacyPolicyActivity"
             android:screenOrientation="portrait"
             android:exported="false"/>
-
-        <meta-data
-            android:name="io.fabric.ApiKey"
-            android:value="623c25e275154d77c79e34c25f30e8fd4f7685da" />
 
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"

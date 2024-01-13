@@ -17,13 +17,13 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class MainActivity : BaseActivity<ActivityMainBinding>() {
 
-    val billingManager: BillingManager by lazy { BillingManager(this) }
+//    val billingManager: BillingManager by lazy { BillingManager(this) }
     private var navigationId = 0
     private var mAdsCallback: AdsCallback? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        billingManager.startConnection()
+//        billingManager.startConnection()
         if (savedInstanceState != null) {
             viewBinding.bottomNavigation.selectedItemId = navigationId
         } else {
