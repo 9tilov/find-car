@@ -63,12 +63,8 @@ class HomeFragment : LocationFragment(R.layout.fragment_home), OnTouchListener, 
         super.onViewCreated(view, savedInstanceState)
         (activity as MainActivity).setCallback(this)
         viewBinding.ivGear.isEnabled = false
-        viewModel.parkingData.observe(viewLifecycleOwner, {
+        viewModel.parkingData.observe(viewLifecycleOwner) {
             viewBinding.ivGear.isEnabled = true
-        })
-        val activity = activity as MainActivity
-        if (!activity.isPremiumPurchased) {
-            viewBinding.adMain.loadAd(adRequest)
         }
         isAnimated = false
         viewBinding.ivGear.setOnTouchListener(this)

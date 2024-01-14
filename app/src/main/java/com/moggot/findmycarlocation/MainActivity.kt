@@ -4,19 +4,14 @@ import android.os.Bundle
 import android.os.PersistableBundle
 import android.view.MenuItem
 import androidx.annotation.IdRes
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import com.moggot.findmycarlocation.about.AboutFragment
 import com.moggot.findmycarlocation.billing.BillingManager
-import com.moggot.findmycarlocation.billing.BillingReadyListener
 import com.moggot.findmycarlocation.common.BaseActivity
 import com.moggot.findmycarlocation.common.BaseFragment
 import com.moggot.findmycarlocation.databinding.ActivityMainBinding
 import com.moggot.findmycarlocation.home.HomeFragment
 import com.moggot.findmycarlocation.map.ui.GoogleMapFragment
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MainActivity : BaseActivity<ActivityMainBinding>() {
@@ -65,11 +60,6 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
         }
     }
 
-    //        return mBillingManager.isPremium();
-    val isPremiumPurchased: Boolean
-        get() =//        return mBillingManager.isPremium();
-            false
-
     public override fun onResume() {
         super.onResume()
         viewBinding.bottomNavigation.selectedItemId = navigationId
@@ -83,30 +73,17 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
         viewBinding.bottomNavigation.selectedItemId = R.id.navigation_map
     }
 
-    fun switchToHome() {
-        viewBinding.bottomNavigation.selectedItemId = R.id.navigation_home
-    }
-
     override fun onSaveInstanceState(outState: Bundle, outPersistentState: PersistableBundle) {
         super.onSaveInstanceState(outState, outPersistentState)
         navigationId = viewBinding.bottomNavigation.selectedItemId
     }
 
     override fun onDestroy() {
-//        mBillingManager.destroy();
+        billingManager.destroy()
         super.onDestroy()
     }
 
     interface AdsCallback {
         fun showAds(show: Boolean)
-    }
-
-    private inner class PurchaseEnableListener : BillingReadyListener {
-        override fun billingReady() {
-//            if (mBillingManager != null
-//                    && mBillingManager.getBillingClientResponseCode() > BILLING_MANAGER_NOT_INITIALIZED) {
-//                mAdsCallback.showAds(!mBillingManager.isPremium());
-//            }
-        }
     }
 }

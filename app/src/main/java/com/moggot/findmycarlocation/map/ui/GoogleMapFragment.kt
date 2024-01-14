@@ -34,7 +34,6 @@ import com.google.android.gms.maps.model.RoundCap
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.maps.android.PolyUtil
-import com.moggot.findmycarlocation.MainActivity
 import com.moggot.findmycarlocation.R
 import com.moggot.findmycarlocation.base.data.Result
 import com.moggot.findmycarlocation.base.data.Status
@@ -71,13 +70,9 @@ class GoogleMapFragment : LocationFragment(R.layout.fragment_map), OnMapReadyCal
         mapView.onCreate(savedInstanceState)
         mapView.getMapAsync(this)
         startLocationUpdatesAfterCheck()
-        viewModel.getRouteData().observe(viewLifecycleOwner, { result: Result<Path> ->
+        viewModel.getRouteData().observe(viewLifecycleOwner) { result: Result<Path> ->
             when (result.status) {
                 Status.SUCCESS -> {
-                    val activity = activity as MainActivity? ?: return@observe
-                    if (!activity.isPremiumPurchased) {
-                        showInterstitial()
-                    }
                     val path = result.data ?: return@observe
                     enableSearchMode(true)
                     showDistance(path.routes[0].legs[0].distance?.text ?: "")
@@ -88,6 +83,7 @@ class GoogleMapFragment : LocationFragment(R.layout.fragment_map), OnMapReadyCal
                     viewBinding.mapTvEndAddress.text = path.routes[0].legs[0].endAddress
                     showRoute(points)
                 }
+
                 Status.ERROR -> Snackbar.make(
                     view,
                     getString(R.string.no_path),
@@ -95,11 +91,12 @@ class GoogleMapFragment : LocationFragment(R.layout.fragment_map), OnMapReadyCal
                 )
                     .setAction(getString(R.string.retry)) { viewModel.retryCall() }
                     .show()
+
                 else -> {
                 }
             }
 
-        })
+        }
         viewModel.parkingData.observe(viewLifecycleOwner, { data ->
             if (data != null) {
                 decoratePoint(data.coords)

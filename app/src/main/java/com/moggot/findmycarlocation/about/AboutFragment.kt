@@ -15,8 +15,8 @@ import com.moggot.findmycarlocation.R
 import com.moggot.findmycarlocation.base.viewBinding
 import com.moggot.findmycarlocation.common.BaseFragment
 import com.moggot.findmycarlocation.databinding.FragmentAboutBinding
-import kotlinx.coroutines.launch
 import java.util.Calendar
+import kotlinx.coroutines.launch
 
 class AboutFragment : BaseFragment(R.layout.fragment_about) {
 
@@ -32,9 +32,6 @@ class AboutFragment : BaseFragment(R.layout.fragment_about) {
             Calendar.getInstance()[Calendar.YEAR]
         )
         val mainActivity: MainActivity = activity as? MainActivity ?: return
-        if ((activity as MainActivity).isPremiumPurchased) {
-            viewBinding.aboutClPurchasePremium.visibility = View.GONE
-        }
         viewBinding.aboutClPrivacyPolicy.setOnClickListener {
             startActivity(Intent(context, PrivacyPolicyActivity::class.java))
         }
