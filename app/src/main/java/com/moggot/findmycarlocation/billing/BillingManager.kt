@@ -4,36 +4,38 @@ import android.app.Activity
 import android.util.Log
 import com.android.billingclient.api.BillingClient
 import com.android.billingclient.api.BillingClientStateListener
+import com.android.billingclient.api.BillingFlowParams
 import com.android.billingclient.api.BillingResult
 import com.android.billingclient.api.ProductDetails
 import com.android.billingclient.api.ProductDetailsResponseListener
 import com.android.billingclient.api.Purchase
-import com.android.billingclient.api.PurchasesUpdatedListener
 import com.android.billingclient.api.QueryProductDetailsParams
 import com.android.billingclient.api.QueryPurchasesParams
 import com.moggot.findmycarlocation.App.Companion.TAG
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
+import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
-import timber.log.Timber
 
 @Singleton
 class BillingManager @Inject constructor(private val mActivity: Activity) {
 
+    private val _purchases = MutableStateFlow<List<Purchase>>(listOf())
+    val isPremium: Flow<Boolean> = _purchases.asStateFlow().map { it.isNotEmpty() }
+
      private val mBillingClient: BillingClient  = BillingClient.newBuilder(mActivity)
-         .setListener { result, purchases ->
+         .enablePendingPurchases()
+         .setListener { result, purchases: MutableList<Purchase>? ->
              if (result.responseCode == BillingClient.BillingResponseCode.OK && purchases != null) {
-                 for (purchase in purchases) {
-                     if (purchase.isAutoRenewing) {
-                         showAds = false
-                     }
-                 }
+                 _purchases.value = purchases
              }
          }.build()
 
-     private var mBillingReadyListener: BillingReadyListener? = null
      var billingClientResponseCode = BILLING_MANAGER_NOT_INITIALIZED
          private set
-     private var showAds = true
      fun startConnection() {
          mBillingClient.startConnection(object : BillingClientStateListener {
              override fun onBillingServiceDisconnected() {
@@ -47,25 +49,19 @@ class BillingManager @Inject constructor(private val mActivity: Activity) {
                          Timber.tag(TAG).e("queryPurchases: BillingClient is not ready")
                      }
                      mBillingClient.queryPurchasesAsync(QueryPurchasesParams.newBuilder().setProductType(BillingClient.ProductType.SUBS).build()) { billingResult, purchaseList ->
-                         for (purchase in purchaseList) {
-                             if (purchase.isAutoRenewing) {
-                                 showAds = false
+                         if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
+                             if (purchaseList.isNotEmpty()) {
+                                 _purchases.value = purchaseList
+                             } else {
+                                 _purchases.value = emptyList()
                              }
-                             if (mBillingReadyListener != null) {
-                                 mBillingReadyListener!!.billingReady()
-                             }
+                         } else {
+                             Timber.tag(TAG).e(billingResult.debugMessage)
                          }
                      }
                  }
              }
          })
-     }
-
-     val isPremium: Boolean
-         get() = !showAds
-
-     fun setAdsShowListener(billingReadyListener: BillingReadyListener?) {
-         mBillingReadyListener = billingReadyListener
      }
 
      fun requestSubscription() {
@@ -87,50 +83,39 @@ class BillingManager @Inject constructor(private val mActivity: Activity) {
                          result: BillingResult,
                          skuDetailsList: MutableList<ProductDetails>,
                      ) {
-//                         val responseCode = result.responseCode
-//                         if (responseCode == BillingClient.BillingResponseCode.OK) {
-//                             for (skuDetails: ProductDetails in skuDetailsList) {
-//                                 val offers = skuDetails.subscriptionOfferDetails?.let {
-//                                     retrieveEligibleOffers(offerDetails = it)
-//                                 }
-//                                 val offerToken = offers?.let { leastPricedOfferToken(it) }
-//                                 val builder = BillingFlowParams.newBuilder().setProductDetailsParamsList(
-//                                     listOf(
-//                                         BillingFlowParams.ProductDetailsParams.newBuilder()
-//                                             .setProductDetails(skuDetails)
-//                                             .setOfferToken(offerToken)
-//                                             .build()
-//                                     )
-//                                 )
-//                                 if (mBillingClient.isFeatureSupported(BillingClient.FeatureType.SUBSCRIPTIONS).responseCode
-//                                     == BillingClient.BillingResponseCode.OK
-//                                 ) {
-//                                     mBillingClient.launchBillingFlow(mActivity, builder.build())
-//                                 }
-//                             }
-//                         } else {
-//                             startConnection()
-//                         }
+                         val responseCode = result.responseCode
+                         if (responseCode == BillingClient.BillingResponseCode.OK) {
+                             for (skuDetails: ProductDetails in skuDetailsList) {
+                                 val offers: List<ProductDetails.SubscriptionOfferDetails>? = skuDetails.subscriptionOfferDetails
+                                 Log.d(TAG, "skuDetails: $skuDetails")
+                                 Log.d(TAG, "offers: $offers")
+                                 val offerToken = offers?.firstOrNull()
+                                 Log.d(TAG, "offerToken: $offerToken")
+                                 offerToken?.let { token: ProductDetails.SubscriptionOfferDetails ->
+                                     val builder = BillingFlowParams.newBuilder().setProductDetailsParamsList(
+                                         listOf(
+                                             BillingFlowParams.ProductDetailsParams.newBuilder()
+                                                 .setProductDetails(skuDetails)
+                                                 .setOfferToken(token.offerToken)
+                                                 .build()
+                                         )
+                                     )
+                                     if (mBillingClient.isFeatureSupported(BillingClient.FeatureType.SUBSCRIPTIONS).responseCode
+                                         == BillingClient.BillingResponseCode.OK
+                                     ) {
+                                         mBillingClient.launchBillingFlow(mActivity, builder.build())
+                                     }
+                                 }
+                             }
+                         } else {
+                             startConnection()
+                         }
                          Log.d(TAG, "onProductDetailsResponse: $skuDetailsList")
                      }
                  })
              }
          }
      }
-
-    private fun retrieveEligibleOffers(
-        offerDetails: MutableList<ProductDetails.SubscriptionOfferDetails>,
-        tag: String
-    ): List<ProductDetails.SubscriptionOfferDetails> {
-        val eligibleOffers = emptyList<ProductDetails.SubscriptionOfferDetails>().toMutableList()
-        offerDetails.forEach { offerDetail ->
-            if (offerDetail.offerTags.contains(tag)) {
-                eligibleOffers.add(offerDetail)
-            }
-        }
-
-        return eligibleOffers
-    }
 
      fun destroy() {
          if (mBillingClient.isReady) {

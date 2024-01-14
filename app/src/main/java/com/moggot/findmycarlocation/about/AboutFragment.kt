@@ -3,13 +3,19 @@ package com.moggot.findmycarlocation.about
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.moggot.findmycarlocation.BuildConfig
 import com.moggot.findmycarlocation.MainActivity
 import com.moggot.findmycarlocation.R
 import com.moggot.findmycarlocation.base.viewBinding
 import com.moggot.findmycarlocation.common.BaseFragment
 import com.moggot.findmycarlocation.databinding.FragmentAboutBinding
+import kotlinx.coroutines.launch
 import java.util.Calendar
 
 class AboutFragment : BaseFragment(R.layout.fragment_about) {
@@ -32,7 +38,14 @@ class AboutFragment : BaseFragment(R.layout.fragment_about) {
         viewBinding.aboutClPrivacyPolicy.setOnClickListener {
             startActivity(Intent(context, PrivacyPolicyActivity::class.java))
         }
-//         viewBinding.aboutClPurchasePremium.setOnClickListener { v -> mainActivity.billingManager.requestSubscription() }
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                mainActivity.billingManager.isPremium.collect { isPremium ->
+                    viewBinding.aboutClPurchasePremium.visibility = if (isPremium) GONE else VISIBLE
+                }
+            }
+        }
+        viewBinding.aboutClPurchasePremium.setOnClickListener { v -> mainActivity.billingManager.requestSubscription() }
     }
 
     companion object {
