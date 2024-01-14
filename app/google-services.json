@@ -1,39 +1,55 @@
 {
   "project_info": {
-    "project_number": "750096529354",
-    "firebase_url": "https://find-my-car-location-42dea.firebaseio.com",
-    "project_id": "find-my-car-location-42dea",
-    "storage_bucket": "find-my-car-location-42dea.appspot.com"
+    "project_number": "79745386976",
+    "firebase_url": "https://androidapps-150409.firebaseio.com",
+    "project_id": "androidapps-150409",
+    "storage_bucket": "androidapps-150409.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:750096529354:android:cbb072e11736d21e878133",
+        "mobilesdk_app_id": "1:79745386976:android:d96b1e2c2cdd8827",
         "android_client_info": {
           "package_name": "com.moggot.findmycarlocation"
         }
       },
       "oauth_client": [
         {
-          "client_id": "750096529354-piod1sm9j82sha74v6gr3106g0jk8odh.apps.googleusercontent.com",
-          "client_type": 3
+          "client_id": "79745386976-36s87o6sc40ufbu3d90fsm910j5m7m03.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.moggot.findmycarlocation",
+            "certificate_hash": "cec90f98bc7c36b6a061f3e799cac149890c3566"
+          }
+        },
+        {
+          "client_id": "79745386976-fvcgu3cf2fbqv65aipd564vug9hba8v8.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.moggot.findmycarlocation",
+            "certificate_hash": "3470d5735ca9eb4d7ac7340400023351d8e53bdb"
+          }
+        },
+        {
+          "client_id": "79745386976-ndt49qjtoq2sqfmv4h1hfpnfhl43mrmh.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.moggot.findmycarlocation",
+            "certificate_hash": "0fae6525f9b9282cd744fd94a417879573a69b92"
+          }
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyBRYe32YPLSv0TlXumFaFcqUDbXM4KoRjI"
+          "current_key": "AIzaSyCcsjvfCYq8ECvSBtLjpv6toYsepEBawVE"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "750096529354-piod1sm9j82sha74v6gr3106g0jk8odh.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
+          "other_platform_oauth_client": []
         }
-      }
+      },
+      "admob_app_id": "ca-app-pub-1475613019168586~2120488559"
     }
   ],
   "configuration_version": "1"

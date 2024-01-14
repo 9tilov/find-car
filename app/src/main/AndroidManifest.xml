@@ -44,10 +44,6 @@
             android:exported="false"/>
 
         <meta-data
-            android:name="io.fabric.ApiKey"
-            android:value="623c25e275154d77c79e34c25f30e8fd4f7685da" />
-
-        <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="@string/app_id" />
 

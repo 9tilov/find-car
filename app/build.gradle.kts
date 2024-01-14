@@ -27,8 +27,8 @@ android {
 
     val versionMajor = 1
     val versionMinor = 12
-    val versionPatch = 8
-    val versionBuild = 39
+    val versionPatch = 9
+    val versionBuild = 1
 
     namespace = "com.moggot.findmycarlocation"
     compileSdk = 34

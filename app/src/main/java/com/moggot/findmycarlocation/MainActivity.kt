@@ -4,6 +4,9 @@ import android.os.Bundle
 import android.os.PersistableBundle
 import android.view.MenuItem
 import androidx.annotation.IdRes
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.moggot.findmycarlocation.about.AboutFragment
 import com.moggot.findmycarlocation.billing.BillingManager
 import com.moggot.findmycarlocation.billing.BillingReadyListener
@@ -13,19 +16,18 @@ import com.moggot.findmycarlocation.databinding.ActivityMainBinding
 import com.moggot.findmycarlocation.home.HomeFragment
 import com.moggot.findmycarlocation.map.ui.GoogleMapFragment
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MainActivity : BaseActivity<ActivityMainBinding>() {
 
-    val billingManager: BillingManager? = null
+    val billingManager: BillingManager by lazy { BillingManager(this) }
     private var navigationId = 0
     private var mAdsCallback: AdsCallback? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        //        mBillingManager = new BillingManager(this);
-//        mBillingManager.setAdsShowListener(new PurchaseEnableListener());
-//        mBillingManager.startConnection();
+        billingManager.startConnection()
         if (savedInstanceState != null) {
             viewBinding.bottomNavigation.selectedItemId = navigationId
         } else {
